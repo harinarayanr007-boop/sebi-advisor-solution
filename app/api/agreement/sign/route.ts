@@ -33,8 +33,13 @@ export async function POST(req: NextRequest) {
         clientName: clientName || "Valued Fiduciary Client",
         signedAt: executionTimestamp,
         legalHash: cryptographicHash,
-        // Mock PDF link or data URL that can be inspected and downloaded
         pdfDownloadUrl: `/api/agreement/download?agreementId=${agreementId}`,
+        data: {
+          agreementId,
+          signedAt: executionTimestamp,
+          sha256Hash: cryptographicHash,
+          downloadUrl: `/api/agreement/download?agreementId=${agreementId}`,
+        },
       },
       { status: 200 }
     );

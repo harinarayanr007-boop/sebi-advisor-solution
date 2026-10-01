@@ -18,13 +18,13 @@ import {
 
 export default function AboutFiduciary() {
   return (
-    <section className="py-24 bg-[#050B17] border-b border-slate-800/80">
+    <section className="py-24 bg-[#040915] border-b border-slate-800/80">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-20">
         {/* Leadership & Fiduciary Governance Strip */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Executive Portrait */}
           <div className="lg:col-span-5 relative">
-            <div className="relative rounded-2xl overflow-hidden border border-[#C5A059]/40 shadow-2xl shadow-black/80 bg-[#0A1226]">
+            <div className="relative rounded-sm overflow-hidden border border-[#BE9A48]/50 shadow-2xl shadow-black/80 bg-[#081022]">
               <Image
                 src="/images/principal-officer.jpg"
                 alt="Rajesh V. Mehta - Principal Officer, Aurum Fiduciary Advisory"
@@ -34,23 +34,23 @@ export default function AboutFiduciary() {
                 className="w-full h-auto object-cover"
                 priority
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050B17] via-transparent to-transparent opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#020611] via-transparent to-transparent opacity-85" />
 
-              <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-[#050B17]/90 backdrop-blur-md border border-[#C5A059]/30 space-y-1">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#C5A059]">
+              <div className="absolute bottom-6 left-6 right-6 p-4 rounded-sm bg-[#040915]/95 backdrop-blur-md border border-[#BE9A48]/30 space-y-1">
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#D8BD80]">
                   Statutory Principal Officer
                 </span>
                 <h4 className="font-serif text-lg text-slate-100 font-medium">
                   Rajesh V. Mehta
                 </h4>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-slate-400 font-mono">
                   Managing Partner • SEBI Registered Principal Officer • NISM Series X-A / X-B Certified
                 </p>
               </div>
             </div>
 
             {/* Embossed Seal Floating Badge */}
-            <div className="absolute -bottom-6 -right-6 hidden sm:block h-28 w-28 rounded-full overflow-hidden border-2 border-[#C5A059] shadow-2xl shadow-black bg-[#0A1226]">
+            <div className="absolute -bottom-6 -right-6 hidden sm:block h-28 w-28 rounded-full overflow-hidden border-2 border-[#BE9A48] shadow-2xl shadow-black bg-[#081022]">
               <Image
                 src="/images/fiduciary-seal.jpg"
                 alt="SEBI RIA Fiduciary Seal"
@@ -65,8 +65,8 @@ export default function AboutFiduciary() {
           {/* Fiduciary Profile & Credentials */}
           <div className="lg:col-span-7 space-y-6">
             <div className="space-y-2">
-              <div className="flex items-center space-x-2 text-xs font-mono uppercase tracking-widest text-[#C5A059]">
-                <ShieldCheck className="h-4 w-4" />
+              <div className="flex items-center space-x-2 text-[10px] font-mono uppercase tracking-[0.25em] text-[#D8BD80]">
+                <ShieldCheck className="h-4 w-4 text-[#BE9A48]" />
                 <span>Statutory Fiduciary Stewardship</span>
               </div>
               <h2 className="font-serif text-3xl sm:text-4xl text-slate-50 font-normal">
@@ -84,28 +84,28 @@ export default function AboutFiduciary() {
 
             {/* Qualifications Matrix */}
             <div className="grid grid-cols-2 gap-4 pt-2">
-              <div className="p-4 rounded-xl bg-[#090F1E] border border-slate-800 space-y-1">
-                <div className="font-serif text-xl text-[#DFC68E]">24+ Years</div>
+              <div className="p-4 rounded-sm bg-[#081022] border border-slate-800 space-y-1">
+                <div className="font-serif text-xl text-[#D8BD80]">24+ Years</div>
                 <div className="text-xs text-slate-300 font-medium">Capital Market Experience</div>
-                <div className="text-[10px] text-slate-500">Navigated 5 Major Market Cycles</div>
+                <div className="text-[10px] text-slate-500 font-mono">Navigated 5 Major Market Cycles</div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#090F1E] border border-slate-800 space-y-1">
+              <div className="p-4 rounded-sm bg-[#081022] border border-slate-800 space-y-1">
                 <div className="font-serif text-xl text-slate-100">1:25 Max</div>
                 <div className="text-xs text-slate-300 font-medium">Partner-to-Family Ratio</div>
-                <div className="text-[10px] text-slate-500">Strict Capacity Caps Enforced</div>
+                <div className="text-[10px] text-slate-500 font-mono">Strict Capacity Caps Enforced</div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#090F1E] border border-slate-800 space-y-1">
-                <div className="font-serif text-xl text-[#DFC68E]">NISM X-A/B</div>
+              <div className="p-4 rounded-sm bg-[#081022] border border-slate-800 space-y-1">
+                <div className="font-serif text-xl text-[#D8BD80]">NISM X-A/B</div>
                 <div className="text-xs text-slate-300 font-medium">Statutory Certification</div>
-                <div className="text-[10px] text-slate-500">National Institute of Securities Markets</div>
+                <div className="text-[10px] text-slate-500 font-mono">National Institute of Securities Markets</div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#090F1E] border border-slate-800 space-y-1">
+              <div className="p-4 rounded-sm bg-[#081022] border border-slate-800 space-y-1">
                 <div className="font-serif text-xl text-slate-100">INA000019842</div>
                 <div className="text-xs text-slate-300 font-medium">SEBI Registration</div>
-                <div className="text-[10px] text-slate-500">Corporate RIA Category</div>
+                <div className="text-[10px] text-slate-500 font-mono">Corporate RIA Category</div>
               </div>
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function AboutFiduciary() {
 
         {/* Institutional Facilities & Presence */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center pt-8 border-t border-slate-800/80">
-          <div className="rounded-2xl overflow-hidden border border-slate-800 relative group bg-[#0A1226]">
+          <div className="rounded-sm overflow-hidden border border-slate-800 relative group bg-[#081022]">
             <Image
               src="/images/boardroom.jpg"
               alt="Aurum Fiduciary Boardroom in Nariman Point, Mumbai"
@@ -122,9 +122,9 @@ export default function AboutFiduciary() {
               unoptimized
               className="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050B17] via-transparent to-transparent opacity-80" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#020611] via-transparent to-transparent opacity-85" />
             <div className="absolute bottom-4 left-4 right-4">
-              <span className="text-[10px] font-mono text-[#C5A059] uppercase tracking-wider block">
+              <span className="text-[10px] font-mono text-[#D8BD80] uppercase tracking-wider block">
                 Private Advisory Boardroom
               </span>
               <h4 className="font-serif text-base text-slate-100 font-medium">
@@ -136,7 +136,7 @@ export default function AboutFiduciary() {
             </div>
           </div>
 
-          <div className="rounded-2xl overflow-hidden border border-slate-800 relative group bg-[#0A1226]">
+          <div className="rounded-sm overflow-hidden border border-slate-800 relative group bg-[#081022]">
             <Image
               src="/images/nariman-point.jpg"
               alt="Nariman Point Financial District, Mumbai"
@@ -145,9 +145,9 @@ export default function AboutFiduciary() {
               unoptimized
               className="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050B17] via-transparent to-transparent opacity-80" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#020611] via-transparent to-transparent opacity-85" />
             <div className="absolute bottom-4 left-4 right-4">
-              <span className="text-[10px] font-mono text-[#C5A059] uppercase tracking-wider block">
+              <span className="text-[10px] font-mono text-[#D8BD80] uppercase tracking-wider block">
                 Mumbai Financial Core
               </span>
               <h4 className="font-serif text-base text-slate-100 font-medium">
@@ -161,10 +161,10 @@ export default function AboutFiduciary() {
         </div>
 
         {/* Regulatory Governance Accordion */}
-        <div className="rounded-2xl border border-slate-800 bg-[#090F1E] p-6 sm:p-10 space-y-6">
+        <div className="architectural-panel p-6 sm:p-10 space-y-6">
           <div className="space-y-2">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#C5A059]">
-              Institutional Governance
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#D8BD80]">
+              Institutional Governance // Reg. 15 Disclosures
             </span>
             <h3 className="font-serif text-2xl text-slate-100 font-normal">
               Statutory Fiduciary Disclosures & Frequently Addressed Questions

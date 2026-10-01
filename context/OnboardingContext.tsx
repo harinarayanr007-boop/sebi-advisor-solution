@@ -16,7 +16,9 @@ export interface RPQData {
   liquidityNeed: string;
   riskScore: number;
   riskTier: "Conservative Capital Preservation" | "Balanced Strategic Growth" | "Aggressive Capital Accretion";
+  riskProfile?: string;
   isQualified: boolean;
+  completedAt?: string;
 }
 
 export interface KYCData {
@@ -34,6 +36,8 @@ export interface AgreementData {
   signedAt: string | null;
   signatureDataUrl: string | null;
   agreementPdfUrl: string | null;
+  downloadUrl?: string | null;
+  agreementHash?: string | null;
   termsAccepted: boolean;
   clientId: string;
 }

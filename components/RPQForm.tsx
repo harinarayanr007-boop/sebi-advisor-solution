@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -16,13 +16,26 @@ import {
   Sliders,
   DollarSign,
   UserCheck,
+  CheckCircle2,
+  Activity,
+  Layers,
+  Scale,
+  ShieldCheck,
+  Award,
+  Clock,
+  Landmark,
+  User,
+  Briefcase,
+  HelpCircle,
 } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { useOnboarding } from "@/context/OnboardingContext";
 
 const rpqSchema = z.object({
   fullName: z.string().min(3, "Legal full name as per PAN is mandatory"),
   email: z.string().email("Valid corporate or personal email required"),
   phone: z.string().regex(/^[6-9]\d{9}$/, "Valid 10-digit Indian mobile number required"),
+  entityType: z.string().min(1, "Entity classification is required"),
   age: z.string().min(1, "Please select your age bracket"),
   horizon: z.string().min(1, "Please select your investment time horizon"),
   netWorth: z.string().min(1, "Mandatory net worth disclosure required"),
@@ -40,14 +53,27 @@ type RPQFormData = z.infer<typeof rpqSchema>;
 
 export default function RPQForm() {
   const router = useRouter();
-  const { setRPQ, resetOnboarding } = useOnboarding();
+  const searchParams = useSearchParams();
+  const initialTier = searchParams.get("tier");
+
+  const { setRPQ } = useOnboarding();
   const [step, setStep] = useState<number>(1);
   const totalSteps = 3;
+
+  const defaultNetWorth =
+    initialTier === "sub_50l"
+      ? "under_50l"
+      : initialTier === "10cr_plus"
+      ? "above_10cr"
+      : initialTier === "50l_to_2cr"
+      ? "50l_to_2cr"
+      : "2cr_to_10cr";
 
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     trigger,
     formState: { errors },
   } = useForm<RPQFormData>({
@@ -57,10 +83,11 @@ export default function RPQForm() {
       fullName: "",
       email: "",
       phone: "",
+      entityType: "individual_hni",
       age: "36-50",
       horizon: "3_to_7_years",
-      netWorth: "50l_to_2cr",
-      income: "25l_to_75l",
+      netWorth: defaultNetWorth,
+      income: "75l_to_2cr",
       experience: "direct_equity_mf",
       drawdownReaction: "remain_invested",
       objective: "wealth_preservation_growth",
@@ -70,45 +97,72 @@ export default function RPQForm() {
   });
 
   const selectedNetWorth = watch("netWorth");
+  const selectedReaction = watch("drawdownReaction");
+  const selectedHorizon = watch("horizon");
+  const selectedEntityType = watch("entityType");
+  const selectedAge = watch("age");
+  const selectedIncome = watch("income");
+  const selectedExperience = watch("experience");
+  const fullName = watch("fullName");
+
+  // Dynamic Risk Score calculation for live gauge
+  const computeRiskScore = () => {
+    let score = 50;
+    if (selectedReaction === "allocate_more") score += 25;
+    if (selectedReaction === "panic_exit") score -= 25;
+    if (selectedHorizon === "7_plus_years") score += 15;
+    if (selectedHorizon === "less_1_year") score -= 20;
+    if (selectedNetWorth === "above_10cr") score += 10;
+    if (selectedNetWorth === "under_50l") score -= 15;
+    return Math.max(10, Math.min(95, score));
+  };
+
+  const riskScore = computeRiskScore();
+  const isQualified = selectedNetWorth !== "under_50l";
+
+  const getProfileTitle = () => {
+    if (riskScore < 40) return "Conservative Capital Preservation";
+    if (riskScore <= 70) return "Balanced Strategic Growth";
+    return "Capital Accretion & Expansion";
+  };
 
   const handleNextStep = async () => {
     let isValid = false;
     if (step === 1) {
-      isValid = await trigger(["fullName", "email", "phone", "age", "horizon"]);
+      isValid = await trigger(["fullName", "email", "phone", "entityType", "age", "horizon"]);
     } else if (step === 2) {
       isValid = await trigger(["netWorth", "income", "experience"]);
     }
     if (isValid) {
       setStep((prev) => Math.min(prev + 1, totalSteps));
+      window.scrollTo({ top: 120, behavior: "smooth" });
     }
   };
 
   const onSubmit = (data: RPQFormData) => {
-    // Determine Qualification Filter ("Spam Wall")
     const isUnqualified = data.netWorth === "under_50l";
 
-    // Calculate Risk Capacity Score (0 - 100)
-    let score = 50;
-    if (data.drawdownReaction === "allocate_more") score += 25;
-    if (data.drawdownReaction === "panic_exit") score -= 25;
-    if (data.horizon === "7_plus_years") score += 15;
-    if (data.horizon === "less_1_year") score -= 20;
-    if (data.liquidityNeed === "low") score += 10;
-    if (data.liquidityNeed === "high") score -= 15;
-
-    let tier: "Conservative Capital Preservation" | "Balanced Strategic Growth" | "Aggressive Capital Accretion" =
-      "Balanced Strategic Growth";
-    if (score < 45) {
-      tier = "Conservative Capital Preservation";
-    } else if (score > 75) {
-      tier = "Aggressive Capital Accretion";
-    }
+    let calculatedTier: "Conservative Capital Preservation" | "Balanced Strategic Growth" | "Aggressive Capital Accretion" = "Balanced Strategic Growth";
+    if (riskScore < 40) calculatedTier = "Conservative Capital Preservation";
+    if (riskScore > 70) calculatedTier = "Aggressive Capital Accretion";
 
     setRPQ({
-      ...data,
-      riskScore: score,
-      riskTier: tier,
+      fullName: data.fullName,
+      email: data.email,
+      phone: data.phone,
+      netWorth: data.netWorth,
+      income: data.income,
+      experience: data.experience,
+      age: data.age,
+      horizon: data.horizon,
+      drawdownReaction: data.drawdownReaction,
+      objective: data.objective,
+      liquidityNeed: data.liquidityNeed,
+      riskScore,
+      riskTier: calculatedTier,
+      riskProfile: calculatedTier,
       isQualified: !isUnqualified,
+      completedAt: new Date().toISOString(),
     });
 
     if (isUnqualified) {
@@ -119,472 +173,644 @@ export default function RPQForm() {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto rounded-xl border border-slate-800 bg-[#090F1E] shadow-2xl overflow-hidden">
-      {/* Progress Bar & Header */}
-      <div className="border-b border-slate-800/80 bg-[#050B17] p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-          <div>
-            <div className="flex items-center space-x-2 text-[11px] text-[#C5A059] uppercase tracking-widest font-mono">
-              <Lock className="h-3.5 w-3.5" />
-              <span>SEBI Mandated Statutory Suitability Assessment</span>
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      {/* LEFT COLUMN: STATUTORY AUDIT RAIL & SUITABILITY SCORECARD */}
+      <div className="lg:col-span-4 space-y-6">
+        <div className="architectural-panel p-5 sm:p-6 space-y-5 text-slate-100">
+          <div className="flex items-center justify-between pb-3 border-b border-[#BE9A48]/20">
+            <div className="flex items-center space-x-2">
+              <Scale className="h-4 w-4 text-[#BE9A48]" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#D8BD80] font-semibold">
+                Statutory Dossier Rail
+              </span>
             </div>
-            <h2 className="font-serif text-xl sm:text-2xl text-slate-100 font-normal mt-1">
-              Risk Profiling Questionnaire (RPQ)
-            </h2>
+            <span className="font-mono text-[10px] text-slate-400">SEBI Reg. 16/17</span>
           </div>
-          <div className="text-right">
-            <span className="text-xs font-mono text-slate-400">
-              Stage <strong className="text-[#DFC68E]">{step}</strong> of {totalSteps}
+
+          {/* Real-time Risk Capacity Dial */}
+          <div className="p-4 rounded-sm bg-[#040915] border border-slate-800 space-y-3">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                Risk Capacity Index
+              </span>
+              <span className="font-mono text-xs text-[#BE9A48] font-bold">{riskScore} / 100</span>
+            </div>
+
+            {/* Gauge Graphic */}
+            <div className="relative pt-2">
+              <div className="h-2 w-full bg-slate-800 rounded-sm overflow-hidden flex">
+                <div
+                  className="h-full bg-gradient-to-r from-emerald-500 via-[#BE9A48] to-amber-500 transition-all duration-300"
+                  style={{ width: `${riskScore}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-[9px] font-mono text-slate-400 pt-1">
+                <span>CONSERVATIVE</span>
+                <span>BALANCED</span>
+                <span>ACCRETION</span>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-slate-800/80">
+              <span className="text-[10px] text-slate-400 block">Indicated Mandate:</span>
+              <span className="font-serif text-sm text-[#F3ECDB] font-medium block">
+                {getProfileTitle()}
+              </span>
+            </div>
+          </div>
+
+          {/* Spam Wall Clearance Status */}
+          <div
+            className={`p-3.5 rounded-sm border ${
+              isQualified
+                ? "bg-emerald-950/20 border-emerald-500/30 text-emerald-300"
+                : "bg-rose-950/25 border-rose-500/40 text-rose-300"
+            }`}
+          >
+            <div className="flex items-center space-x-2.5">
+              {isQualified ? (
+                <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
+              ) : (
+                <AlertTriangle className="h-4 w-4 text-rose-400 shrink-0" />
+              )}
+              <div>
+                <span className="font-mono text-[10px] uppercase tracking-wider block font-bold">
+                  {isQualified ? "Hurdle Gate: PASSED" : "Hurdle Gate: SUB-THRESHOLD"}
+                </span>
+                <span className="text-[10px] opacity-80 block leading-tight">
+                  {isQualified
+                    ? "Portfolio >= ₹50L qualifies for direct RIA fee-only mandate"
+                    : "Net worth < ₹50L will be redirected to educational waitlist"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Compliance Audit Trail Checkpoints */}
+          <div className="space-y-2 text-xs">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 block">
+              SEBI Audit Trail Verification
             </span>
+            <div className="space-y-1.5 font-mono text-[11px]">
+              <div className="flex items-center space-x-2 text-slate-300">
+                <div
+                  className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${
+                    step >= 1 ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-slate-800 text-slate-500"
+                  }`}
+                >
+                  1
+                </div>
+                <span className={step === 1 ? "text-[#D8BD80] font-semibold" : ""}>
+                  PAN & Domicile Clearance
+                </span>
+              </div>
+
+              <div className="flex items-center space-x-2 text-slate-300">
+                <div
+                  className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${
+                    step >= 2 ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-slate-800 text-slate-500"
+                  }`}
+                >
+                  2
+                </div>
+                <span className={step === 2 ? "text-[#D8BD80] font-semibold" : ""}>
+                  Capital Capacity (Spam Wall)
+                </span>
+              </div>
+
+              <div className="flex items-center space-x-2 text-slate-300">
+                <div
+                  className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${
+                    step >= 3 ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-slate-800 text-slate-500"
+                  }`}
+                >
+                  3
+                </div>
+                <span className={step === 3 ? "text-[#D8BD80] font-semibold" : ""}>
+                  Crisis Drawdown & Fiduciary Oath
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Principal Officer Endorsement */}
+          <div className="pt-3 border-t border-slate-800/80 space-y-1 text-[11px] text-slate-400 font-mono">
+            <span className="text-[#BE9A48] block font-semibold">Supervising Principal Officer:</span>
+            <span>Rajesh V. Mehta (SEBI RIA: INA000019842)</span>
+            <div className="text-[10px] text-slate-500 pt-0.5">
+              Strict 1:25 partner-to-family ratio enforced.
+            </div>
           </div>
         </div>
-
-        {/* Step progress pills */}
-        <div className="grid grid-cols-3 gap-2">
-          <div
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              step >= 1 ? "bg-[#C5A059]" : "bg-slate-800"
-            }`}
-          />
-          <div
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              step >= 2 ? "bg-[#C5A059]" : "bg-slate-800"
-            }`}
-          />
-          <div
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              step >= 3 ? "bg-[#C5A059]" : "bg-slate-800"
-            }`}
-          />
-        </div>
       </div>
 
-      {/* High friction statutory warning banner */}
-      <div className="bg-[#0A1226] border-b border-slate-800/80 px-6 py-2.5 flex items-center space-x-2 text-[11px] text-slate-300">
-        <ShieldAlert className="h-4 w-4 text-[#C5A059] shrink-0" />
-        <span>
-          Under Regulation 16 of SEBI (IA) Regulations, 2013, accurate disclosure is a statutory prerequisite for portfolio advice.
-        </span>
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="p-6 sm:p-8 space-y-8">
-        {/* STEP 1: IDENTITY & INVESTMENT HORIZON */}
-        {step === 1 && (
-          <div className="space-y-6 animate-fadeIn">
-            <div className="border-b border-slate-800 pb-3">
-              <h3 className="font-serif text-lg text-slate-100 font-medium">
-                Stage 1: Legal Identity & Time Horizon
-              </h3>
-              <p className="text-xs text-slate-400">
-                Ensure details match your Income Tax Department (PAN) records for KYC synchronization.
-              </p>
+      {/* RIGHT COLUMN: THE INTERACTIVE QUALIFICATION MATRIX */}
+      <div className="lg:col-span-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="architectural-panel p-6 sm:p-9 space-y-8">
+          {/* Stage Breadcrumb Header */}
+          <div className="flex items-center justify-between pb-4 border-b border-[#BE9A48]/20">
+            <div className="space-y-0.5">
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#D8BD80]">
+                Stage 0{step} of 0{totalSteps}
+              </span>
+              <h2 className="font-serif text-xl sm:text-2xl text-slate-100 font-normal">
+                {step === 1 && "Identity, Entity Classification & Investment Horizon"}
+                {step === 2 && "Capital Allocation Capacity & Economic Hurdle Gate"}
+                {step === 3 && "Crisis Drawdown Stress Testing & Fiduciary Execution"}
+              </h2>
             </div>
+            <div className="text-right">
+              <span className="font-mono text-[10px] text-emerald-400 block">ENCRYPTED</span>
+              <span className="font-mono text-[9px] text-slate-500">256-Bit SSL</span>
+            </div>
+          </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="sm:col-span-2 space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">
-                  Full Legal Name (as per PAN Card) *
+          {/* STAGE 1: IDENTITY & ENTITY STRUCTURE */}
+          {step === 1 && (
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              className="space-y-6"
+            >
+              {/* Entity Type Selector */}
+              <div className="space-y-2">
+                <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                  Legal Entity Classification *
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[
+                    { id: "individual_hni", label: "Individual HNI" },
+                    { id: "family_trust", label: "Private Family Trust" },
+                    { id: "corporate_treasury", label: "Corporate Treasury" },
+                    { id: "huf", label: "HUF Entity" },
+                  ].map((ent) => (
+                    <button
+                      key={ent.id}
+                      type="button"
+                      onClick={() => setValue("entityType", ent.id)}
+                      className={`p-3 text-left rounded-sm border text-xs font-mono transition-all ${
+                        selectedEntityType === ent.id
+                          ? "bg-[#142445] border-[#BE9A48] text-[#F3ECDB] shadow-inner"
+                          : "bg-[#040915] border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200"
+                      }`}
+                    >
+                      <span className="block font-medium">{ent.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Legal Name */}
+              <div className="space-y-1.5">
+                <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                  Full Legal Name (as per Income Tax PAN) *
                 </label>
                 <input
                   type="text"
                   placeholder="e.g. Vikramaditya Singhania"
                   {...register("fullName")}
-                  className="w-full rounded-md border border-slate-700 bg-[#050B17] px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:border-[#C5A059] focus:outline-none focus:ring-1 focus:ring-[#C5A059]"
+                  className="w-full rounded-sm border border-slate-800 bg-[#040915] px-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:border-[#BE9A48] focus:bg-[#071022] focus:outline-none transition-all font-sans"
                 />
                 {errors.fullName && (
-                  <p className="text-[11px] text-rose-400">{errors.fullName.message}</p>
+                  <p className="text-[11px] text-rose-400 font-mono">{errors.fullName.message}</p>
                 )}
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">
-                  Official Communication Email *
-                </label>
-                <input
-                  type="email"
-                  placeholder="name@familyoffice.com"
-                  {...register("email")}
-                  className="w-full rounded-md border border-slate-700 bg-[#050B17] px-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:border-[#C5A059] focus:outline-none focus:ring-1 focus:ring-[#C5A059]"
-                />
-                {errors.email && (
-                  <p className="text-[11px] text-rose-400">{errors.email.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">
-                  Mobile Number (Aadhaar Linked) *
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-sm text-slate-400 font-mono">
-                    +91
-                  </span>
+              {/* Email & Phone */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                    Official Communication Email *
+                  </label>
                   <input
-                    type="tel"
-                    maxLength={10}
-                    placeholder="9820012345"
-                    {...register("phone")}
-                    className="w-full rounded-md border border-slate-700 bg-[#050B17] pl-12 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 focus:border-[#C5A059] focus:outline-none focus:ring-1 focus:ring-[#C5A059]"
+                    type="email"
+                    placeholder="v.singhania@familyoffice.in"
+                    {...register("email")}
+                    className="w-full rounded-sm border border-slate-800 bg-[#040915] px-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:border-[#BE9A48] focus:bg-[#071022] focus:outline-none transition-all font-sans"
                   />
-                </div>
-                {errors.phone && (
-                  <p className="text-[11px] text-rose-400">{errors.phone.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">Age Bracket *</label>
-                <select
-                  {...register("age")}
-                  className="w-full rounded-md border border-slate-700 bg-[#050B17] px-4 py-2.5 text-sm text-slate-100 focus:border-[#C5A059] focus:outline-none focus:ring-1 focus:ring-[#C5A059]"
-                >
-                  <option value="21-35">21 – 35 Years (Early Wealth Creation)</option>
-                  <option value="36-50">36 – 50 Years (Peak Earnings / Expansion)</option>
-                  <option value="51-65">51 – 65 Years (Wealth Consolidation & Succession)</option>
-                  <option value="65_plus">Above 65 Years (Intergenerational Trust & Legacy)</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">
-                  Targeted Investment Horizon *
-                </label>
-                <select
-                  {...register("horizon")}
-                  className="w-full rounded-md border border-slate-700 bg-[#050B17] px-4 py-2.5 text-sm text-slate-100 focus:border-[#C5A059] focus:outline-none focus:ring-1 focus:ring-[#C5A059]"
-                >
-                  <option value="less_1_year">Less than 1 Year (Short-Term Liquidity)</option>
-                  <option value="1_to_3_years">1 – 3 Years (Medium-Term Capital)</option>
-                  <option value="3_to_7_years">3 – 7 Years (Full Market Cycle Allocation)</option>
-                  <option value="7_plus_years">7+ Years (Multi-Decadal & Family Office Legacy)</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-4">
-              <button
-                type="button"
-                onClick={handleNextStep}
-                className="inline-flex items-center px-6 py-3 rounded border border-[#C5A059] bg-[#C5A059] text-[#050B17] text-xs font-semibold uppercase tracking-wider hover:bg-[#DFC68E] transition-colors"
-              >
-                <span>Continue to Financial Capacity</span>
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 2: FINANCIAL CAPACITY & THE SPAM WALL FILTER */}
-        {step === 2 && (
-          <div className="space-y-6 animate-fadeIn">
-            <div className="border-b border-slate-800 pb-3">
-              <h3 className="font-serif text-lg text-slate-100 font-medium">
-                Stage 2: Financial Capacity & Investable Assets
-              </h3>
-              <p className="text-xs text-slate-400">
-                SEBI guidelines require verification of liquid investable surplus to establish suitability.
-              </p>
-            </div>
-
-            {/* THE SPAM WALL: Net Worth Selector */}
-            <div className="space-y-3">
-              <label className="text-xs font-medium text-slate-200 block">
-                Total Liquid Investable Net Worth (Excluding Primary Residence) *
-              </label>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <label
-                  className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                    selectedNetWorth === "under_50l"
-                      ? "border-rose-500/80 bg-rose-950/20"
-                      : "border-slate-800 bg-[#050B17] hover:border-slate-600"
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="text-sm font-medium text-slate-200">Below ₹50 Lakhs</div>
-                      <div className="text-[11px] text-slate-400 mt-1">
-                        Retail / Emerging Investor Surplus
-                      </div>
-                    </div>
-                    <input
-                      type="radio"
-                      value="under_50l"
-                      {...register("netWorth")}
-                      className="mt-1"
-                    />
-                  </div>
-                  {selectedNetWorth === "under_50l" && (
-                    <div className="mt-2.5 pt-2 border-t border-rose-900/40 text-[10px] text-rose-300 flex items-center space-x-1">
-                      <AlertTriangle className="h-3 w-3 shrink-0" />
-                      <span>Does not meet our ₹50 Lakhs fiduciary intake mandate.</span>
-                    </div>
+                  {errors.email && (
+                    <p className="text-[11px] text-rose-400 font-mono">{errors.email.message}</p>
                   )}
-                </label>
+                </div>
 
-                <label
-                  className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                    selectedNetWorth === "50l_to_2cr"
-                      ? "border-[#C5A059] bg-[#0A1226]"
-                      : "border-slate-800 bg-[#050B17] hover:border-slate-600"
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="text-sm font-medium text-slate-200">₹50 Lakhs – ₹2 Crores</div>
-                      <div className="text-[11px] text-slate-400 mt-1">
-                        Qualified Emerging HNI
-                      </div>
-                    </div>
+                <div className="space-y-1.5">
+                  <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                    Aadhaar-Linked Mobile Number *
+                  </label>
+                  <div className="flex items-center rounded-sm border border-slate-800 bg-[#040915] px-3 focus-within:border-[#BE9A48]">
+                    <span className="font-mono text-xs text-slate-400 mr-2 border-r border-slate-800 pr-2">
+                      +91
+                    </span>
                     <input
-                      type="radio"
-                      value="50l_to_2cr"
-                      {...register("netWorth")}
-                      className="mt-1"
+                      type="tel"
+                      placeholder="9820012345"
+                      {...register("phone")}
+                      className="w-full bg-transparent py-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none font-mono"
                     />
                   </div>
-                  <div className="mt-2 text-[10px] text-emerald-400 font-mono">
-                    ✓ Eligible for Bespoke Fiduciary Mandate
-                  </div>
-                </label>
+                  {errors.phone && (
+                    <p className="text-[11px] text-rose-400 font-mono">{errors.phone.message}</p>
+                  )}
+                </div>
+              </div>
 
-                <label
-                  className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                    selectedNetWorth === "2cr_to_10cr"
-                      ? "border-[#C5A059] bg-[#0A1226]"
-                      : "border-slate-800 bg-[#050B17] hover:border-slate-600"
-                  }`}
+              {/* Age Bracket & Investment Horizon */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                    Principal Officer / Investor Age Bracket *
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: "under_35", label: "Under 35 Yrs" },
+                      { id: "36-50", label: "36 – 50 Yrs" },
+                      { id: "51-65", label: "51 – 65 Yrs" },
+                      { id: "above_65", label: "Above 65 Yrs" },
+                    ].map((ag) => (
+                      <button
+                        key={ag.id}
+                        type="button"
+                        onClick={() => setValue("age", ag.id)}
+                        className={`p-2.5 text-center rounded-sm border text-xs font-mono transition-all ${
+                          selectedAge === ag.id
+                            ? "bg-[#142445] border-[#BE9A48] text-[#F3ECDB]"
+                            : "bg-[#040915] border-slate-800 text-slate-400 hover:border-slate-700"
+                        }`}
+                      >
+                        {ag.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                    Mandate Time Horizon *
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: "less_1_year", label: "< 1 Year (Tactical)" },
+                      { id: "1_to_3_years", label: "1 – 3 Years" },
+                      { id: "3_to_7_years", label: "3 – 7 Years (Full Cycle)" },
+                      { id: "7_plus_years", label: "7+ Yrs (Multi-Gen)" },
+                    ].map((hz) => (
+                      <button
+                        key={hz.id}
+                        type="button"
+                        onClick={() => setValue("horizon", hz.id)}
+                        className={`p-2.5 text-center rounded-sm border text-xs font-mono transition-all ${
+                          selectedHorizon === hz.id
+                            ? "bg-[#142445] border-[#BE9A48] text-[#F3ECDB]"
+                            : "bg-[#040915] border-slate-800 text-slate-400 hover:border-slate-700"
+                        }`}
+                      >
+                        {hz.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Next Stage Button */}
+              <div className="pt-4 border-t border-slate-800/80 flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleNextStep}
+                  className="btn-gold-foil px-8 py-3.5 rounded-sm text-xs uppercase tracking-widest font-bold flex items-center space-x-2"
                 >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="text-sm font-medium text-slate-200">₹2 Crores – ₹10 Crores</div>
-                      <div className="text-[11px] text-slate-400 mt-1">
-                        High-Net-Worth Individual (HNI)
-                      </div>
+                  <span>Proceed to Capital Capacity Hurdle</span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STAGE 2: CAPITAL CAPACITY (THE SPAM WALL) */}
+          {step === 2 && (
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              className="space-y-6"
+            >
+              {/* THE SPAM WALL MATRIX: 4 BESPOKE CARDS */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                    Statutory Net Worth Disclosure (Liquid Investable Surplus) *
+                  </label>
+                  <span className="font-mono text-[10px] text-[#BE9A48]">
+                    Hurdle Mandate: Minimum ₹50 Lakhs
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {/* TIER 0: SUB-50L (THE FILTER) */}
+                  <div
+                    onClick={() => setValue("netWorth", "under_50l")}
+                    className={`p-4 rounded-sm border cursor-pointer transition-all relative ${
+                      selectedNetWorth === "under_50l"
+                        ? "bg-[#1a0a10] border-rose-500/70 ring-1 ring-rose-500"
+                        : "bg-[#040915] border-slate-800 hover:border-slate-700"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between pb-2">
+                      <span className="font-mono text-[10px] uppercase font-bold text-rose-400">
+                        Sub-Fiduciary Hurdle
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-rose-950/60 text-rose-300 border border-rose-800/50">
+                        FILTER ACTIVE
+                      </span>
                     </div>
-                    <input
-                      type="radio"
-                      value="2cr_to_10cr"
-                      {...register("netWorth")}
-                      className="mt-1"
-                    />
+                    <span className="font-serif text-lg text-slate-200 block font-medium">
+                      Below ₹50 Lakhs
+                    </span>
+                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                      At this capital scale, RIA fixed retainers incur adverse fee drag. Re-routed to direct index guidelines.
+                    </p>
                   </div>
-                  <div className="mt-2 text-[10px] text-emerald-400 font-mono">
-                    ✓ Eligible for Institutional Multi-Asset Portfolio
-                  </div>
-                </label>
 
-                <label
-                  className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                    selectedNetWorth === "above_10cr"
-                      ? "border-[#C5A059] bg-[#0A1226]"
-                      : "border-slate-800 bg-[#050B17] hover:border-slate-600"
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="text-sm font-medium text-slate-200">Above ₹10 Crores</div>
-                      <div className="text-[11px] text-slate-400 mt-1">
-                        Ultra-HNI / Single Family Office
-                      </div>
+                  {/* TIER 1: 50L - 2CR */}
+                  <div
+                    onClick={() => setValue("netWorth", "50l_to_2cr")}
+                    className={`p-4 rounded-sm border cursor-pointer transition-all relative ${
+                      selectedNetWorth === "50l_to_2cr"
+                        ? "bg-[#0d1c3a] border-[#BE9A48] ring-1 ring-[#BE9A48]"
+                        : "bg-[#040915] border-slate-800 hover:border-slate-700"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between pb-2">
+                      <span className="font-mono text-[10px] uppercase font-bold text-emerald-400">
+                        Statutory Hurdle Met
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-950/60 text-emerald-300 border border-emerald-800/50">
+                        QUALIFIED
+                      </span>
                     </div>
-                    <input
-                      type="radio"
-                      value="above_10cr"
-                      {...register("netWorth")}
-                      className="mt-1"
-                    />
+                    <span className="font-serif text-lg text-slate-100 block font-medium">
+                      ₹50 Lakhs – ₹2 Crores
+                    </span>
+                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                      Emerging HNI core mandate. Direct mutual fund architecture, sovereign debt allocation, zero commission.
+                    </p>
                   </div>
-                  <div className="mt-2 text-[10px] text-emerald-400 font-mono">
-                    ✓ Eligible for Comprehensive Family Office Governance
+
+                  {/* TIER 2: 2CR - 10CR */}
+                  <div
+                    onClick={() => setValue("netWorth", "2cr_to_10cr")}
+                    className={`p-4 rounded-sm border cursor-pointer transition-all relative ${
+                      selectedNetWorth === "2cr_to_10cr"
+                        ? "bg-[#0d1c3a] border-[#BE9A48] ring-1 ring-[#BE9A48]"
+                        : "bg-[#040915] border-slate-800 hover:border-slate-700"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between pb-2">
+                      <span className="font-mono text-[10px] uppercase font-bold text-emerald-400">
+                        Multi-Asset Architecture
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-950/60 text-emerald-300 border border-emerald-800/50">
+                        CORE WEALTH
+                      </span>
+                    </div>
+                    <span className="font-serif text-lg text-[#F3ECDB] block font-medium">
+                      ₹2 Crores – ₹10 Crores
+                    </span>
+                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                      Established private wealth. Direct stock mandates, SGB hedging, multi-account family portfolio governance.
+                    </p>
                   </div>
-                </label>
-              </div>
-              {errors.netWorth && (
-                <p className="text-[11px] text-rose-400">{errors.netWorth.message}</p>
-              )}
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">
-                  Annual Taxable Household Income *
-                </label>
-                <select
-                  {...register("income")}
-                  className="w-full rounded-md border border-slate-700 bg-[#050B17] px-4 py-2.5 text-sm text-slate-100 focus:border-[#C5A059] focus:outline-none focus:ring-1 focus:ring-[#C5A059]"
+                  {/* TIER 3: ABOVE 10CR */}
+                  <div
+                    onClick={() => setValue("netWorth", "above_10cr")}
+                    className={`p-4 rounded-sm border cursor-pointer transition-all relative ${
+                      selectedNetWorth === "above_10cr"
+                        ? "bg-[#0d1c3a] border-[#BE9A48] ring-1 ring-[#BE9A48]"
+                        : "bg-[#040915] border-slate-800 hover:border-slate-700"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between pb-2">
+                      <span className="font-mono text-[10px] uppercase font-bold text-[#BE9A48]">
+                        Single Family Office Desk
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-[#1C3360] text-[#D8BD80] border border-[#BE9A48]/50">
+                        ULTRA-HNI
+                      </span>
+                    </div>
+                    <span className="font-serif text-lg text-[#F3ECDB] block font-medium">
+                      Above ₹10 Crores
+                    </span>
+                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                      Institutional family office retainer. Dedicated Investment Committee, private trust succession, global hedging.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Taxable Income & Experience Matrices */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                    Annual Taxable Household Income *
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: "under_25l", label: "Under ₹25 Lakhs" },
+                      { id: "25l_to_75l", label: "₹25L – ₹75 Lakhs" },
+                      { id: "75l_to_2cr", label: "₹75L – ₹2 Crores" },
+                      { id: "above_2cr", label: "Above ₹2 Crores" },
+                    ].map((inc) => (
+                      <button
+                        key={inc.id}
+                        type="button"
+                        onClick={() => setValue("income", inc.id)}
+                        className={`p-2.5 text-center rounded-sm border text-xs font-mono transition-all ${
+                          selectedIncome === inc.id
+                            ? "bg-[#142445] border-[#BE9A48] text-[#F3ECDB]"
+                            : "bg-[#040915] border-slate-800 text-slate-400 hover:border-slate-700"
+                        }`}
+                      >
+                        {inc.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                    Capital Market Experience *
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: "fd_conservative", label: "Bank FDs / Debt" },
+                      { id: "direct_equity_mf", label: "Equities & MFs (5+ Yrs)" },
+                      { id: "aif_pms", label: "AIF / PMS / PE" },
+                      { id: "fixed_income", label: "Sovereign G-Secs" },
+                    ].map((exp) => (
+                      <button
+                        key={exp.id}
+                        type="button"
+                        onClick={() => setValue("experience", exp.id)}
+                        className={`p-2.5 text-center rounded-sm border text-xs font-mono transition-all ${
+                          selectedExperience === exp.id
+                            ? "bg-[#142445] border-[#BE9A48] text-[#F3ECDB]"
+                            : "bg-[#040915] border-slate-800 text-slate-400 hover:border-slate-700"
+                        }`}
+                      >
+                        {exp.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Navigation Buttons */}
+              <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="px-4 py-2.5 text-xs font-mono uppercase text-slate-400 hover:text-slate-200 flex items-center space-x-1.5"
                 >
-                  <option value="under_25l">Below ₹25 Lakhs</option>
-                  <option value="25l_to_75l">₹25 Lakhs – ₹75 Lakhs</option>
-                  <option value="75l_to_2cr">₹75 Lakhs – ₹2 Crores</option>
-                  <option value="above_2cr">Above ₹2 Crores</option>
-                </select>
-              </div>
+                  <ArrowLeft className="h-4 w-4" />
+                  <span>Previous Stage</span>
+                </button>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">
-                  Market Experience & Instruments Held *
-                </label>
-                <select
-                  {...register("experience")}
-                  className="w-full rounded-md border border-slate-700 bg-[#050B17] px-4 py-2.5 text-sm text-slate-100 focus:border-[#C5A059] focus:outline-none focus:ring-1 focus:ring-[#C5A059]"
+                <button
+                  type="button"
+                  onClick={handleNextStep}
+                  className="btn-gold-foil px-8 py-3.5 rounded-sm text-xs uppercase tracking-widest font-bold flex items-center space-x-2"
                 >
-                  <option value="direct_equity_mf">Direct Equities & Mutual Funds (5+ Years)</option>
-                  <option value="fixed_income">Sovereign Debt & Corporate Bonds</option>
-                  <option value="aif_pms">AIF Category II/III, PMS & Private Equity</option>
-                  <option value="fd_conservative">Conservative (Bank FDs & Postal Savings)</option>
-                </select>
+                  <span>Proceed to Crisis Stress Testing</span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
               </div>
-            </div>
+            </motion.div>
+          )}
 
-            <div className="flex items-center justify-between pt-4 border-t border-slate-800">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="inline-flex items-center px-4 py-2.5 text-xs text-slate-400 hover:text-white"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                <span>Previous</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleNextStep}
-                className="inline-flex items-center px-6 py-3 rounded border border-[#C5A059] bg-[#C5A059] text-[#050B17] text-xs font-semibold uppercase tracking-wider hover:bg-[#DFC68E] transition-colors"
-              >
-                <span>Continue to Risk Capacity</span>
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </button>
-            </div>
-          </div>
-        )}
+          {/* STAGE 3: BEHAVIORAL CRISIS TESTING & STATUTORY DECLARATION */}
+          {step === 3 && (
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              className="space-y-6"
+            >
+              {/* Historical Crisis Stress Test */}
+              <div className="p-5 rounded-sm bg-[#040915] border border-slate-800 space-y-4">
+                <div className="flex items-center justify-between text-xs">
+                  <div className="space-y-0.5">
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 block">
+                      Historical Crisis Scenario Simulation
+                    </span>
+                    <span className="text-slate-200 font-medium">
+                      Simulated -25% Broad Market Dislocation (e.g. March 2020 Covid Crash)
+                    </span>
+                  </div>
+                  <span className="font-mono text-rose-400 text-xs font-bold">-25.0% Drawdown</span>
+                </div>
 
-        {/* STEP 3: DRAWDOWN TOLERANCE & STATUTORY DECLARATION */}
-        {step === 3 && (
-          <div className="space-y-6 animate-fadeIn">
-            <div className="border-b border-slate-800 pb-3">
-              <h3 className="font-serif text-lg text-slate-100 font-medium">
-                Stage 3: Behavioral Risk Capacity & Final Declaration
-              </h3>
-              <p className="text-xs text-slate-400">
-                Statutory evaluation of physiological reaction to simulated equity volatility.
-              </p>
-            </div>
+                <div className="h-1.5 w-full bg-slate-800 rounded-sm overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-rose-500 to-amber-500 w-[25%]" />
+                </div>
 
-            <div className="space-y-4">
-              <label className="text-xs font-medium text-slate-200 block">
-                During a severe macroeconomic correction, your portfolio declines by 20% over 90 days. What is your reaction? *
-              </label>
+                {/* 3 Behavioral Response Options */}
+                <div className="space-y-2.5 pt-2">
+                  {[
+                    {
+                      id: "panic_exit",
+                      title: "Capital Preservation Priority: Liquidate to Risk-Free Debt",
+                      desc: "I cannot endure mark-to-market drawdown and prefer preserving remaining principal in liquid sovereign instruments.",
+                      badge: "CONSERVATIVE PROTOCOL",
+                    },
+                    {
+                      id: "remain_invested",
+                      title: "Fiduciary Rebalance: Maintain Target Asset Allocation",
+                      desc: "Execute pre-determined mathematical rebalancing rules between equity and debt without emotional intervention.",
+                      badge: "BALANCED PROTOCOL",
+                    },
+                    {
+                      id: "allocate_more",
+                      title: "Opportunistic Deployment: Deploy Dry-Powder into Compounding Equities",
+                      desc: "Capitalize on systemic valuation compression to accelerate long-term capital compounding.",
+                      badge: "EXPANSION PROTOCOL",
+                    },
+                  ].map((proto) => (
+                    <div
+                      key={proto.id}
+                      onClick={() => setValue("drawdownReaction", proto.id)}
+                      className={`p-4 rounded-sm border cursor-pointer transition-all ${
+                        selectedReaction === proto.id
+                          ? "bg-[#0e1c3b] border-[#BE9A48] shadow-md"
+                          : "bg-[#040915] border-slate-800 hover:border-slate-700"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between pb-1">
+                        <span className="font-mono text-[9px] uppercase tracking-wider text-[#D8BD80] font-bold">
+                          {proto.badge}
+                        </span>
+                        {selectedReaction === proto.id && (
+                          <CheckCircle2 className="h-4 w-4 text-[#BE9A48]" />
+                        )}
+                      </div>
+                      <span className="font-serif text-sm text-slate-100 font-medium block">
+                        {proto.title}
+                      </span>
+                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                        {proto.desc}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-              <div className="space-y-2.5">
-                <label className="p-3.5 rounded-lg border border-slate-800 bg-[#050B17] flex items-center space-x-3 cursor-pointer hover:border-slate-600">
+              {/* SEBI Statutory Acknowledgement Checkbox */}
+              <div className="p-4 rounded-sm border border-[#BE9A48]/30 bg-[#061022] space-y-3">
+                <label className="flex items-start space-x-3 cursor-pointer">
                   <input
-                    type="radio"
-                    value="panic_exit"
-                    {...register("drawdownReaction")}
-                    className="mt-0.5"
+                    type="checkbox"
+                    {...register("sebiAcknowledge")}
+                    className="mt-1 h-4 w-4 rounded-sm border-slate-700 text-[#BE9A48] focus:ring-[#BE9A48]"
                   />
-                  <div className="text-xs text-slate-300">
-                    <strong className="text-slate-100 block">Liquidate Immediately to Cash:</strong>
-                    I cannot tolerate temporary mark-to-market drawdown of capital.
+                  <div className="text-xs text-slate-300 leading-relaxed">
+                    <strong className="text-[#F3ECDB] block font-medium">
+                      Statutory Investor Charter & Risk Disclosure Acknowledgement
+                    </strong>
+                    <span>
+                      I hereby declare that all financial disclosures provided are true and accurate. I acknowledge that investments in securities markets are subject to market risks, and that Aurum Fiduciary Advisory LLP operates strictly in a fee-only fiduciary capacity under SEBI (Investment Advisers) Regulations, 2013 without guaranteeing returns.
+                    </span>
                   </div>
                 </label>
-
-                <label className="p-3.5 rounded-lg border border-slate-800 bg-[#050B17] flex items-center space-x-3 cursor-pointer hover:border-slate-600">
-                  <input
-                    type="radio"
-                    value="remain_invested"
-                    {...register("drawdownReaction")}
-                    className="mt-0.5"
-                  />
-                  <div className="text-xs text-slate-300">
-                    <strong className="text-slate-100 block">Maintain Strategic Asset Allocation:</strong>
-                    Remain invested and rebalance according to pre-determined mathematical thresholds.
-                  </div>
-                </label>
-
-                <label className="p-3.5 rounded-lg border border-slate-800 bg-[#050B17] flex items-center space-x-3 cursor-pointer hover:border-slate-600">
-                  <input
-                    type="radio"
-                    value="allocate_more"
-                    {...register("drawdownReaction")}
-                    className="mt-0.5"
-                  />
-                  <div className="text-xs text-slate-300">
-                    <strong className="text-slate-100 block">Opportunistic Capital Deployment:</strong>
-                    Deploy additional liquid surplus into undervalued high-quality assets.
-                  </div>
-                </label>
+                {errors.sebiAcknowledge && (
+                  <p className="text-[11px] text-rose-400 font-mono">
+                    {errors.sebiAcknowledge.message}
+                  </p>
+                )}
               </div>
-              {errors.drawdownReaction && (
-                <p className="text-[11px] text-rose-400">{errors.drawdownReaction.message}</p>
-              )}
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">Primary Objective *</label>
-                <select
-                  {...register("objective")}
-                  className="w-full rounded-md border border-slate-700 bg-[#050B17] px-4 py-2.5 text-sm text-slate-100 focus:border-[#C5A059] focus:outline-none focus:ring-1 focus:ring-[#C5A059]"
+              {/* Submit Buttons */}
+              <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="px-4 py-2.5 text-xs font-mono uppercase text-slate-400 hover:text-slate-200 flex items-center space-x-1.5"
                 >
-                  <option value="wealth_preservation">Capital Preservation (Beat Inflation)</option>
-                  <option value="wealth_preservation_growth">Balanced Real Growth (Preservation + Capital Accretion)</option>
-                  <option value="aggressive_growth">Aggressive Long-Term Compounding</option>
-                </select>
-              </div>
+                  <ArrowLeft className="h-4 w-4" />
+                  <span>Previous Stage</span>
+                </button>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">
-                  Anticipated Liquidity Needs (Next 24 Months) *
-                </label>
-                <select
-                  {...register("liquidityNeed")}
-                  className="w-full rounded-md border border-slate-700 bg-[#050B17] px-4 py-2.5 text-sm text-slate-100 focus:border-[#C5A059] focus:outline-none focus:ring-1 focus:ring-[#C5A059]"
+                <button
+                  type="submit"
+                  className="btn-gold-foil px-9 py-4 rounded-sm text-xs uppercase tracking-widest font-bold flex items-center space-x-2"
                 >
-                  <option value="low">Negligible (&lt;10% of surplus required)</option>
-                  <option value="moderate">Moderate (10% to 25% earmarked for planned outflows)</option>
-                  <option value="high">Substantial (&gt;25% needed in near-term liquid form)</option>
-                </select>
+                  <span>Submit Dossier & Verify Suitability</span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
               </div>
-            </div>
-
-            {/* SEBI Mandatory Acknowledgment Checkbox */}
-            <div className="p-4 rounded-lg bg-[#050B17] border border-slate-800 space-y-3">
-              <label className="flex items-start space-x-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  {...register("sebiAcknowledge")}
-                  className="mt-1 h-4 w-4 rounded border-slate-700 text-[#C5A059] focus:ring-[#C5A059]"
-                />
-                <span className="text-[11px] leading-relaxed text-slate-300">
-                  I hereby declare that the financial parameters, net worth bracket, and behavioral inputs provided herein are accurate and reflect my true financial capacity. I acknowledge that Aurum Fiduciary Advisory LLP operates solely as a fee-only SEBI Registered Investment Adviser and does not promise or assure capital appreciation or fixed returns.
-                </span>
-              </label>
-              {errors.sebiAcknowledge && (
-                <p className="text-[11px] text-rose-400">{errors.sebiAcknowledge.message}</p>
-              )}
-            </div>
-
-            <div className="flex items-center justify-between pt-4 border-t border-slate-800">
-              <button
-                type="button"
-                onClick={() => setStep(2)}
-                className="inline-flex items-center px-4 py-2.5 text-xs text-slate-400 hover:text-white"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                <span>Previous</span>
-              </button>
-              <button
-                type="submit"
-                className="inline-flex items-center px-8 py-3.5 rounded border border-[#C5A059] bg-[#C5A059] text-[#050B17] text-xs font-bold uppercase tracking-wider hover:bg-[#DFC68E] transition-all shadow-lg shadow-[#C5A059]/20"
-              >
-                <span>Execute Suitability Evaluation</span>
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </button>
-            </div>
-          </div>
-        )}
-      </form>
+            </motion.div>
+          )}
+        </form>
+      </div>
     </div>
   );
 }

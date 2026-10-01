@@ -30,13 +30,13 @@ const mandates: Record<string, MandateProfile> = {
       {
         label: "Sovereign Debt & T-Bills",
         pct: 60,
-        color: "#C5A059",
+        color: "#BE9A48",
         description: "Direct Reserve Bank of India G-Secs with zero default risk.",
       },
       {
         label: "High-Quality Corporate Debt",
         pct: 20,
-        color: "#886526",
+        color: "#7E6325",
         description: "AAA PSU & Banking debt yielding predictable accrual cashflow.",
       },
       {
@@ -48,7 +48,7 @@ const mandates: Record<string, MandateProfile> = {
       {
         label: "Sovereign Gold Bonds (SGB)",
         pct: 10,
-        color: "#DFC68E",
+        color: "#D8BD80",
         description: "2.5% annual sovereign coupon + gold price hedge.",
       },
     ],
@@ -69,13 +69,13 @@ const mandates: Record<string, MandateProfile> = {
       {
         label: "Sovereign Debt (Target Maturity)",
         pct: 35,
-        color: "#C5A059",
+        color: "#BE9A48",
         description: "Locking yield curve spreads without duration speculation.",
       },
       {
         label: "Sovereign Gold Bonds",
         pct: 10,
-        color: "#DFC68E",
+        color: "#D8BD80",
         description: "Currency depreciation hedge and geopolitical shock absorber.",
       },
       {
@@ -102,7 +102,7 @@ const mandates: Record<string, MandateProfile> = {
       {
         label: "Sovereign Debt Cushion",
         pct: 15,
-        color: "#C5A059",
+        color: "#BE9A48",
         description: "Liquidity reserve to deploy opportunistically during market dislocations.",
       },
       {
@@ -114,7 +114,7 @@ const mandates: Record<string, MandateProfile> = {
       {
         label: "Precious Metals & Gold",
         pct: 10,
-        color: "#DFC68E",
+        color: "#D8BD80",
         description: "Sovereign Gold Bonds ensuring systemic monetary hedge.",
       },
     ],
@@ -126,11 +126,11 @@ export default function AllocationSimulator() {
   const profile = mandates[selectedKey];
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-[#090F1E] p-6 sm:p-10 shadow-2xl relative overflow-hidden">
+    <div className="architectural-panel p-6 sm:p-10 shadow-2xl relative overflow-hidden text-slate-100">
       <div className="space-y-3 mb-8">
-        <div className="flex items-center space-x-2 text-xs font-mono uppercase tracking-widest text-[#C5A059]">
-          <Layers className="h-4 w-4" />
-          <span>Fiduciary Portfolio Engineering</span>
+        <div className="flex items-center space-x-2 text-[10px] font-mono uppercase tracking-[0.25em] text-[#D8BD80]">
+          <Layers className="h-4 w-4 text-[#BE9A48]" />
+          <span>Fiduciary Portfolio Engineering // Modern Portfolio Theory</span>
         </div>
         <h3 className="font-serif text-2xl sm:text-3xl text-slate-100 font-normal">
           Bespoke Asset Allocation Architecture
@@ -141,8 +141,8 @@ export default function AllocationSimulator() {
       </div>
 
       <Tabs value={selectedKey} onValueChange={setSelectedKey} className="w-full">
-        <TabsList className="grid grid-cols-1 sm:grid-cols-3 w-full h-auto p-1.5 gap-1">
-          <TabsTrigger value="conservative">Conservative</TabsTrigger>
+        <TabsList className="grid grid-cols-1 sm:grid-cols-3 w-full h-auto p-1 gap-1 bg-[#040915] border border-slate-800 rounded-sm">
+          <TabsTrigger value="conservative">Capital Preservation</TabsTrigger>
           <TabsTrigger value="balanced">Balanced Growth</TabsTrigger>
           <TabsTrigger value="aggressive">Capital Accretion</TabsTrigger>
         </TabsList>
@@ -150,7 +150,7 @@ export default function AllocationSimulator() {
         <div className="mt-8 space-y-6">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-800">
             <div>
-              <span className="text-xs font-mono uppercase tracking-wider text-[#C5A059] block">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#D8BD80] block">
                 Selected Mandate Architecture
               </span>
               <h4 className="font-serif text-xl text-slate-100 font-medium mt-1">
@@ -160,11 +160,11 @@ export default function AllocationSimulator() {
             </div>
 
             <div className="flex flex-wrap gap-4 text-xs font-mono">
-              <div className="p-3 rounded-lg bg-[#050B17] border border-slate-800">
+              <div className="p-3 rounded-sm bg-[#040915] border border-slate-800">
                 <span className="text-[10px] text-slate-500 uppercase block">Target Horizon</span>
                 <span className="text-slate-200">{profile.targetHorizon}</span>
               </div>
-              <div className="p-3 rounded-lg bg-[#050B17] border border-slate-800">
+              <div className="p-3 rounded-sm bg-[#040915] border border-slate-800">
                 <span className="text-[10px] text-slate-500 uppercase block">Max Stress Drawdown</span>
                 <span className="text-rose-400">{profile.maxSimulatedDrawdown}</span>
               </div>
@@ -175,9 +175,9 @@ export default function AllocationSimulator() {
           <div className="space-y-2">
             <div className="flex justify-between text-xs text-slate-300 font-medium">
               <span>Target Weight Distribution</span>
-              <span className="font-mono text-[#DFC68E]">100% Direct Allocation</span>
+              <span className="font-mono text-[#D8BD80]">100% Direct Allocation</span>
             </div>
-            <div className="h-6 w-full rounded-lg overflow-hidden flex bg-slate-900 border border-slate-800">
+            <div className="h-6 w-full rounded-sm overflow-hidden flex bg-slate-900 border border-slate-800">
               {profile.allocations.map((item, idx) => (
                 <div
                   key={idx}
@@ -194,7 +194,7 @@ export default function AllocationSimulator() {
             {profile.allocations.map((item, idx) => (
               <div
                 key={idx}
-                className="p-4 rounded-xl bg-[#050B17] border border-slate-800 space-y-2"
+                className="p-4 rounded-sm bg-[#040915] border border-slate-800 space-y-2"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
@@ -206,7 +206,7 @@ export default function AllocationSimulator() {
                       {item.label}
                     </span>
                   </div>
-                  <span className="font-mono text-sm text-[#DFC68E] font-bold">
+                  <span className="font-mono text-sm text-[#D8BD80] font-bold">
                     {item.pct}%
                   </span>
                 </div>
@@ -217,16 +217,16 @@ export default function AllocationSimulator() {
             ))}
           </div>
 
-          <div className="p-4 rounded-lg bg-[#050B17] border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+          <div className="p-4 rounded-sm bg-[#040915] border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans">
             <div className="flex items-center space-x-2 text-slate-300">
-              <Activity className="h-4 w-4 text-[#C5A059] shrink-0" />
+              <Activity className="h-4 w-4 text-[#BE9A48] shrink-0" />
               <span>
                 <strong>Systematic Rebalancing Rule:</strong> {profile.rebalanceFrequency}. Prevents emotional selling during drawdowns and enforces buying at fair value.
               </span>
             </div>
             <Link
               href="/rpq"
-              className="shrink-0 text-xs font-mono uppercase text-[#C5A059] hover:text-[#DFC68E] flex items-center"
+              className="shrink-0 text-xs font-mono uppercase text-[#D8BD80] hover:text-[#F3ECDB] flex items-center"
             >
               <span>Map Your Profile</span>
               <ArrowRight className="h-3.5 w-3.5 ml-1" />

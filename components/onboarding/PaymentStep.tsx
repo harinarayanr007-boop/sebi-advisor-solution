@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import {
   Landmark,
   ShieldCheck,
@@ -13,7 +14,12 @@ import {
   ArrowLeft,
   CreditCard,
   FileCheck,
+  Copy,
+  Check,
+  ExternalLink,
+  ChevronRight,
 } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { useOnboarding } from "@/context/OnboardingContext";
 
 export default function PaymentStep({
@@ -27,11 +33,21 @@ export default function PaymentStep({
 
   const [feeModel, setFeeModel] = useState<"Fixed" | "AUA">(payment.feeModel || "Fixed");
   const [selectedBank, setSelectedBank] = useState("hdfc");
+  const [activeRail, setActiveRail] = useState<"netbanking" | "rtgs" | "upi">("netbanking");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [paidSuccess, setPaidSuccess] = useState(payment.isPaid);
+  const [copiedEscrow, setCopiedEscrow] = useState(false);
 
-  const amount = feeModel === "Fixed" ? 147500 : 88500; // 1,25,000 + GST or 75,000 + GST
+  const baseAmount = feeModel === "Fixed" ? 125000 : 75000;
+  const gstAmount = baseAmount * 0.18;
+  const totalAmount = baseAmount + gstAmount;
+
+  const handleCopyEscrow = () => {
+    navigator.clipboard.writeText("BSE-CEFCOM-992817264819");
+    setCopiedEscrow(true);
+    setTimeout(() => setCopiedEscrow(false), 2000);
+  };
 
   const handlePayCeFCoM = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,9 +59,9 @@ export default function PaymentStep({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount,
+          amount: totalAmount,
           feeModel,
-          clientId: agreement.clientId || "AURUM-HNI-DEFAULT",
+          clientId: agreement.clientId || "AURUM-HNI-2024-8891",
         }),
       });
 
@@ -59,7 +75,7 @@ export default function PaymentStep({
 
       setPayment({
         feeModel,
-        amount,
+        amount: totalAmount,
         transactionId: data.transactionId,
         isPaid: true,
         paidAt: data.timestamp,
@@ -75,269 +91,384 @@ export default function PaymentStep({
   };
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-[#090F1E] shadow-2xl overflow-hidden animate-fadeIn relative">
+    <div className="architectural-panel p-6 sm:p-9 space-y-8 text-slate-100 relative overflow-hidden">
       {/* Loading Overlay simulating BSE/MFU CeFCoM Network */}
       {loading && (
-        <div className="absolute inset-0 z-50 bg-[#050B17]/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center space-y-5">
+        <div className="absolute inset-0 z-50 bg-[#020611]/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center space-y-6">
           <div className="relative">
-            <div className="h-16 w-16 rounded-full border-4 border-slate-800 border-t-[#C5A059] animate-spin" />
+            <div className="h-20 w-20 rounded-full border-4 border-slate-800 border-t-[#BE9A48] animate-spin" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <Landmark className="h-6 w-6 text-[#C5A059]" />
+              <Landmark className="h-8 w-8 text-[#BE9A48]" />
             </div>
           </div>
-          <div className="space-y-2 max-w-md">
-            <h3 className="font-serif text-lg text-slate-100">
+          <div className="space-y-3 max-w-md">
+            <h3 className="font-serif text-xl text-slate-100 font-normal">
               Routing through BSE/MFU CeFCoM network...
             </h3>
-            <p className="text-xs text-[#DFC68E] font-mono">
-              Validating SEBI RIA Registration (INA000019842) with BASL Clearing Core
-            </p>
-            <p className="text-[11px] text-slate-400">
-              Securing settlement transaction into Centralized Escrow Account. Please do not close or refresh this window.
+            <div className="p-3.5 rounded-sm bg-[#040915] border border-slate-800 text-xs font-mono text-[#D8BD80] space-y-1.5 text-left">
+              <div className="flex items-center space-x-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Validating SEBI RIA Registration: INA000019842</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Querying BASL Clearing Core for PAN matching...</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Generating Statutory BSE Settlement URN...</span>
+              </div>
+            </div>
+            <p className="text-[11px] text-slate-400 font-mono">
+              Securing settlement transaction into BSE Centralized Escrow. Please do not close or refresh.
             </p>
           </div>
         </div>
       )}
 
       {/* Header */}
-      <div className="border-b border-slate-800/80 bg-[#050B17] p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <div className="flex items-center space-x-2 text-[11px] text-[#C5A059] uppercase tracking-widest font-mono">
-              <Landmark className="h-3.5 w-3.5" />
-              <span>Step 3: Centralized Fee Collection Mechanism</span>
-            </div>
-            <h2 className="font-serif text-xl sm:text-2xl text-slate-100 font-normal mt-1">
-              BSE / MFU CeFCoM Clearing & Fee Escrow
-            </h2>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-[#BE9A48]/20">
+        <div>
+          <div className="flex items-center space-x-2 text-[10px] text-[#D8BD80] uppercase tracking-[0.2em] font-mono">
+            <Landmark className="h-3.5 w-3.5 text-[#BE9A48]" />
+            <span>Statutory Clearance // Step 03</span>
           </div>
-          <div className="flex items-center space-x-2 text-xs font-mono text-emerald-400">
-            <ShieldCheck className="h-4 w-4" />
-            <span>SEBI Mandated Escrow Active</span>
-          </div>
+          <h2 className="font-serif text-2xl text-slate-100 font-normal mt-1">
+            BSE / MFU Centralized Escrow Clearing (CeFCoM)
+          </h2>
+        </div>
+        <div className="flex items-center space-x-2 text-xs font-mono text-emerald-400 bg-emerald-950/40 px-3 py-1.5 rounded-sm border border-emerald-500/30">
+          <ShieldCheck className="h-3.5 w-3.5" />
+          <span>Circular SEBI/HO/MIRSD-PoD-1/P/CIR/2024/78</span>
         </div>
       </div>
 
-      <div className="p-6 sm:p-8 space-y-8">
-        {paidSuccess ? (
-          /* Payment Settlement Confirmation Receipt */
-          <div className="space-y-6 animate-fadeIn">
-            <div className="p-6 rounded-xl border border-emerald-500/40 bg-emerald-950/20 space-y-4">
-              <div className="flex items-center space-x-3 text-emerald-400">
-                <CheckCircle2 className="h-7 w-7 shrink-0" />
-                <div>
-                  <h3 className="font-serif text-lg text-slate-100 font-medium">
-                    CeFCoM Settlement Verified & Escrowed
-                  </h3>
-                  <p className="text-xs text-emerald-400/90 font-mono">
-                    Receipt Generated • BSE Administration & Supervision Ltd (BASL)
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-emerald-900/40 text-xs">
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-mono">Transaction ID:</span>
-                  <span className="font-mono text-[#DFC68E] font-medium">
-                    {payment.transactionId || "CEFCOM-BSE-202610-88192731"}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-mono">Unique Reference Number (URN):</span>
-                  <span className="font-mono text-slate-200">
-                    {payment.cefcomUrn || "URN-BASL-49182-9912"}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-mono">Settlement Escrow Account:</span>
-                  <span className="text-slate-300">BSE CeFCoM Escrow # 992817264819 (HDFC Bank)</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-mono">Total Statutory Fee Cleared:</span>
-                  <span className="font-serif text-base text-slate-100 font-medium">
-                    ₹{amount.toLocaleString("en-IN")} <span className="text-[10px] font-sans text-slate-400">(incl. 18% GST)</span>
-                  </span>
-                </div>
+      {paidSuccess ? (
+        /* Settlement Confirmation Receipt */
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-6"
+        >
+          <div className="p-6 sm:p-8 rounded-sm border border-[#BE9A48]/40 bg-gradient-to-b from-[#09152e] to-[#040915] space-y-6 shadow-2xl">
+            <div className="flex items-center space-x-3 text-emerald-400 pb-4 border-b border-slate-800">
+              <CheckCircle2 className="h-6 w-6 shrink-0" />
+              <div>
+                <h3 className="font-serif text-xl text-slate-100 font-medium">
+                  Advisory Fee Settled via BSE CeFCoM Escrow
+                </h3>
+                <p className="text-xs text-slate-400 font-mono">
+                  Official statutory clearing confirmed under BASL Supervision
+                </p>
               </div>
             </div>
 
-            <div className="flex justify-end pt-4">
+            {/* Official Settlement Dossier */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-mono">
+              <div className="p-3 bg-[#040915] border border-slate-800 rounded-sm">
+                <span className="text-slate-500 text-[10px] block">BSE SETTLEMENT URN</span>
+                <span className="text-[#D8BD80] font-bold text-sm block mt-0.5">
+                  {payment.cefcomUrn || "BSE-URN-2024-8849201"}
+                </span>
+              </div>
+              <div className="p-3 bg-[#040915] border border-slate-800 rounded-sm">
+                <span className="text-slate-500 text-[10px] block">TOTAL CLEARANCE</span>
+                <span className="text-slate-100 font-bold text-sm block mt-0.5">
+                  ₹{payment.amount?.toLocaleString("en-IN") || "1,47,500"}
+                </span>
+              </div>
+              <div className="p-3 bg-[#040915] border border-slate-800 rounded-sm">
+                <span className="text-slate-500 text-[10px] block">TRANSACTION REF</span>
+                <span className="text-slate-300 font-bold text-sm block mt-0.5 truncate">
+                  {payment.transactionId || "TXN-CEFCOM-99124"}
+                </span>
+              </div>
+              <div className="p-3 bg-[#040915] border border-slate-800 rounded-sm">
+                <span className="text-slate-500 text-[10px] block">BASL STATUS</span>
+                <span className="text-emerald-400 font-bold text-sm block mt-0.5">
+                  SETTLED IN ESCROW
+                </span>
+              </div>
+            </div>
+
+            {/* Action Forward */}
+            <div className="pt-2 flex justify-end">
               <button
                 type="button"
                 onClick={onNext}
-                className="inline-flex items-center px-8 py-3.5 rounded border border-[#C5A059] bg-[#C5A059] text-[#050B17] text-xs font-bold uppercase tracking-wider hover:bg-[#DFC68E] transition-all shadow-lg shadow-[#C5A059]/20"
+                className="btn-gold-foil px-8 py-3.5 rounded-sm text-xs uppercase tracking-widest font-bold flex items-center space-x-2"
               >
-                <span>View Fiduciary Onboarding Dossier & Booking</span>
-                <ArrowRight className="h-4 w-4 ml-2" />
+                <span>Finalize Onboarding & Receive Dossier</span>
+                <ArrowRight className="h-4 w-4" />
               </button>
             </div>
           </div>
-        ) : (
-          /* Payment Interface */
-          <form onSubmit={handlePayCeFCoM} className="space-y-6">
-            {/* Statutory CeFCoM Notice */}
-            <div className="p-4 rounded-lg bg-[#050B17] border border-[#C5A059]/30 text-xs space-y-2">
-              <div className="text-[#C5A059] font-medium flex items-center space-x-2 uppercase tracking-wider text-[11px] font-mono">
-                <Building2 className="h-3.5 w-3.5" />
-                <span>Regulatory Mechanism: Circular SEBI/HO/MIRSD/MIRSD-PoD-1/P/CIR/2024/78</span>
-              </div>
-              <p className="text-slate-300 leading-relaxed text-justify">
-                To guarantee maximum investor protection, SEBI mandates that advisory fees must NEVER be transferred directly to an adviser&apos;s commercial bank account. All fees are routed through the recognized BSE/MFU CeFCoM clearing escrow, ensuring transparent audit trails and non-negotiable compliance.
-              </p>
+        </motion.div>
+      ) : (
+        /* Active Payment Interface */
+        <div className="space-y-8">
+          {/* BSE/MFU CeFCoM Clearing Architecture Schematic */}
+          <div className="p-5 rounded-sm bg-[#040915] border border-slate-800 space-y-4">
+            <div className="flex items-center justify-between text-xs font-mono">
+              <span className="uppercase text-[#D8BD80] font-semibold">
+                Official SEBI CeFCoM Escrow Routing Architecture
+              </span>
+              <span className="text-emerald-400 font-bold">100% REGULATED ESCROW</span>
             </div>
 
-            {error && (
-              <div className="p-4 rounded-lg bg-rose-950/40 border border-rose-800 text-rose-300 text-xs flex items-start space-x-3">
-                <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-rose-400" />
-                <span>{error}</span>
+            {/* Routing Flow Nodes */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
+              <div className="p-3 bg-[#081022] border border-slate-800 rounded-sm space-y-1">
+                <span className="text-[10px] text-slate-500 block uppercase">ORIGIN</span>
+                <span className="text-slate-200 font-bold block">Client Verified Bank A/C</span>
+                <span className="text-[10px] text-slate-400 block truncate">
+                  HDFC / ICICI / Kotak / SBI
+                </span>
               </div>
-            )}
 
-            {/* Fee Model Choice */}
-            <div className="space-y-3">
-              <label className="text-xs font-medium text-slate-200 block">
-                Select Approved Statutory Fee Structure
-              </label>
+              <div className="p-3 bg-[#10203d] border border-[#BE9A48]/50 rounded-sm space-y-1 relative">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-[#D8BD80] uppercase block">CLEARING ESCROW</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                </div>
+                <span className="text-[#F3ECDB] font-bold block">BSE StAR MF Escrow Hub</span>
+                <span className="text-[10px] text-slate-400 block">
+                  Governed under BASL Circular 2024/78
+                </span>
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <label
-                  className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                    feeModel === "Fixed"
-                      ? "border-[#C5A059] bg-[#0A1226]"
-                      : "border-slate-800 bg-[#050B17] hover:border-slate-700"
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <span className="text-xs uppercase tracking-wider text-[#C5A059] font-mono block">
-                        Annual Retainer
-                      </span>
-                      <div className="font-serif text-xl text-slate-100 mt-1">
-                        ₹1,25,000 <span className="text-xs text-slate-400 font-sans">+ 18% GST</span>
-                      </div>
-                      <div className="text-xs text-slate-400 mt-1 font-mono">
-                        Total: ₹1,47,500
-                      </div>
-                    </div>
-                    <input
-                      type="radio"
-                      name="feeModel"
-                      checked={feeModel === "Fixed"}
-                      onChange={() => setFeeModel("Fixed")}
-                      className="mt-1"
-                    />
-                  </div>
-                  <p className="text-[11px] text-slate-400 mt-2">
-                    Comprehensive annual fiduciary balance-sheet strategy and rebalancing.
-                  </p>
-                </label>
-
-                <label
-                  className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                    feeModel === "AUA"
-                      ? "border-[#C5A059] bg-[#0A1226]"
-                      : "border-slate-800 bg-[#050B17] hover:border-slate-700"
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <span className="text-xs uppercase tracking-wider text-[#DFC68E] font-mono block">
-                        AUA Model Tranche
-                      </span>
-                      <div className="font-serif text-xl text-slate-100 mt-1">
-                        ₹75,000 <span className="text-xs text-slate-400 font-sans">+ 18% GST</span>
-                      </div>
-                      <div className="text-xs text-slate-400 mt-1 font-mono">
-                        Total: ₹88,500
-                      </div>
-                    </div>
-                    <input
-                      type="radio"
-                      name="feeModel"
-                      checked={feeModel === "AUA"}
-                      onChange={() => setFeeModel("AUA")}
-                      className="mt-1"
-                    />
-                  </div>
-                  <p className="text-[11px] text-slate-400 mt-2">
-                    Initial advisory onboarding tranche for active multi-asset family office portfolios.
-                  </p>
-                </label>
+              <div className="p-3 bg-[#081022] border border-slate-800 rounded-sm space-y-1">
+                <span className="text-[10px] text-slate-500 block uppercase">BENEFICIARY</span>
+                <span className="text-slate-200 font-bold block">Aurum Fiduciary Trust A/C</span>
+                <span className="text-[10px] text-slate-400 block">
+                  SEBI RIA Reg: INA000019842
+                </span>
               </div>
             </div>
+          </div>
 
-            {/* Institutional Banking Gateway Selector */}
-            <div className="space-y-3">
-              <label className="text-xs font-medium text-slate-200 block">
-                Select CeFCoM Connected Banking Facility
-              </label>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                {[
-                  { id: "hdfc", name: "HDFC Private Banking" },
-                  { id: "icici", name: "ICICI Wealth NetBanking" },
-                  { id: "sbi", name: "SBI Corporate Internet" },
-                  { id: "axis", name: "Axis Burgundy Banking" },
-                ].map((bank) => (
+          {/* Model Selector & Tax Invoice Ledger */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left: Retainer Model Selector & Rails */}
+            <div className="lg:col-span-7 space-y-6">
+              {/* Fee Model Selector */}
+              <div className="space-y-2">
+                <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                  Select Statutory Fee Model *
+                </label>
+                <div className="grid grid-cols-2 gap-3">
                   <button
-                    key={bank.id}
                     type="button"
-                    onClick={() => setSelectedBank(bank.id)}
-                    className={`p-3 rounded-lg border text-left transition-all ${
-                      selectedBank === bank.id
-                        ? "border-[#C5A059] bg-[#0E1B38] text-slate-100 shadow-sm"
-                        : "border-slate-800 bg-[#050B17] text-slate-400 hover:border-slate-700"
+                    onClick={() => setFeeModel("Fixed")}
+                    className={`p-4 rounded-sm border text-left transition-all ${
+                      feeModel === "Fixed"
+                        ? "bg-[#142445] border-[#BE9A48] text-[#F3ECDB]"
+                        : "bg-[#040915] border-slate-800 text-slate-400 hover:border-slate-700"
                     }`}
                   >
-                    <Landmark className="h-4 w-4 mb-2 text-[#C5A059]" />
-                    <span className="block font-medium text-[11px]">{bank.name}</span>
-                    <span className="block text-[10px] text-emerald-400 font-mono mt-1">
-                      CeFCoM Verified
+                    <span className="font-mono text-[10px] uppercase text-[#D8BD80] block font-semibold">
+                      Statutory Fixed Retainer
+                    </span>
+                    <span className="font-serif text-lg text-slate-100 font-medium block mt-0.5">
+                      ₹1,25,000 / annum
+                    </span>
+                    <span className="text-[11px] text-slate-400 block mt-1">
+                      Capped at SEBI statutory ceiling for individual HNIs
                     </span>
                   </button>
-                ))}
+
+                  <button
+                    type="button"
+                    onClick={() => setFeeModel("AUA")}
+                    className={`p-4 rounded-sm border text-left transition-all ${
+                      feeModel === "AUA"
+                        ? "bg-[#142445] border-[#BE9A48] text-[#F3ECDB]"
+                        : "bg-[#040915] border-slate-800 text-slate-400 hover:border-slate-700"
+                    }`}
+                  >
+                    <span className="font-mono text-[10px] uppercase text-[#D8BD80] block font-semibold">
+                      Asset-Under-Advice (AUA)
+                    </span>
+                    <span className="font-serif text-lg text-slate-100 font-medium block mt-0.5">
+                      0.75% / annum
+                    </span>
+                    <span className="text-[11px] text-slate-400 block mt-1">
+                      Semi-annual initial retainer deposit: ₹75,000
+                    </span>
+                  </button>
+                </div>
               </div>
+
+              {/* Payment Rail Options */}
+              <div className="space-y-2">
+                <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                  Select Institutional Payment Gateway Rail *
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: "netbanking", label: "Private NetBanking" },
+                    { id: "rtgs", label: "Institutional RTGS" },
+                    { id: "upi", label: "NPCI Mandate / UPI" },
+                  ].map((rail) => (
+                    <button
+                      key={rail.id}
+                      type="button"
+                      onClick={() => setActiveRail(rail.id as any)}
+                      className={`p-2.5 text-center rounded-sm border text-xs font-mono transition-all ${
+                        activeRail === rail.id
+                          ? "bg-[#142445] border-[#BE9A48] text-[#D8BD80] font-semibold"
+                          : "bg-[#040915] border-slate-800 text-slate-400 hover:border-slate-700"
+                      }`}
+                    >
+                      {rail.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Selected Rail Details */}
+              {activeRail === "netbanking" && (
+                <div className="p-4 rounded-sm bg-[#040915] border border-slate-800 space-y-3">
+                  <span className="font-mono text-[10px] uppercase text-slate-400 block">
+                    Supported Private Wealth NetBanking Portals
+                  </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                      { id: "hdfc", name: "HDFC Private" },
+                      { id: "icici", name: "ICICI Wealth" },
+                      { id: "kotak", name: "Kotak Privy" },
+                      { id: "sbi", name: "SBI Wealth" },
+                    ].map((bank) => (
+                      <button
+                        key={bank.id}
+                        type="button"
+                        onClick={() => setSelectedBank(bank.id)}
+                        className={`p-2 text-center rounded-sm border text-xs font-mono transition-all ${
+                          selectedBank === bank.id
+                            ? "bg-[#142445] border-[#BE9A48] text-[#F3ECDB]"
+                            : "bg-[#020611] border-slate-800 text-slate-400"
+                        }`}
+                      >
+                        {bank.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {activeRail === "rtgs" && (
+                <div className="p-4 rounded-sm bg-[#040915] border border-slate-800 space-y-2 text-xs font-mono">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-400">VIRTUAL ESCROW ACCOUNT:</span>
+                    <button
+                      type="button"
+                      onClick={handleCopyEscrow}
+                      className="text-[#D8BD80] hover:underline flex items-center space-x-1"
+                    >
+                      <Copy className="h-3 w-3" />
+                      <span>{copiedEscrow ? "COPIED" : "COPY"}</span>
+                    </button>
+                  </div>
+                  <div className="text-slate-200 font-bold">BSE-CEFCOM-992817264819</div>
+                  <div className="hairline-rule" />
+                  <div className="flex justify-between text-slate-400">
+                    <span>IFSC CODE:</span>
+                    <span className="text-slate-200 font-bold">BSEB0000001</span>
+                  </div>
+                  <div className="flex justify-between text-slate-400">
+                    <span>ESCROW BANK:</span>
+                    <span className="text-slate-200">ICICI Bank Ltd (BSE Clearing Desk)</span>
+                  </div>
+                </div>
+              )}
+
+              {activeRail === "upi" && (
+                <div className="p-4 rounded-sm bg-[#040915] border border-slate-800 space-y-2 text-xs font-mono">
+                  <span className="text-slate-400 block uppercase">
+                    NPCI CeFCoM e-Mandate Settlement
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="name@okhdfcbank"
+                    defaultValue="singhania@okhdfcbank"
+                    className="w-full rounded-sm border border-slate-800 bg-[#020611] px-4 py-2.5 text-sm text-slate-100 focus:border-[#BE9A48] focus:outline-none"
+                  />
+                </div>
+              )}
             </div>
 
-            {/* Clearing Badges */}
-            <div className="pt-2 flex flex-wrap items-center justify-between gap-4 text-[11px] text-slate-400 border-t border-slate-800/80">
-              <div className="flex items-center space-x-2">
-                <ShieldCheck className="h-4 w-4 text-[#C5A059]" />
-                <span>BSE Administration & Supervision Ltd (BASL)</span>
+            {/* Right: Statutory Tax Invoice Ledger */}
+            <div className="lg:col-span-5 space-y-4">
+              <div className="p-5 rounded-sm bg-[#040915] border border-[#BE9A48]/30 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-[#D8BD80] font-semibold">
+                    Statutory Tax Invoice
+                  </span>
+                  <span className="font-mono text-[10px] text-slate-500">GSTIN: 27AAYFA4912E1Z5</span>
+                </div>
+
+                <div className="space-y-2.5 text-xs font-mono">
+                  <div className="flex justify-between text-slate-300">
+                    <span>Base Fiduciary Retainer:</span>
+                    <span>₹{baseAmount.toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-400 text-[11px]">
+                    <span>Central GST (CGST 9%):</span>
+                    <span>₹{(gstAmount / 2).toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-400 text-[11px]">
+                    <span>State GST (SGST 9%):</span>
+                    <span>₹{(gstAmount / 2).toLocaleString("en-IN")}</span>
+                  </div>
+
+                  <div className="hairline-rule pt-1" />
+
+                  <div className="flex justify-between text-slate-100 font-bold text-sm pt-1">
+                    <span>Total Authorized Settlement:</span>
+                    <span className="text-[#D8BD80]">₹{totalAmount.toLocaleString("en-IN")}</span>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={handlePayCeFCoM}
+                    disabled={loading}
+                    className="w-full btn-gold-foil py-4 px-4 rounded-sm text-xs uppercase tracking-widest font-bold flex items-center justify-center space-x-2"
+                  >
+                    <span>Authorize CeFCoM Settlement</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Building2 className="h-4 w-4 text-[#C5A059]" />
-                <span>Mutual Fund Utilities (MFU) CeFCoM</span>
-              </div>
-              <div className="flex items-center space-x-2 font-mono text-[#DFC68E]">
-                <Lock className="h-3 w-3" />
-                <span>Direct Escrow Deposit Only</span>
+
+              <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 px-1">
+                <span>BASL Membership: BASL-1892</span>
+                <span>Zero Cash Policy Enforced</span>
               </div>
             </div>
+          </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center justify-between pt-4 border-t border-slate-800">
-              <button
-                type="button"
-                onClick={onBack}
-                className="inline-flex items-center text-xs text-slate-400 hover:text-white"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                <span>Back to Agreement</span>
-              </button>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="inline-flex items-center px-8 py-3.5 rounded border border-[#C5A059] bg-[#C5A059] text-[#050B17] text-xs font-bold uppercase tracking-wider hover:bg-[#DFC68E] transition-all shadow-lg shadow-[#C5A059]/20"
-              >
-                <span>Authorize ₹{amount.toLocaleString("en-IN")} via CeFCoM</span>
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </button>
+          {error && (
+            <div className="p-4 rounded-sm bg-rose-950/30 border border-rose-500/50 flex items-center space-x-2 text-rose-300 text-xs font-mono">
+              <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
+              <span>{error}</span>
             </div>
-          </form>
-        )}
-      </div>
+          )}
+
+          {/* Back Navigation */}
+          <div className="pt-4 border-t border-slate-800 flex justify-start">
+            <button
+              type="button"
+              onClick={onBack}
+              className="px-4 py-2.5 text-xs font-mono uppercase text-slate-400 hover:text-slate-200 flex items-center space-x-1.5"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Return to Advisory Indenture</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

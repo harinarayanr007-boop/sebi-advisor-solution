@@ -1,60 +1,145 @@
 @import "tailwindcss";
 
 @theme {
-  --color-navy-950: #030712;
-  --color-navy-900: #050B17;
-  --color-navy-850: #0A1226;
-  --color-navy-800: #0E1B38;
-  --color-navy-700: #16264C;
-  --color-navy-600: #203666;
+  --color-navy-950: #020611;
+  --color-navy-900: #040915;
+  --color-navy-850: #081022;
+  --color-navy-800: #0D1830;
+  --color-navy-700: #142445;
+  --color-navy-600: #1C3360;
 
-  --color-gold-50: #FAF6EF;
-  --color-gold-100: #F3EBD8;
-  --color-gold-200: #E6D2A8;
-  --color-gold-300: #D8BD80;
-  --color-gold-400: #CBA858;
-  --color-gold-500: #C5A059;
-  --color-gold-600: #A8833C;
-  --color-gold-700: #886526;
+  --color-gold-50: #FAF7EF;
+  --color-gold-100: #F3ECDB;
+  --color-gold-200: #E5D3A9;
+  --color-gold-300: #D6BD82;
+  --color-gold-400: #C9A960;
+  --color-gold-500: #BE9A48;
+  --color-gold-600: #A07F34;
+  --color-gold-700: #7E6325;
 
   --font-serif: var(--font-playfair), Georgia, serif;
   --font-sans: var(--font-jakarta), -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 :root {
-  --background: #050B17;
+  --background: #020611;
   --foreground: #F8FAFC;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
+}
+
+/* Subtle Banknote Guilloche & Architectural Grid */
+.bg-architectural-grid {
+  background-image: 
+    linear-gradient(to right, rgba(190, 154, 72, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(190, 154, 72, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Fine-line Guilloche overlay for luxury private banking texture */
+.bg-guilloche-subtle {
+  background-image: radial-gradient(circle at 50% 50%, rgba(190, 154, 72, 0.04) 0%, transparent 80%),
+                    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.008) 0px, rgba(255, 255, 255, 0.008) 1px, transparent 1px, transparent 12px);
 }
 
 /* Custom Institutional Wealth UI Utilities */
 .gold-gradient-text {
-  background: linear-gradient(135deg, #F3EBD8 0%, #D8BD80 50%, #C5A059 100%);
+  background: linear-gradient(135deg, #FFF9EB 0%, #E8D3A2 35%, #BE9A48 75%, #8B6B23 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.gold-border {
-  border-color: rgba(197, 160, 89, 0.35);
+.gold-gradient-border {
+  border-image: linear-gradient(135deg, rgba(232, 211, 162, 0.6) 0%, rgba(190, 154, 72, 0.3) 50%, rgba(139, 107, 35, 0.1) 100%) 1;
 }
 
-.gold-glow {
-  box-shadow: 0 0 25px -5px rgba(197, 160, 89, 0.15);
+/* Architectural frame with precision corner ticks */
+.architectural-panel {
+  position: relative;
+  background: linear-gradient(180deg, rgba(13, 24, 48, 0.85) 0%, rgba(4, 9, 21, 0.95) 100%);
+  border: 1px solid rgba(190, 154, 72, 0.22);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
-.card-institutional {
-  background: linear-gradient(180deg, rgba(14, 27, 56, 0.75) 0%, rgba(10, 18, 38, 0.85) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
+.architectural-panel::before,
+.architectural-panel::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  pointer-events: none;
 }
 
-.card-institutional-highlight {
-  background: linear-gradient(180deg, rgba(20, 34, 74, 0.85) 0%, rgba(14, 27, 56, 0.95) 100%);
-  border: 1px solid rgba(197, 160, 89, 0.35);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px -5px rgba(197, 160, 89, 0.1);
+.architectural-panel::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid #BE9A48;
+  border-left: 2px solid #BE9A48;
+}
+
+.architectural-panel::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid #BE9A48;
+  border-right: 2px solid #BE9A48;
+}
+
+/* Authentic Legal Vellum / Parchment Document Sheet */
+.vellum-sheet {
+  background-color: #F8F5EE;
+  background-image: 
+    radial-gradient(ellipse at 50% 0%, rgba(190, 154, 72, 0.08) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.015) 0px, rgba(0, 0, 0, 0.015) 1px, transparent 1px, transparent 24px);
+  color: #171A21;
+  border: 1px solid #D6BD82;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), inset 0 0 40px rgba(190, 154, 72, 0.08);
+}
+
+/* Hairline dividers */
+.hairline-gold {
+  background: linear-gradient(90deg, transparent 0%, rgba(190, 154, 72, 0.5) 50%, transparent 100%);
+  height: 1px;
+}
+
+.hairline-rule {
+  border-bottom: 1px solid rgba(190, 154, 72, 0.2);
+}
+
+/* Hot-stamp gold foil button */
+.btn-gold-foil {
+  background: linear-gradient(135deg, #BE9A48 0%, #D8BD80 50%, #A07F34 100%);
+  color: #040915;
+  font-weight: 700;
+  border: 1px solid #FAF7EF;
+  box-shadow: 0 4px 20px -2px rgba(190, 154, 72, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-gold-foil:hover {
+  background: linear-gradient(135deg, #D8BD80 0%, #F3ECDB 50%, #BE9A48 100%);
+  box-shadow: 0 6px 25px -2px rgba(190, 154, 72, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transform: translateY(-1px);
+}
+
+/* Custom sleek scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020611;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1C3360;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #BE9A48;
 }
