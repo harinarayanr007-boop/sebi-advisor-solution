@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   CheckCircle2,
   Calendar,
@@ -14,11 +15,12 @@ import {
   FileText,
   ArrowRight,
   ExternalLink,
+  Building,
 } from "lucide-react";
 import { useOnboarding } from "@/context/OnboardingContext";
 
 export default function CompletionStep() {
-  const { rpq, kyc, agreement, payment, resetOnboarding } = useOnboarding();
+  const { rpq, kyc, agreement, payment } = useOnboarding();
 
   const [selectedDate, setSelectedDate] = useState("2026-10-06");
   const [selectedTime, setSelectedTime] = useState("11:00 AM IST");
@@ -35,8 +37,14 @@ export default function CompletionStep() {
       <div className="rounded-xl border border-emerald-500/50 bg-gradient-to-b from-emerald-950/30 to-[#090F1E] p-8 sm:p-10 shadow-2xl relative overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-800">
           <div className="flex items-center space-x-4">
-            <div className="h-14 w-14 rounded-full bg-emerald-500/20 border border-emerald-500/60 flex items-center justify-center">
-              <CheckCircle2 className="h-8 w-8 text-emerald-400" />
+            <div className="h-16 w-16 rounded-full border-2 border-[#C5A059] overflow-hidden shadow-lg shrink-0">
+              <Image
+                src="/images/fiduciary-seal.jpg"
+                alt="Institutional Seal"
+                width={70}
+                height={70}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <span className="text-[11px] font-mono text-emerald-400 uppercase tracking-widest block">
@@ -58,12 +66,25 @@ export default function CompletionStep() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 text-xs text-slate-300">
-          <div className="p-4 rounded-lg bg-[#050B17] border border-slate-800 space-y-2">
-            <div className="flex items-center space-x-2 text-[#C5A059] font-medium text-xs">
-              <UserCheck className="h-4 w-4" />
-              <span>Assigned Principal Officer</span>
+          {/* Principal Officer with portrait thumbnail */}
+          <div className="p-4 rounded-lg bg-[#050B17] border border-slate-800 space-y-3">
+            <div className="flex items-center space-x-3">
+              <div className="h-11 w-11 rounded-full overflow-hidden border border-[#C5A059]/60 shrink-0">
+                <Image
+                  src="/images/principal-officer.jpg"
+                  alt="Rajesh V. Mehta"
+                  width={50}
+                  height={50}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <span className="text-[10px] text-[#C5A059] uppercase font-mono block">
+                  Principal Officer
+                </span>
+                <span className="text-slate-100 font-medium text-xs">Rajesh V. Mehta</span>
+              </div>
             </div>
-            <div className="text-slate-100 font-medium">Rajesh V. Mehta</div>
             <p className="text-[11px] text-slate-400">
               Senior Managing Partner & SEBI Registered Principal Officer (NISM-Series-X-A/B Certified).
             </p>
@@ -130,7 +151,7 @@ export default function CompletionStep() {
                 CeFCoM Fee Escrow Settlement Receipt
               </span>
               <span className="text-[10px] text-slate-400 font-mono block">
-                URN: {payment.cefcomUrn || "URN-BASL-99821"} • BSE Verified
+                URN: {payment.cefcomUrn || "URN-BASL-96678-1153"} • BSE Verified
               </span>
             </div>
             <div className="inline-flex items-center px-3 py-1.5 rounded bg-emerald-950/40 border border-emerald-800/60 text-[11px] text-emerald-400">
@@ -142,7 +163,7 @@ export default function CompletionStep() {
       </div>
 
       {/* Fiduciary Strategy Consultation Booking */}
-      <div className="rounded-xl border border-[#C5A059]/40 bg-[#0A1226] p-6 sm:p-8 space-y-6">
+      <div className="rounded-xl border border-[#C5A059]/40 bg-[#0A1226] p-6 sm:p-8 space-y-6 overflow-hidden relative">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
           <div>
             <div className="flex items-center space-x-2 text-[11px] text-[#C5A059] uppercase tracking-widest font-mono">
@@ -171,48 +192,66 @@ export default function CompletionStep() {
             </p>
           </div>
         ) : (
-          <form onSubmit={handleBooking} className="space-y-4">
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Select your preferred date and time slot for a private consultation with Principal Officer Rajesh V. Mehta to formulate your bespoke strategic asset allocation and tax-optimized direct portfolio roadmap.
-            </p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            {/* Boardroom Preview Thumbnail */}
+            <div className="lg:col-span-5 rounded-lg overflow-hidden border border-slate-800 relative">
+              <Image
+                src="/images/boardroom.jpg"
+                alt="Nariman Point Boardroom"
+                width={400}
+                height={260}
+                className="w-full h-44 object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050B17] to-transparent opacity-80" />
+              <div className="absolute bottom-2 left-3 right-3 text-[10px] text-slate-300">
+                <span className="text-[#C5A059] font-medium block">Venue / Video Link:</span>
+                Nariman Point Private Chambers or Encrypted Boardroom Telepresence
+              </div>
+            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">Consultation Date</label>
-                <input
-                  type="date"
-                  value={selectedDate}
-                  min="2026-10-02"
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="w-full rounded-md border border-slate-700 bg-[#050B17] px-4 py-2.5 text-xs text-slate-100 focus:border-[#C5A059] focus:outline-none"
-                />
+            <form onSubmit={handleBooking} className="lg:col-span-7 space-y-4">
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Select your preferred date and time slot for a private consultation with Principal Officer Rajesh V. Mehta to formulate your bespoke strategic asset allocation and tax-optimized direct portfolio roadmap.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-slate-300">Consultation Date</label>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    min="2026-10-02"
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="w-full rounded-md border border-slate-700 bg-[#050B17] px-3 py-2 text-xs text-slate-100 focus:border-[#C5A059] focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-slate-300">Time Slot</label>
+                  <select
+                    value={selectedTime}
+                    onChange={(e) => setSelectedTime(e.target.value)}
+                    className="w-full rounded-md border border-slate-700 bg-[#050B17] px-3 py-2 text-xs text-slate-100 focus:border-[#C5A059] focus:outline-none"
+                  >
+                    <option value="10:00 AM IST">10:00 AM – 11:30 AM IST (Morning Session)</option>
+                    <option value="11:00 AM IST">11:00 AM – 12:30 PM IST (Midday Session)</option>
+                    <option value="03:00 PM IST">03:00 PM – 04:30 PM IST (Afternoon Session)</option>
+                    <option value="05:00 PM IST">05:00 PM – 06:30 PM IST (Evening Session)</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">Time Slot</label>
-                <select
-                  value={selectedTime}
-                  onChange={(e) => setSelectedTime(e.target.value)}
-                  className="w-full rounded-md border border-slate-700 bg-[#050B17] px-4 py-2.5 text-xs text-slate-100 focus:border-[#C5A059] focus:outline-none"
+              <div className="flex justify-end pt-2">
+                <button
+                  type="submit"
+                  className="inline-flex items-center px-6 py-2.5 rounded border border-[#C5A059] bg-[#C5A059] text-[#050B17] text-xs font-bold uppercase tracking-wider hover:bg-[#DFC68E] transition-all shadow-md shadow-[#C5A059]/20"
                 >
-                  <option value="10:00 AM IST">10:00 AM – 11:30 AM IST (Morning Session)</option>
-                  <option value="11:00 AM IST">11:00 AM – 12:30 PM IST (Midday Session)</option>
-                  <option value="03:00 PM IST">03:00 PM – 04:30 PM IST (Afternoon Session)</option>
-                  <option value="05:00 PM IST">05:00 PM – 06:30 PM IST (Evening Session)</option>
-                </select>
+                  <span>Confirm Consultation Booking</span>
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </button>
               </div>
-            </div>
-
-            <div className="flex justify-end pt-3">
-              <button
-                type="submit"
-                className="inline-flex items-center px-6 py-3 rounded border border-[#C5A059] bg-[#C5A059] text-[#050B17] text-xs font-bold uppercase tracking-wider hover:bg-[#DFC68E] transition-all shadow-md shadow-[#C5A059]/20"
-              >
-                <span>Confirm Consultation Booking</span>
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         )}
       </div>
 

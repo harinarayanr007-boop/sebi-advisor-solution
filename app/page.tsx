@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ShieldCheck,
   Scale,
@@ -15,6 +16,9 @@ import {
   XCircle,
   BookOpen,
 } from "lucide-react";
+import FeeDragCalculator from "@/components/interactive/FeeDragCalculator";
+import AllocationSimulator from "@/components/interactive/AllocationSimulator";
+import AboutFiduciary from "@/components/AboutFiduciary";
 
 export default function Home() {
   return (
@@ -201,67 +205,25 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ADVISORY FRAMEWORK */}
-      <section id="framework" className="py-20 bg-[#030712] border-b border-slate-800/80">
+      {/* INTERACTIVE FEE DRAG CALCULATOR */}
+      <section className="py-20 bg-[#030712] border-b border-slate-800/80">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-            <span className="text-[#C5A059] text-xs font-semibold tracking-widest uppercase">
-              Scientific Fiduciary Process
-            </span>
-            <h2 className="font-serif text-2xl sm:text-4xl text-slate-50 font-normal">
-              Disciplined Capital Allocation Framework
-            </h2>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Every mandate follows a non-negotiable four-stage protocol engineered for risk mitigation, volatility capacity alignment, and capital preservation.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="rounded-lg border border-slate-800 bg-[#0A1226] p-6 space-y-4">
-              <div className="h-10 w-10 rounded border border-[#C5A059]/40 bg-[#050B17] flex items-center justify-center text-[#DFC68E] font-serif font-bold text-sm">
-                01
-              </div>
-              <h4 className="font-serif text-lg text-slate-100">Suitability & Drawdown Capacity</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Objective stress-testing of liquidity needs, family obligations, and physiological risk tolerance before asset deployment.
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-slate-800 bg-[#0A1226] p-6 space-y-4">
-              <div className="h-10 w-10 rounded border border-[#C5A059]/40 bg-[#050B17] flex items-center justify-center text-[#DFC68E] font-serif font-bold text-sm">
-                02
-              </div>
-              <h4 className="font-serif text-lg text-slate-100">Strategic Asset Allocation</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Mathematical multi-asset modeling balancing Sovereign Debt, Large-Cap Equity, Gold, and Global Hedging without speculation.
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-slate-800 bg-[#0A1226] p-6 space-y-4">
-              <div className="h-10 w-10 rounded border border-[#C5A059]/40 bg-[#050B17] flex items-center justify-center text-[#DFC68E] font-serif font-bold text-sm">
-                03
-              </div>
-              <h4 className="font-serif text-lg text-slate-100">Direct Plan Architecture</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Execution roadmap eliminating distributor commissions and maximizing net yields through institutional-grade direct securities.
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-slate-800 bg-[#0A1226] p-6 space-y-4">
-              <div className="h-10 w-10 rounded border border-[#C5A059]/40 bg-[#050B17] flex items-center justify-center text-[#DFC68E] font-serif font-bold text-sm">
-                04
-              </div>
-              <h4 className="font-serif text-lg text-slate-100">Periodic Rebalancing & Audit</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Disciplined threshold-triggered rebalancing and annual statutory compliance audit under SEBI IA regulation guidelines.
-              </p>
-            </div>
-          </div>
+          <FeeDragCalculator />
         </div>
       </section>
 
+      {/* INTERACTIVE ASSET ALLOCATION ARCHITECTURE */}
+      <section id="framework" className="py-20 bg-[#050B17] border-b border-slate-800/80">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <AllocationSimulator />
+        </div>
+      </section>
+
+      {/* ABOUT THE FIDUCIARY & GOVERNANCE */}
+      <AboutFiduciary />
+
       {/* THOUGHT LEADERSHIP (LINKEDIN ROUTING) */}
-      <section id="insights" className="py-20 bg-[#050B17] border-b border-slate-800/80">
+      <section id="insights" className="py-20 bg-[#030712] border-b border-slate-800/80">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
             <div>
@@ -339,7 +301,7 @@ export default function Home() {
       </section>
 
       {/* STATUTORY FEE SCHEDULE (SEBI REGULATORY CAPS) */}
-      <section id="fees" className="py-20 bg-[#030712] border-b border-slate-800/80">
+      <section id="fees" className="py-20 bg-[#050B17] border-b border-slate-800/80">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
             <span className="text-[#C5A059] text-xs font-semibold tracking-widest uppercase">
@@ -420,8 +382,15 @@ export default function Home() {
       {/* FINAL SPAM WALL TRIGGER CTA */}
       <section className="py-24 bg-gradient-to-b from-[#050B17] via-[#0A1226] to-[#030712] relative overflow-hidden">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
-          <div className="h-12 w-12 rounded-full border border-[#C5A059]/60 bg-[#050B17] mx-auto flex items-center justify-center shadow-lg">
-            <Scale className="h-6 w-6 text-[#DFC68E]" />
+          <div className="h-16 w-16 rounded-full border border-[#C5A059]/60 bg-[#050B17] mx-auto flex items-center justify-center shadow-lg overflow-hidden">
+            <Image
+              src="/images/fiduciary-seal.jpg"
+              alt="Aurum Seal"
+              width={64}
+              height={64}
+              unoptimized
+              className="object-cover"
+            />
           </div>
 
           <h2 className="font-serif text-3xl sm:text-5xl text-slate-50 font-normal">
