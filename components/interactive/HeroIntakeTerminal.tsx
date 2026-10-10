@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, AlertCircle, ArrowRight, Check, Landmark, Lock, HelpCircle } from "lucide-react";
+import { ShieldCheck, AlertCircle, ArrowRight, Lock, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 interface HurdleTier {
@@ -32,7 +32,7 @@ const TIERS: HurdleTier[] = [
     fiduciarySavings: "Ineligible for RIA",
     fiduciaryRetainer: "N/A",
     leadPartner: "Direct Index Re-route",
-    custodyNote: "Fee-to-corpus ratio creates negative economic drag under SEBI norms",
+    custodyNote: "Negative fee-to-corpus drag under SEBI advisory rules",
   },
   {
     id: "50l_to_2cr",
@@ -90,19 +90,19 @@ export default function HeroIntakeTerminal() {
   };
 
   return (
-    <div className="architectural-panel p-6 sm:p-7 relative overflow-hidden text-slate-100">
+    <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 shadow-[0_12px_40px_-12px_rgba(15,23,42,0.08)] relative overflow-hidden text-slate-800">
       {/* Top Terminal Status Bar */}
-      <div className="flex items-center justify-between pb-4 border-b border-[#BE9A48]/20">
-        <div className="flex items-center space-x-2.5">
+      <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div className="flex items-center space-x-2">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#D8BD80] font-semibold">
-            SEBI Reg. 16 Intake Hurdle Console
+          <span className="text-xs uppercase tracking-wider font-semibold text-slate-700">
+            SEBI Suitability Intake Hurdle
           </span>
         </div>
-        <span className="font-mono text-[10px] text-slate-400 tracking-wider">
+        <span className="text-[11px] text-slate-400 font-mono">
           BASL-1892 // CeFCoM Live
         </span>
       </div>
@@ -110,13 +110,13 @@ export default function HeroIntakeTerminal() {
       {/* Interactive Capital Tier Matrix */}
       <div className="mt-5 space-y-2">
         <div className="flex items-center justify-between">
-          <label className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
-            Select Liquid Investable Net Worth
+          <label className="text-xs font-semibold text-slate-700">
+            Investable Liquid Portfolio
           </label>
-          <span className="text-[10px] text-[#BE9A48] font-mono">Simulated Case: {currentTier.corpusDisplay}</span>
+          <span className="text-xs text-red-600 font-medium">Sample: {currentTier.corpusDisplay}</span>
         </div>
 
-        <div className="grid grid-cols-4 gap-1.5 p-1 rounded-sm bg-[#040915] border border-slate-800">
+        <div className="grid grid-cols-4 gap-1.5 p-1 rounded-2xl bg-slate-50 border border-slate-200">
           {TIERS.map((tier) => {
             const isSelected = tier.id === selectedTierId;
             return (
@@ -124,20 +124,13 @@ export default function HeroIntakeTerminal() {
                 key={tier.id}
                 type="button"
                 onClick={() => setSelectedTierId(tier.id)}
-                className={`py-2 px-1 text-center rounded-sm font-mono text-[11px] transition-all relative ${
+                className={`py-2 px-1 text-center rounded-xl text-xs font-semibold transition-all relative ${
                   isSelected
-                    ? "bg-[#142445] text-[#F3ECDB] font-semibold border border-[#BE9A48]/50 shadow-inner"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-[#081022]"
+                    ? "bg-white text-slate-900 shadow-sm border border-slate-200/80"
+                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/60"
                 }`}
               >
                 {tier.shortLabel}
-                {isSelected && (
-                  <motion.div
-                    layoutId="activePill"
-                    className="absolute inset-0 border border-[#BE9A48] rounded-sm pointer-events-none"
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  />
-                )}
               </button>
             );
           })}
@@ -156,32 +149,38 @@ export default function HeroIntakeTerminal() {
         >
           {/* Clearance Status Banner */}
           <div
-            className={`p-3.5 border flex items-center justify-between rounded-sm ${
+            className={`p-3.5 border flex items-center justify-between rounded-2xl transition-all ${
               currentTier.isEligible
-                ? "bg-[#061426] border-emerald-500/30 text-emerald-300"
-                : "bg-[#1f0f14] border-rose-500/30 text-rose-300"
+                ? "bg-emerald-50/70 border-emerald-200/80 text-emerald-900"
+                : "bg-rose-50/70 border-rose-200/80 text-rose-900"
             }`}
           >
             <div className="flex items-center space-x-2.5">
               {currentTier.isEligible ? (
-                <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
               ) : (
-                <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
+                <AlertCircle className="h-5 w-5 text-rose-600 shrink-0" />
               )}
               <div>
-                <span className="font-mono text-[10px] uppercase tracking-wider block font-semibold">
+                <span className="text-xs uppercase tracking-wide block font-bold">
                   {currentTier.isEligible
-                    ? "Statutory Hurdle Passed: Fiduciary Clearance Active"
-                    : "Sub-Hurdle: Filtered By Spam Wall"}
+                    ? "Hurdle Passed: Qualified for RIA Mandate"
+                    : "Spam Wall Active: Minimum ₹50L Required"}
                 </span>
-                <span className="text-[11px] opacity-80 block">
+                <span className="text-[11px] opacity-80 block text-slate-600">
                   {currentTier.isEligible
-                    ? "Qualified for SEBI Fee-Only Direct RIA Mandate"
-                    : "Net worth below ₹50 Lakh minimum threshold"}
+                    ? "Fee-Only Fiduciary Portfolio Management available"
+                    : "Net worth falls below SEBI fee-only economic viability"}
                 </span>
               </div>
             </div>
-            <span className="font-mono text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded border border-current">
+            <span
+              className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border ${
+                currentTier.isEligible
+                  ? "bg-emerald-100/60 text-emerald-800 border-emerald-300"
+                  : "bg-rose-100/60 text-rose-800 border-rose-300"
+              }`}
+            >
               {currentTier.isEligible ? "ELIGIBLE" : "RESTRICTED"}
             </span>
           </div>
@@ -189,77 +188,77 @@ export default function HeroIntakeTerminal() {
           {/* Forensics Ledger Cards */}
           <div className="grid grid-cols-2 gap-3">
             {/* Distributor Fee Drain */}
-            <div className="p-3 bg-[#040915] border border-slate-800/90 rounded-sm space-y-1">
-              <span className="text-[9px] font-mono uppercase tracking-wider text-rose-400/90 block">
-                Distributor Trail Leak
+            <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1">
+              <span className="text-[10px] uppercase tracking-wider text-rose-600 font-semibold block">
+                Bank Distributor Leak
               </span>
-              <span className="font-mono text-base font-semibold text-rose-300 tabular-nums block">
+              <span className="text-base font-bold text-slate-900 tabular-nums block">
                 {currentTier.commissionDrain}
               </span>
               <span className="text-[10px] text-slate-500 block leading-tight">
-                Siphoned via AMC Regular Plan NAV
+                Embedded commissions siphoned annually
               </span>
             </div>
 
             {/* Fiduciary Preservation */}
-            <div className="p-3 bg-[#040915] border border-[#BE9A48]/30 rounded-sm space-y-1">
-              <span className="text-[9px] font-mono uppercase tracking-wider text-[#D8BD80] block">
-                Wealth Preserved (Direct)
+            <div className="p-3.5 bg-emerald-50/40 border border-emerald-200/60 rounded-2xl space-y-1">
+              <span className="text-[10px] uppercase tracking-wider text-emerald-700 font-semibold block">
+                Direct Alpha Preserved
               </span>
-              <span className="font-mono text-base font-semibold text-emerald-400 tabular-nums block">
+              <span className="text-base font-bold text-emerald-700 tabular-nums block">
                 {currentTier.fiduciarySavings}
               </span>
-              <span className="text-[10px] text-slate-400 block leading-tight">
-                Kept in compounding corpus
+              <span className="text-[10px] text-slate-500 block leading-tight">
+                Compounded inside client account
               </span>
             </div>
           </div>
 
           {/* Institutional Specifications */}
-          <div className="p-3 bg-[#040915] border border-slate-800/80 rounded-sm space-y-2 text-xs">
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="text-slate-400">Statutory Fee Model:</span>
-              <span className="font-mono text-slate-200 font-medium">{currentTier.fiduciaryRetainer}</span>
+          <div className="p-3.5 bg-slate-50/80 border border-slate-200/70 rounded-2xl space-y-2 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500">Statutory Fee Model:</span>
+              <span className="font-semibold text-slate-800">{currentTier.fiduciaryRetainer}</span>
             </div>
-            <div className="hairline-rule" />
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="text-slate-400">Assigned Oversight:</span>
-              <span className="text-[#D8BD80] font-medium">{currentTier.leadPartner}</span>
+            <div className="h-px bg-slate-200/60" />
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500">Assigned Partner:</span>
+              <span className="font-semibold text-slate-900">{currentTier.leadPartner}</span>
             </div>
-            <div className="hairline-rule" />
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="text-slate-400">Custody Protocol:</span>
-              <span className="text-slate-300 text-right max-w-[200px] truncate">{currentTier.custodyNote}</span>
+            <div className="h-px bg-slate-200/60" />
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500">Custody Protocol:</span>
+              <span className="text-slate-700 text-right max-w-[210px] truncate">{currentTier.custodyNote}</span>
             </div>
           </div>
         </motion.div>
       </AnimatePresence>
 
       {/* Action Button */}
-      <div className="mt-5 pt-4 border-t border-slate-800/80">
+      <div className="mt-5 pt-4 border-t border-slate-100">
         <button
           type="button"
           onClick={handleProceed}
-          className={`w-full py-3.5 px-4 rounded-sm text-xs uppercase tracking-widest font-bold flex items-center justify-center space-x-2 transition-all duration-200 ${
+          className={`w-full py-3.5 px-5 rounded-full text-xs font-semibold tracking-wide flex items-center justify-center space-x-2 transition-all duration-200 shadow-sm ${
             currentTier.isEligible
-              ? "btn-gold-foil shadow-lg"
-              : "bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700"
+              ? "btn-primary-pill shadow-md hover:shadow-lg"
+              : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200"
           }`}
         >
           <span>
             {currentTier.isEligible
-              ? "Enter Statutory Suitability Dossier"
-              : "View Direct Indexing Guidelines"}
+              ? "Start Suitability Assessment"
+              : "Review Alternative Options"}
           </span>
           <ArrowRight className="h-4 w-4" />
         </button>
 
-        <div className="mt-3 flex items-center justify-between text-[10px] text-slate-400 font-mono">
-          <span className="flex items-center space-x-1">
-            <Lock className="h-3 w-3 text-[#BE9A48]" />
-            <span>256-Bit Encrypted</span>
+        <div className="mt-3 flex items-center justify-between text-[11px] text-slate-500">
+          <span className="flex items-center space-x-1.5">
+            <Lock className="h-3 w-3 text-slate-400" />
+            <span>256-Bit Encrypted Confidentiality</span>
           </span>
-          <span>Zero Spam Policy • Zero Cold Calling</span>
+          <span>Zero Commission Guarantee</span>
         </div>
       </div>
     </div>

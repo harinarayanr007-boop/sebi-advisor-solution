@@ -1,145 +1,91 @@
 @import "tailwindcss";
 
 @theme {
-  --color-navy-950: #020611;
-  --color-navy-900: #040915;
-  --color-navy-850: #081022;
-  --color-navy-800: #0D1830;
-  --color-navy-700: #142445;
-  --color-navy-600: #1C3360;
-
-  --color-gold-50: #FAF7EF;
-  --color-gold-100: #F3ECDB;
-  --color-gold-200: #E5D3A9;
-  --color-gold-300: #D6BD82;
-  --color-gold-400: #C9A960;
-  --color-gold-500: #BE9A48;
-  --color-gold-600: #A07F34;
-  --color-gold-700: #7E6325;
-
-  --font-serif: var(--font-playfair), Georgia, serif;
-  --font-sans: var(--font-jakarta), -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-inter: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-roboto: var(--font-roboto), Roboto, system-ui, sans-serif;
 }
 
 :root {
-  --background: #020611;
-  --foreground: #F8FAFC;
+  --color-scheme-1-background: #e8f3ff;
+  --color-scheme-1-text: #030a03;
+  --color-scheme-2-background: #ffffff;
+  --color-scheme-2-text: #030a03;
+  --color-scheme-3-background: #e8f3ff;
+  --color-scheme-3-text: #030a03;
+  --color-scheme-3-border: rgba(3, 10, 3, 0.15);
+  --color-dodger-blue: #1e90ff;
+  --color-neutral-darkest: #030a03;
+  --opacity-neutral-darkest-15: rgba(3, 10, 3, 0.15);
+  --page-padding-global: 64px;
+  --section-padding-large: 112px;
+  --section-padding-medium: 80px;
+  --text-heading-2: 48px;
+  --text-heading-3: 40px;
+  --text-heading-4: 40px;
+  --text-heading-6: 20px;
+  --text-medium: 18px;
+  --text-regular: 16px;
+  --text-small: 14px;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
+  background-color: #ffffff;
+  color: #030a03;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Subtle Banknote Guilloche & Architectural Grid */
-.bg-architectural-grid {
-  background-image: 
-    linear-gradient(to right, rgba(190, 154, 72, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(190, 154, 72, 0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
-/* Fine-line Guilloche overlay for luxury private banking texture */
-.bg-guilloche-subtle {
-  background-image: radial-gradient(circle at 50% 50%, rgba(190, 154, 72, 0.04) 0%, transparent 80%),
-                    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.008) 0px, rgba(255, 255, 255, 0.008) 1px, transparent 1px, transparent 12px);
-}
-
-/* Custom Institutional Wealth UI Utilities */
-.gold-gradient-text {
-  background: linear-gradient(135deg, #FFF9EB 0%, #E8D3A2 35%, #BE9A48 75%, #8B6B23 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.gold-gradient-border {
-  border-image: linear-gradient(135deg, rgba(232, 211, 162, 0.6) 0%, rgba(190, 154, 72, 0.3) 50%, rgba(139, 107, 35, 0.1) 100%) 1;
-}
-
-/* Architectural frame with precision corner ticks */
-.architectural-panel {
-  position: relative;
-  background: linear-gradient(180deg, rgba(13, 24, 48, 0.85) 0%, rgba(4, 9, 21, 0.95) 100%);
-  border: 1px solid rgba(190, 154, 72, 0.22);
-  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.architectural-panel::before,
-.architectural-panel::after {
-  content: "";
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  pointer-events: none;
-}
-
-.architectural-panel::before {
-  top: -1px;
-  left: -1px;
-  border-top: 2px solid #BE9A48;
-  border-left: 2px solid #BE9A48;
-}
-
-.architectural-panel::after {
-  bottom: -1px;
-  right: -1px;
-  border-bottom: 2px solid #BE9A48;
-  border-right: 2px solid #BE9A48;
-}
-
-/* Authentic Legal Vellum / Parchment Document Sheet */
-.vellum-sheet {
-  background-color: #F8F5EE;
-  background-image: 
-    radial-gradient(ellipse at 50% 0%, rgba(190, 154, 72, 0.08) 0%, transparent 60%),
-    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.015) 0px, rgba(0, 0, 0, 0.015) 1px, transparent 1px, transparent 24px);
-  color: #171A21;
-  border: 1px solid #D6BD82;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), inset 0 0 40px rgba(190, 154, 72, 0.08);
-}
-
-/* Hairline dividers */
-.hairline-gold {
-  background: linear-gradient(90deg, transparent 0%, rgba(190, 154, 72, 0.5) 50%, transparent 100%);
-  height: 1px;
-}
-
-.hairline-rule {
-  border-bottom: 1px solid rgba(190, 154, 72, 0.2);
-}
-
-/* Hot-stamp gold foil button */
-.btn-gold-foil {
-  background: linear-gradient(135deg, #BE9A48 0%, #D8BD80 50%, #A07F34 100%);
-  color: #040915;
-  font-weight: 700;
-  border: 1px solid #FAF7EF;
-  box-shadow: 0 4px 20px -2px rgba(190, 154, 72, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+/* Custom smooth transitions for interactive cards and buttons */
+.figma-btn-primary {
+  background-color: #1e90ff;
+  color: #ffffff;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.btn-gold-foil:hover {
-  background: linear-gradient(135deg, #D8BD80 0%, #F3ECDB 50%, #BE9A48 100%);
-  box-shadow: 0 6px 25px -2px rgba(190, 154, 72, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+.figma-btn-primary:hover {
+  background-color: #0077e6;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(30, 144, 255, 0.3);
+}
+.figma-btn-primary:active {
+  transform: translateY(0);
 }
 
-/* Custom sleek scrollbar */
+.figma-btn-secondary {
+  border: 1px solid rgba(3, 10, 3, 0.15);
+  color: #030a03;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.figma-btn-secondary:hover {
+  border-color: rgba(3, 10, 3, 0.4);
+  background-color: rgba(3, 10, 3, 0.03);
+  transform: translateY(-1px);
+}
+.figma-btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* Hide Next dev indicator for clean screenshots */
+nextjs-portal, [data-nextjs-dev-indicator], [data-nextjs-toast] {
+  display: none !important;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #020611;
+  background: #f1f5f9;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #1C3360;
-  border-radius: 2px;
+  background: #cbd5e1;
+  border-radius: 9999px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #BE9A48;
+  background: #94a3b8;
 }

@@ -1,374 +1,776 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import {
-  ShieldCheck,
-  Scale,
-  ArrowRight,
-  Lock,
-  LineChart,
-  FileCheck,
-  Building2,
-  AlertCircle,
-  Clock,
-  Compass,
-  CheckCircle2,
-  XCircle,
-  BookOpen,
-  Landmark,
-  Layers,
-  FileText,
-  Award,
-} from "lucide-react";
-import FeeDragCalculator from "@/components/interactive/FeeDragCalculator";
-import AllocationSimulator from "@/components/interactive/AllocationSimulator";
-import AboutFiduciary from "@/components/AboutFiduciary";
-import StructuralComparisonLedger from "@/components/StructuralComparisonLedger";
-import HeroIntakeTerminal from "@/components/interactive/HeroIntakeTerminal";
+import { motion, AnimatePresence } from "motion/react";
+import FigmaNavbar from "@/components/FigmaNavbar";
+import FigmaFooter from "@/components/FigmaFooter";
+import RegulatoryDisclosuresModal from "@/components/RegulatoryDisclosuresModal";
+
+// Asset paths matching downloaded Figma assets
+const imgLogoWide1 = "/figma/logo-wide-1.svg";
+const imgHeroImage = "/figma/hero-image.png";
+const imgInvestmentPlanning = "/figma/investment-planning.png";
+const imgPortfolioManagement = "/figma/portfolio-management.png";
+const imgRiskAssessment = "/figma/risk-assessment.png";
+const imgAboutPhoto = "/figma/about-photo.png";
+const imgProcessStep1 = "/figma/process-step-1.png";
+const imgProcessStep2 = "/figma/process-step-2.png";
+const imgProcessStep3 = "/figma/process-step-3.png";
+const imgAvatar1 = "/figma/avatar-1.png";
+const imgAvatar2 = "/figma/avatar-2.png";
+const imgAvatar3 = "/figma/avatar-3.png";
+const imgCtaImage = "/figma/cta-image.png";
+const imgChevronDown = "/figma/chevron-down.svg";
+const imgChevronRight = "/figma/chevron-right.svg";
+const imgChevronRight1 = "/figma/chevron-right-1.svg";
+const imgPlaceholderLogo = "/figma/placeholder-logo.svg";
+const imgClose = "/figma/close.svg";
+const imgMail = "/figma/mail.svg";
+const imgCall = "/figma/call.svg";
+const imgCallWhite = "/figma/call-white.svg";
+const imgLocationOn = "/figma/location-on.svg";
+const imgDivider = "/figma/divider.svg";
+
+function CompanyLogo({ className = "h-[36px] w-[84px] relative" }: { className?: string }) {
+  return (
+    <div className={`overflow-hidden relative ${className}`} data-node-id="4179:8846">
+      <div className="-translate-x-1/2 -translate-y-1/2 absolute h-[36px] left-[calc(50%-0.33px)] top-1/2 w-[70px]">
+        <img alt="Company Logo" className="absolute block inset-0 size-full object-contain" src={imgLogoWide1} />
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
+  // Interactive FAQ state: all open by default to match 1:1 Figma canvas, with interactive toggle
+  const [openFaqs, setOpenFaqs] = useState<number[]>([0, 1, 2, 3, 4]);
+  const [resourcesOpen, setResourcesOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleFaq = (index: number) => {
+    setOpenFaqs((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  };
+
+  const faqItems = [
+    {
+      q: "Are you SEBI registered?",
+      a: "Yes. My registration number is INA000015678. You can verify it on the SEBI website before we ever shake hands.",
+    },
+    {
+      q: "How do you charge?",
+      a: "A flat fee. No commissions, no kickbacks, no hidden cuts. You pay for advice, not for products.",
+    },
+    {
+      q: "What is your strategy?",
+      a: "Long term, low cost, and built for your risk. We do not chase tips or time the market. We build a plan and stick to it.",
+    },
+    {
+      q: "How do we start?",
+      a: "We talk first. You bring your numbers and your goals. Then I write the plan and we go from there.",
+    },
+    {
+      q: "Do you sell products?",
+      a: "Never. I am an advisor, not a salesman. My only product is the plan and the discipline to follow it.",
+    },
+  ];
+
+  const scrollToSection = (id: string) => {
+    setMobileMenuOpen(false);
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <div className="flex flex-col min-h-screen bg-[#020611] text-slate-100 bg-architectural-grid">
-      {/* EDITORIAL HERO SECTION */}
-      <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-28 border-b border-[#BE9A48]/20 bg-guilloche-subtle">
-        {/* Subtle ambient lighting */}
-        <div className="pointer-events-none absolute -top-40 left-1/3 -translate-x-1/2 h-[600px] w-[1000px] bg-gradient-to-b from-[#BE9A48]/10 via-[#081022]/40 to-transparent blur-3xl opacity-60" />
+    <div className="flex flex-col items-start relative w-full bg-white text-[#030a03] overflow-x-hidden" data-node-id="10373:67369" data-name="Home • Desktop">
+      
+      {/* 1. NAVBAR / 1 / */}
+      <FigmaNavbar />
+      <RegulatoryDisclosuresModal />
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Left Column: Editorial Masthead */}
-            <div className="lg:col-span-7 space-y-6">
-              {/* Qualification Hurdle Pill */}
-              <div className="inline-flex items-center space-x-2.5 px-3.5 py-1.5 rounded-sm border border-[#BE9A48]/40 bg-[#081022] text-[#D8BD80] text-[11px] font-mono tracking-wider uppercase shadow-inner">
-                <Lock className="h-3.5 w-3.5 text-[#BE9A48]" />
-                <span>Statutory Hurdle: Minimum Investable Net Worth ₹50 Lakhs</span>
-              </div>
-
-              <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-slate-50 leading-[1.14]">
-                Pure Fiduciary Wealth Advisory for{" "}
-                <span className="font-serif italic text-[#D8BD80] block sm:inline">
-                  Select Family Offices
-                </span>{" "}
-                & Ultra-HNIs.
-              </h1>
-
-              <div className="border-l-2 border-[#BE9A48]/70 pl-4 py-1">
-                <p className="text-sm sm:text-base text-slate-300 font-light leading-relaxed max-w-xl">
-                  Statutorily bound to act solely in your best financial interest under SEBI (Investment Advisers) Regulations, 2013. We do not sell financial products, accept distributor commissions, or retain broker kickbacks.
+      {/* 2. HEADER / 1 / (HERO) */}
+      <section className="bg-white flex items-start justify-center overflow-hidden px-5 sm:px-8 md:px-[64px] py-12 sm:py-20 lg:py-[112px] relative w-full" data-node-id="10373:67519" data-name="Header / 1 /">
+        <div className="flex flex-1 flex-col items-start max-w-[1280px] w-full" data-node-id="10373:67520" data-name="Container">
+          <div className="flex flex-col lg:flex-row gap-10 sm:gap-14 lg:gap-[80px] items-center w-full" data-node-id="10373:67521" data-name="Component">
+            
+            <div className="flex flex-1 flex-col gap-6 sm:gap-[32px] items-start w-full text-left" data-node-id="10373:67522" data-name="Column">
+              <div className="flex flex-col gap-4 sm:gap-[24px] items-start text-[#030a03] w-full" data-node-id="10373:67523" data-name="Content">
+                <h1 className="font-bold text-[36px] sm:text-[48px] lg:text-[64px] leading-[1.2] tracking-[-0.64px] w-full" data-node-id="10373:67524">
+                  Fiduciary Wealth Governance for High-Net-Worth Families
+                </h1>
+                <p className="font-normal text-[16px] sm:text-[18px] leading-[1.5] text-[#030a03] w-full" data-node-id="10373:67525">
+                  Independent capital allocation and retirement architecture for business owners, CXOs, and global NRIs. Bound by SEBI fiduciary regulations to eliminate product commissions, bank kickbacks, and distribution bias.
                 </p>
               </div>
 
-              {/* Action Buttons */}
-              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                <Link
-                  href="/rpq"
-                  className="btn-gold-foil inline-flex items-center justify-center px-8 py-4 rounded-sm text-xs uppercase tracking-widest font-bold group shadow-xl"
-                >
-                  <span>Initiate Suitability Assessment</span>
-                  <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  href="#fiduciary-standard"
-                  className="inline-flex items-center justify-center px-6 py-4 rounded-sm border border-slate-700 bg-[#081022] text-slate-300 text-xs font-mono uppercase tracking-wider hover:text-slate-100 hover:border-[#BE9A48]/60 transition-colors"
-                >
-                  <span>Review Fiduciary Charter</span>
-                </Link>
-              </div>
-
-              {/* Trust validation micro badges */}
-              <div className="pt-4 flex flex-wrap items-center gap-6 text-[11px] text-slate-400 font-mono">
-                <div className="flex items-center space-x-1.5">
-                  <ShieldCheck className="h-3.5 w-3.5 text-[#BE9A48]" />
-                  <span>SEBI RIA: INA000019842</span>
-                </div>
-                <div className="flex items-center space-x-1.5">
-                  <Scale className="h-3.5 w-3.5 text-[#BE9A48]" />
-                  <span>BASL Membership: BASL-1892</span>
-                </div>
-                <div className="flex items-center space-x-1.5 text-emerald-400">
-                  <Landmark className="h-3.5 w-3.5" />
-                  <span>CeFCoM Active</span>
-                </div>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-[16px] items-stretch sm:items-start w-full sm:w-auto" data-node-id="10373:67526" data-name="Actions">
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Link
+                    href="/book"
+                    className="bg-[#1e90ff] border border-[#1e90ff] flex gap-[8px] h-[44px] items-center justify-center px-[20px] py-[8px] font-medium text-white text-[16px] leading-[1.5] whitespace-nowrap hover:bg-[#0077e6] transition-all cursor-pointer shadow-sm hover:shadow text-center"
+                    data-node-id="10393:1855"
+                    data-name="Button"
+                  >
+                    <div className="relative size-[24px] shrink-0" data-node-id="10393:1856">
+                      <img alt="" className="inset-0 size-full block" src={imgCallWhite} />
+                    </div>
+                    <span>Consult Now</span>
+                  </Link>
+                </motion.div>
               </div>
             </div>
 
-            {/* Right Column: Live Institutional Terminal Preview */}
-            <div className="lg:col-span-5">
-              <HeroIntakeTerminal />
+            <div className="w-full max-w-[500px] lg:max-w-none lg:w-[601px] h-[320px] sm:h-[460px] lg:h-[599px] relative shrink-0 overflow-hidden flex items-center justify-center" data-node-id="10392:1213" data-name="image 53">
+              <div className="relative size-full pointer-events-none flex items-center justify-center">
+                <img
+                  alt="Registered SEBI Advisor illustration"
+                  className="size-full object-contain"
+                  src={imgHeroImage}
+                />
+              </div>
             </div>
+
           </div>
         </div>
       </section>
 
-      {/* INSTITUTIONAL AUDITED METRICS LEDGER */}
-      <section className="bg-[#040915] border-b border-[#BE9A48]/20 py-8">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-800">
-            <div className="p-4 sm:px-6 text-center space-y-1">
-              <div className="font-serif text-2xl sm:text-3xl text-[#D8BD80] font-medium">
-                ₹50,00,000
-              </div>
-              <div className="text-[11px] uppercase tracking-wider text-slate-400 font-medium">
-                Minimum Client Net Worth
-              </div>
-              <div className="text-[10px] text-slate-500 font-mono">Statutory Intake Hurdle</div>
-            </div>
-
-            <div className="p-4 sm:px-6 text-center space-y-1">
-              <div className="font-serif text-2xl sm:text-3xl text-slate-100 font-medium">
-                0.00%
-              </div>
-              <div className="text-[11px] uppercase tracking-wider text-slate-400 font-medium">
-                Distribution Commission
-              </div>
-              <div className="text-[10px] text-slate-500 font-mono">Zero Brokerage Kickbacks</div>
-            </div>
-
-            <div className="p-4 sm:px-6 text-center space-y-1">
-              <div className="font-serif text-2xl sm:text-3xl text-[#D8BD80] font-medium">
-                100%
-              </div>
-              <div className="text-[11px] uppercase tracking-wider text-slate-400 font-medium">
-                Direct Portfolio Plans
-              </div>
-              <div className="text-[10px] text-slate-500 font-mono">Zero Expense Drag on NAV</div>
-            </div>
-
-            <div className="p-4 sm:px-6 text-center space-y-1">
-              <div className="font-serif text-2xl sm:text-3xl text-slate-100 font-medium">
-                Reg. 15
-              </div>
-              <div className="text-[11px] uppercase tracking-wider text-slate-400 font-medium">
-                SEBI Fiduciary Duty
-              </div>
-              <div className="text-[10px] text-slate-500 font-mono">Statutory Oath of Care</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* STRUCTURAL CONFLICT OF INTEREST COMPARISON LEDGER */}
-      <section id="fiduciary-standard" className="py-20 bg-[#020611] border-b border-slate-800/80">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <StructuralComparisonLedger />
-        </div>
-      </section>
-
-      {/* INTERACTIVE FEE DRAG CALCULATOR */}
-      <section className="py-20 bg-[#040915] border-b border-slate-800/80">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <FeeDragCalculator />
-        </div>
-      </section>
-
-      {/* BESPOKE ASSET ALLOCATION SIMULATOR */}
-      <section id="framework" className="py-20 bg-[#020611] border-b border-slate-800/80">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <AllocationSimulator />
-        </div>
-      </section>
-
-      {/* ABOUT THE FIDUCIARY */}
-      <AboutFiduciary />
-
-      {/* THOUGHT LEADERSHIP & MONOGRAPHS */}
-      <section id="insights" className="py-20 bg-[#020611] border-b border-slate-800/80">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-slate-800">
-            <div className="space-y-2">
-              <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-[#D8BD80]">
-                Institutional Whitepapers & Briefings
-              </div>
-              <h2 className="font-serif text-2xl sm:text-4xl text-slate-50 font-normal">
-                Fiduciary Thought Leadership
-              </h2>
-            </div>
-            <p className="text-xs text-slate-400 max-w-md font-mono">
-              Evidence-based market analysis and regulatory teardowns curated for high-net-worth business owners and family office trustees.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <article className="architectural-panel p-6 space-y-4 flex flex-col justify-between group hover:border-[#BE9A48] transition-all">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-[10px] font-mono text-[#D8BD80]">
-                  <span>MONOGRAPH // 01</span>
-                  <span>8 Min Read</span>
-                </div>
-                <h3 className="font-serif text-lg text-slate-100 font-medium group-hover:text-[#F3ECDB] transition-colors">
-                  The Arithmetic of Regular Plan Drag: How 1.25% Hidden AMC Commissions Erode ₹1.8 Crore Over 20 Years
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  A quantitative empirical study dissecting the compounding destruction inflicted by distributor trailer fees versus direct fiduciary mandates.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-[#D8BD80]">
-                <span>Read Whitepaper</span>
-                <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </article>
-
-            <article className="architectural-panel p-6 space-y-4 flex flex-col justify-between group hover:border-[#BE9A48] transition-all">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-[10px] font-mono text-[#D8BD80]">
-                  <span>MONOGRAPH // 02</span>
-                  <span>11 Min Read</span>
-                </div>
-                <h3 className="font-serif text-lg text-slate-100 font-medium group-hover:text-[#F3ECDB] transition-colors">
-                  Navigating the Sovereign Yield Curve: Sovereign Green Bonds & AAA Corporate Debt Allocations
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Framework for allocating family office liquidity amidst shifting RBI monetary policy stances and corporate credit spread dynamics.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-[#D8BD80]">
-                <span>Read Whitepaper</span>
-                <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </article>
-
-            <article className="architectural-panel p-6 space-y-4 flex flex-col justify-between group hover:border-[#BE9A48] transition-all">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-[10px] font-mono text-[#D8BD80]">
-                  <span>MONOGRAPH // 03</span>
-                  <span>14 Min Read</span>
-                </div>
-                <h3 className="font-serif text-lg text-slate-100 font-medium group-hover:text-[#F3ECDB] transition-colors">
-                  Intergenerational Wealth Continuity: Designing Deterministic Private Family Trusts in India
-                </h3>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Tax efficiency, ring-fencing against creditor liabilities, and seamless succession governance for Indian family enterprises.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-[#D8BD80]">
-                <span>Read Whitepaper</span>
-                <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      {/* STATUTORY FEE SCHEDULE (SEBI REGULATORY CAPS) */}
-      <section id="fees" className="py-20 bg-[#040915] border-b border-slate-800/80">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-            <span className="text-[#D8BD80] text-[10px] font-bold tracking-[0.25em] uppercase font-mono">
-              Statutory Transparency // SEBI Size 10 Mandated
-            </span>
-            <h2 className="font-serif text-2xl sm:text-4xl text-slate-50 font-normal">
-              Regulated Advisory Fee Schedule
+      {/* 3. STATS / 52 / */}
+      <section className="bg-[#e8f3ff] flex flex-col items-center overflow-hidden px-4 sm:px-8 md:px-[64px] py-10 sm:py-16 lg:py-[112px] relative w-full" data-node-id="10391:1182" data-name="Stats / 52 /">
+        <div className="flex flex-col gap-6 sm:gap-10 lg:gap-[80px] items-start max-w-[1280px] w-full" data-node-id="10391:1183" data-name="Container">
+          <div className="flex flex-col gap-2 sm:gap-[16px] items-start w-full">
+            <h2 className="font-semibold text-[26px] sm:text-[36px] lg:text-[48px] leading-[1.2] tracking-[-0.48px] text-[#030a03] w-full" data-node-id="10391:1184">
+              The numbers speak for themselves
             </h2>
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              In full compliance with SEBI circular SEBI/HO/IMD/DF1/CIR/P/2020/182. All fees are transparently agreed upon in advance and collected exclusively through the Centralized Fee Collection Mechanism (CeFCoM).
+            <p className="font-normal text-[15px] sm:text-[18px] leading-[1.5] text-[#030a03]/80 sm:text-[#030a03] w-full" data-node-id="10392:1275">
+              A focused, boutique practice intentionally capped to preserve fiduciary depth.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Fixed Retainer Model */}
-            <div className="architectural-panel p-8 space-y-6">
-              <div className="space-y-2">
-                <div className="text-[10px] uppercase tracking-wider text-[#D8BD80] font-mono font-semibold">
-                  Fixed Retainer Model
-                </div>
-                <div className="font-serif text-3xl text-slate-100">
-                  ₹1,25,000 <span className="text-xs text-slate-400 font-sans">/ annum + GST</span>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Mandated annual retainer for comprehensive family balance sheet advisory, strategic asset allocation, and quarterly governance reviews.
+          <div className="flex flex-col items-start w-full" data-node-id="10391:1185" data-name="Content">
+            <div className="grid grid-cols-3 gap-2 sm:gap-6 lg:gap-[32px] w-full" data-node-id="10391:1186" data-name="Row">
+              
+              {/* Stat 1 */}
+              <motion.div
+                whileHover={{ y: -4, boxShadow: "0 10px 25px -5px rgba(0,0,0,0.06)" }}
+                transition={{ duration: 0.2 }}
+                className="bg-white border border-[rgba(3,10,3,0.12)] rounded-xl sm:rounded-none flex flex-col gap-1 sm:gap-[8px] items-center justify-center p-2.5 sm:p-5 lg:p-[32px] w-full cursor-default text-center shadow-xs sm:shadow-none"
+                data-node-id="10391:1187"
+                data-name="Stat"
+              >
+                <p className="font-bold font-roboto text-[22px] sm:text-[44px] lg:text-[80px] leading-[1.2] text-[#030a03] text-center whitespace-nowrap" data-node-id="10391:1188">
+                  ₹120Cr+
                 </p>
-              </div>
-
-              <div className="pt-4 border-t border-slate-800 space-y-3 text-xs text-slate-300 font-sans">
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="h-4 w-4 text-[#BE9A48] shrink-0" />
-                  <span>Capped at SEBI statutory maximum for individual clients</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="h-4 w-4 text-[#BE9A48] shrink-0" />
-                  <span>Comprehensive tax & direct portfolio roadmap</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="h-4 w-4 text-[#BE9A48] shrink-0" />
-                  <span>Quarterly portfolio stress tests & rebalancing directives</span>
-                </div>
-              </div>
-            </div>
-
-            {/* AUA Percentage Model */}
-            <div className="architectural-panel p-8 space-y-6 border-[#BE9A48]/50">
-              <div className="space-y-2">
-                <div className="text-[10px] uppercase tracking-wider text-[#D8BD80] font-mono font-semibold">
-                  Asset-Under-Advice (AUA) Model
-                </div>
-                <div className="font-serif text-3xl text-[#F3ECDB]">
-                  0.75% – 1.25% <span className="text-xs text-slate-400 font-sans">/ annum + GST</span>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Calibrated for multi-generational family office portfolios requiring ongoing institutional monitoring and active tactical allocation.
+                <p className="font-medium text-[10px] sm:text-[15px] lg:text-[20px] leading-[1.3] text-[#030a03]/80 sm:text-[#030a03] text-center" data-node-id="10391:1189">
+                  Active Advisory Assets
                 </p>
-              </div>
+              </motion.div>
 
-              <div className="pt-4 border-t border-slate-800 space-y-3 text-xs text-slate-300 font-sans">
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="h-4 w-4 text-[#D8BD80] shrink-0" />
-                  <span>Strictly capped well below the SEBI 2.50% statutory maximum</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="h-4 w-4 text-[#D8BD80] shrink-0" />
-                  <span>Audited AUA computation on designated valuation dates</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="h-4 w-4 text-[#D8BD80] shrink-0" />
-                  <span>Dedicated Principal Fiduciary Officer assignment</span>
-                </div>
-              </div>
+              {/* Stat 2 */}
+              <motion.div
+                whileHover={{ y: -4, boxShadow: "0 10px 25px -5px rgba(0,0,0,0.06)" }}
+                transition={{ duration: 0.2 }}
+                className="bg-white border border-[rgba(3,10,3,0.12)] rounded-xl sm:rounded-none flex flex-col gap-1 sm:gap-[8px] items-center justify-center p-2.5 sm:p-5 lg:p-[32px] text-center w-full cursor-default shadow-xs sm:shadow-none"
+                data-node-id="10391:1190"
+                data-name="Stat"
+              >
+                <p className="font-bold font-roboto text-[22px] sm:text-[44px] lg:text-[80px] leading-[1.2] text-[#030a03] text-center whitespace-nowrap" data-node-id="10391:1191">
+                  15
+                </p>
+                <p className="font-medium text-[10px] sm:text-[15px] lg:text-[20px] leading-[1.3] text-[#030a03]/80 sm:text-[#030a03] text-center" data-node-id="10391:1192">
+                  Years of Experience
+                </p>
+              </motion.div>
+
+              {/* Stat 3 */}
+              <motion.div
+                whileHover={{ y: -4, boxShadow: "0 10px 25px -5px rgba(0,0,0,0.06)" }}
+                transition={{ duration: 0.2 }}
+                className="bg-white border border-[rgba(3,10,3,0.12)] rounded-xl sm:rounded-none flex flex-col gap-1 sm:gap-[8px] items-center justify-center p-2.5 sm:p-5 lg:p-[32px] text-center w-full cursor-default shadow-xs sm:shadow-none"
+                data-node-id="10391:1193"
+                data-name="Stat"
+              >
+                <p className="font-bold font-roboto text-[22px] sm:text-[44px] lg:text-[80px] leading-[1.2] text-[#030a03] text-center whitespace-nowrap" data-node-id="10391:1194">
+                  65+
+                </p>
+                <p className="font-medium text-[10px] sm:text-[15px] lg:text-[20px] leading-[1.3] text-[#030a03]/80 sm:text-[#030a03] text-center" data-node-id="10391:1195">
+                  Clients on board
+                </p>
+              </motion.div>
+
             </div>
-          </div>
-
-          <div className="mt-8 text-center text-xs text-slate-500 max-w-xl mx-auto font-mono">
-            Note: Clients may choose between Fixed Retainer or AUA model upon completing the formal Risk Profiling Assessment and execution of the SEBI Advisory Agreement.
           </div>
         </div>
       </section>
 
-      {/* FINAL SPAM WALL TRIGGER CTA */}
-      <section className="py-24 bg-gradient-to-b from-[#040915] via-[#081022] to-[#020611] relative overflow-hidden border-t border-slate-900">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
-          <div className="h-16 w-16 rounded-full border border-[#BE9A48] bg-[#040915] mx-auto flex items-center justify-center shadow-lg overflow-hidden">
-            <Image
-              src="/images/fiduciary-seal.jpg"
-              alt="Aurum Seal"
-              width={64}
-              height={64}
-              unoptimized
-              className="object-cover"
-            />
+      {/* 4. LAYOUT / 249 / (SERVICES) */}
+      <section id="services" className="bg-white flex flex-col items-center overflow-hidden px-4 sm:px-8 md:px-[64px] py-10 sm:py-16 lg:py-[112px] relative w-full" data-node-id="10391:1090" data-name="Layout / 249 /">
+        <div className="flex flex-col gap-8 sm:gap-14 lg:gap-[80px] items-start max-w-[1280px] w-full" data-node-id="10391:1091" data-name="Container">
+          
+          <div className="flex flex-col gap-2.5 sm:gap-[16px] items-start max-w-[768px] w-full" data-node-id="10391:1092" data-name="Section Title">
+            <div className="flex items-center" data-node-id="10391:1093" data-name="Tagline Wrapper">
+              <span className="font-semibold text-[14px] sm:text-[16px] leading-[1.5] text-[#1e90ff] sm:text-[#030a03]" data-node-id="10391:1094">
+                Services
+              </span>
+            </div>
+            <div className="flex flex-col gap-2 sm:gap-[24px] items-start text-[#030a03] w-full" data-node-id="10391:1095" data-name="Content">
+              <h2 className="font-semibold text-[26px] sm:text-[40px] lg:text-[48px] leading-[1.2] tracking-[-0.48px] w-full" data-node-id="10391:1096">
+                Designed for Capital Preservation &amp; Compound Longevity
+              </h2>
+              <p className="font-normal text-[14px] sm:text-[18px] leading-[1.5] w-full text-[#030a03]/80 sm:text-[#030a03]" data-node-id="10391:1097">
+                Three services. Each one built to keep your money honest and your future clear. No products pushed, no commissions taken.
+              </p>
+            </div>
           </div>
 
-          <h2 className="font-serif text-3xl sm:text-5xl text-slate-50 font-normal">
-            Begin with the Statutory Suitability Assessment
-          </h2>
+          <div className="flex flex-col items-start w-full" data-node-id="10391:1098" data-name="Content">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 lg:gap-[48px] items-start w-full" data-node-id="10391:1099" data-name="Row">
+              
+              {/* Service 1 */}
+              <motion.div
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-col gap-3 sm:gap-6 lg:gap-[32px] items-start w-full overflow-hidden p-4 sm:p-5 lg:p-0 rounded-2xl bg-[#f8fbff] lg:bg-transparent border border-[rgba(30,144,255,0.12)] lg:border-none shadow-xs lg:shadow-none"
+                data-node-id="10391:1100"
+                data-name="Column"
+              >
+                <div className="h-[130px] sm:h-[220px] lg:h-[302px] relative w-full overflow-hidden flex items-center justify-center rounded-xl bg-white lg:bg-transparent" data-node-id="10391:1101" data-name="Investment planning illustration">
+                  <img alt="Investment planning" className="size-full object-contain pointer-events-none" src={imgInvestmentPlanning} />
+                </div>
+                <div className="flex flex-col gap-1.5 sm:gap-3 lg:gap-[24px] items-start text-[#030a03] w-full" data-node-id="10391:1102" data-name="Content">
+                  <h3 className="font-semibold text-[20px] sm:text-[28px] lg:text-[40px] leading-[1.3] tracking-[-0.3px] w-full" data-node-id="10391:1103">
+                    Investment planning
+                  </h3>
+                  <p className="font-normal text-[14px] sm:text-[15px] lg:text-[16px] leading-[1.5] w-full text-[#030a03]/80 sm:text-[#030a03]" data-node-id="10391:1104">
+                    We map your income, your spending, and your goals into one written plan.
+                  </p>
+                </div>
+              </motion.div>
 
-          <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed font-light">
-            SEBI regulations mandate comprehensive risk assessment before any advisory relationship is established. Complete the four-minute assessment to verify portfolio eligibility.
-          </p>
+              {/* Service 2 */}
+              <motion.div
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-col gap-3 sm:gap-6 lg:gap-[32px] items-start w-full overflow-hidden p-4 sm:p-5 lg:p-0 rounded-2xl bg-[#f8fbff] lg:bg-transparent border border-[rgba(30,144,255,0.12)] lg:border-none shadow-xs lg:shadow-none"
+                data-node-id="10391:1105"
+                data-name="Column"
+              >
+                <div className="h-[130px] sm:h-[220px] lg:h-[302px] relative w-full overflow-hidden flex items-center justify-center rounded-xl bg-white lg:bg-transparent" data-node-id="10391:1106" data-name="Portfolio management illustration">
+                  <img alt="Portfolio management" className="size-full object-contain pointer-events-none" src={imgPortfolioManagement} />
+                </div>
+                <div className="flex flex-col gap-1.5 sm:gap-3 lg:gap-[24px] items-start text-[#030a03] w-full" data-node-id="10391:1107" data-name="Content">
+                  <h3 className="font-semibold text-[20px] sm:text-[28px] lg:text-[40px] leading-[1.3] tracking-[-0.3px] w-full" data-node-id="10391:1108">
+                    Portfolio management
+                  </h3>
+                  <p className="font-normal text-[14px] sm:text-[15px] lg:text-[16px] leading-[1.5] w-full text-[#030a03]/80 sm:text-[#030a03]" data-node-id="10391:1109">
+                    We build the portfolio, rebalance it, and watch it like a hawk.
+                  </p>
+                </div>
+              </motion.div>
 
-          <div className="pt-4">
+              {/* Service 3 */}
+              <motion.div
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-col gap-3 sm:gap-6 lg:gap-[32px] items-start w-full overflow-hidden p-4 sm:p-5 lg:p-0 rounded-2xl bg-[#f8fbff] lg:bg-transparent border border-[rgba(30,144,255,0.12)] lg:border-none shadow-xs lg:shadow-none"
+                data-node-id="10391:1110"
+                data-name="Column"
+              >
+                <div className="h-[130px] sm:h-[220px] lg:h-[299px] relative w-full overflow-hidden flex items-center justify-center rounded-xl bg-white lg:bg-transparent" data-node-id="10391:1111" data-name="Risk assessment illustration">
+                  <img alt="Risk assessment" className="size-full object-contain pointer-events-none" src={imgRiskAssessment} />
+                </div>
+                <div className="flex flex-col gap-1.5 sm:gap-3 lg:gap-[24px] items-start text-[#030a03] w-full" data-node-id="10391:1112" data-name="Content">
+                  <h3 className="font-semibold text-[20px] sm:text-[28px] lg:text-[40px] leading-[1.3] tracking-[-0.3px] w-full" data-node-id="10391:1113">
+                    Risk assessment
+                  </h3>
+                  <p className="font-normal text-[14px] sm:text-[15px] lg:text-[16px] leading-[1.5] w-full text-[#030a03]/80 sm:text-[#030a03]" data-node-id="10391:1114">
+                    We measure what you can afford to lose before you ever lose it.
+                  </p>
+                </div>
+              </motion.div>
+
+            </div>
+          </div>
+
+          <div className="flex items-center" data-node-id="10391:1115" data-name="Actions">
             <Link
-              href="/rpq"
-              className="btn-gold-foil inline-flex items-center justify-center px-10 py-4 rounded-sm text-xs uppercase tracking-widest font-bold group shadow-2xl"
+              href="/philosophy"
+              className="flex gap-[8px] items-center justify-center font-medium text-[16px] leading-[1.5] text-[#003066] hover:text-[#1e90ff] transition-colors whitespace-nowrap cursor-pointer group"
+              data-node-id="10391:1117"
+              data-name="Button"
             >
-              <span>Verify Eligibility & Begin Assessment</span>
-              <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              <span>More Services</span>
+              <div className="relative size-[24px] group-hover:translate-x-1 transition-transform">
+                <img alt="" className="inset-0 size-full block" src={imgChevronRight} />
+              </div>
             </Link>
           </div>
-
-          <p className="text-[10px] text-slate-500 tracking-wide font-mono">
-            Portfolio criteria: Minimum ₹50 Lakhs liquid investable surplus required for advisory intake.
-          </p>
         </div>
       </section>
+
+      {/* 5. LAYOUT / 19 / (ABOUT ME) */}
+      <section id="about" className="bg-[#e8f3ff] flex flex-col items-center overflow-hidden px-4 sm:px-8 md:px-[64px] py-10 sm:py-16 lg:py-[112px] relative w-full" data-node-id="10373:67928" data-name="Layout / 19 /">
+        <div className="flex flex-col items-start max-w-[1280px] w-full" data-node-id="10373:67929" data-name="Container">
+          <div className="flex flex-col lg:flex-row gap-8 sm:gap-14 lg:gap-[80px] items-center w-full" data-node-id="10373:67930" data-name="Component">
+            
+            <div className="flex flex-1 flex-col gap-4 sm:gap-6 lg:gap-[32px] items-start w-full text-left" data-node-id="10373:67931" data-name="Content">
+              <div className="flex flex-col gap-4 sm:gap-6 lg:gap-[32px] items-start w-full" data-node-id="10373:67932" data-name="Content">
+                <div className="flex flex-col gap-2 sm:gap-[16px] items-start w-full" data-node-id="10373:67933" data-name="Section Title">
+                  <div className="flex items-center" data-node-id="10373:67934" data-name="Tagline Wrapper">
+                    <span className="font-semibold text-[14px] sm:text-[16px] leading-[1.5] text-[#1e90ff] sm:text-[#030a03]" data-node-id="10373:67935">
+                      About me
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-2.5 sm:gap-[24px] items-start text-[#030a03] w-full" data-node-id="10373:67936" data-name="Content">
+                    <h2 className="font-bold text-[28px] sm:text-[40px] lg:text-[48px] leading-[1.2] tracking-[-0.48px] text-[#030a03]" data-node-id="10373:67937">
+                      Dr. Aurum Mamal
+                    </h2>
+                    <div className="flex flex-col gap-2 sm:gap-3 font-normal text-[14px] sm:text-[18px] leading-[1.5] text-[#030a03]/85 sm:text-[#030a03] w-full" data-node-id="10373:67938">
+                      <p>
+                        As a SEBI Registered Investment Adviser (INA000015678), I operate under a legal fiduciary charter: I am statutorily bound to act solely in your financial interest.
+                      </p>
+                      <p>
+                        Having stewarded capital across fifteen years of Indian market cycles, my philosophy rejects speculative stock-picking, expensive PMS structures, and bank-driven regular mutual funds. My sole function is to construct a disciplined, low-cost asset architecture that protects your family&apos;s financial freedom.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2 sm:gap-[16px] items-start w-full" data-node-id="10373:67939" data-name="List">
+                  <div className="flex items-center w-full" data-node-id="10373:68182" data-name="List Item">
+                    <ul className="block flex-1 font-medium text-[14px] sm:text-[16px] leading-[1.5] text-[#030a03]">
+                      <li className="list-disc ms-[18px] sm:ms-[24px]">
+                        <span>SEBI registered advisor INA000015678</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="flex items-center w-full" data-node-id="10373:68184" data-name="List Item">
+                    <ul className="block flex-1 font-medium text-[14px] sm:text-[16px] leading-[1.5] text-[#030a03]">
+                      <li className="list-disc ms-[18px] sm:ms-[24px]">
+                        <span>Fifteen years of market experience</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="flex items-center w-full" data-node-id="10373:68186" data-name="List Item">
+                    <ul className="block flex-1 font-medium text-[14px] sm:text-[16px] leading-[1.5] text-[#030a03]">
+                      <li className="list-disc ms-[18px] sm:ms-[24px]">
+                        <span>Certified financial planner</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-row gap-3 sm:gap-[24px] items-center w-full sm:w-auto" data-node-id="10373:67946" data-name="Actions">
+                <Link
+                  href="#services"
+                  className="flex gap-[6px] items-center justify-center font-medium text-[14px] sm:text-[16px] leading-[1.5] text-[#030a03] hover:text-[#1e90ff] transition-colors whitespace-nowrap cursor-pointer group"
+                  data-node-id="10373:67948"
+                  data-name="Button"
+                >
+                  <span>View Services</span>
+                  <div className="relative size-[20px] sm:size-[24px] group-hover:translate-x-1 transition-transform">
+                    <img alt="" className="inset-0 size-full block" src={imgChevronRight1} />
+                  </div>
+                </Link>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Link
+                    href="/book"
+                    className="bg-[#1e90ff] border border-[#1e90ff] flex gap-[8px] h-[40px] sm:h-[44px] items-center justify-center px-[16px] sm:px-[20px] py-[6px] sm:py-[8px] font-medium text-white text-[14px] sm:text-[16px] leading-[1.5] whitespace-nowrap hover:bg-[#0077e6] transition-all cursor-pointer shadow-sm hover:shadow text-center"
+                    data-node-id="10393:1881"
+                    data-name="Button"
+                  >
+                    <div className="relative size-[20px] sm:size-[24px] shrink-0" data-node-id="10393:1882">
+                      <img alt="" className="inset-0 size-full block" src={imgCallWhite} />
+                    </div>
+                    <span>Consult Now</span>
+                  </Link>
+                </motion.div>
+              </div>
+            </div>
+
+            <div className="w-full max-w-[500px] lg:max-w-none lg:w-[631px] h-[260px] sm:h-[420px] lg:h-[703px] relative shrink-0 overflow-hidden rounded-xl sm:rounded-sm shadow-sm" data-node-id="10391:1204" data-name="unsplash:FLIzAeVvHLo">
+              <img alt="Dr. Aurum Mamal" className="absolute inset-0 object-cover size-full pointer-events-none" src={imgAboutPhoto} />
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 6. LAYOUT / 249 / (PROCESS) */}
+      <section id="process" className="bg-white flex flex-col items-center overflow-hidden px-4 sm:px-8 md:px-[64px] py-10 sm:py-16 lg:py-[112px] relative w-full" data-node-id="10373:67749" data-name="Layout / 249 /">
+        <div className="flex flex-col gap-8 sm:gap-14 lg:gap-[80px] items-start max-w-[1280px] w-full" data-node-id="10373:67750" data-name="Container">
+          
+          <div className="flex flex-col gap-2.5 sm:gap-[16px] items-start max-w-[768px] w-full" data-node-id="10373:67751" data-name="Section Title">
+            <div className="flex items-center" data-node-id="10373:67752" data-name="Tagline Wrapper">
+              <span className="font-semibold text-[14px] sm:text-[16px] leading-[1.5] text-[#1e90ff] sm:text-[#030a03]" data-node-id="10373:67753">
+                Process
+              </span>
+            </div>
+            <div className="flex flex-col gap-2 sm:gap-[24px] items-start text-[#030a03] w-full" data-node-id="10373:67754" data-name="Content">
+              <h2 className="font-semibold text-[26px] sm:text-[40px] lg:text-[48px] leading-[1.2] tracking-[-0.48px] w-full" data-node-id="10373:67755">
+                How we will be working together
+              </h2>
+              <p className="font-normal text-[14px] sm:text-[18px] leading-[1.5] w-full text-[#030a03]/80 sm:text-[#030a03]" data-node-id="10373:67756">
+                Three clear stages. Direct, disciplined execution focused solely on your wealth preservation.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-start w-full" data-node-id="10373:68038" data-name="Content">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 lg:gap-[48px] items-start w-full" data-node-id="10373:68037" data-name="Row">
+              
+              {/* Step 1 */}
+              <motion.div
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-col gap-3 sm:gap-6 lg:gap-[36px] items-center justify-center w-full overflow-hidden p-4 sm:p-5 lg:p-0 rounded-2xl bg-[#f8fbff] lg:bg-transparent border border-[rgba(30,144,255,0.12)] lg:border-none shadow-xs lg:shadow-none"
+                data-node-id="10373:68006"
+                data-name="Column"
+              >
+                <div className="h-[120px] sm:h-[200px] lg:h-[284px] relative w-full overflow-hidden flex items-center justify-center rounded-xl bg-white lg:bg-transparent" data-node-id="10391:1126" data-name="image 52">
+                  <img alt="First, we talk" className="size-full object-contain pointer-events-none" src={imgProcessStep1} />
+                </div>
+                <div className="bg-[#1e90ff]/10 lg:bg-[#a0befe] border border-[#1e90ff]/20 lg:border-none flex items-center justify-center size-[36px] sm:size-[44px] lg:w-auto lg:h-auto lg:px-[20px] lg:py-[4px] rounded-full lg:rounded-[100px]" data-node-id="10391:1138">
+                  <span className="font-bold text-[18px] sm:text-[22px] lg:text-[40px] leading-none lg:leading-[1.3] text-[#1e90ff] lg:text-[#030a03] text-center tracking-[-0.4px] whitespace-nowrap" data-node-id="10391:1129">
+                    1
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1.5 sm:gap-3 lg:gap-[24px] items-center text-[#030a03] w-full text-center" data-node-id="10373:68008" data-name="Content">
+                  <h3 className="font-semibold text-[20px] sm:text-[28px] lg:text-[40px] leading-[1.3] tracking-[-0.3px] w-full text-center" data-node-id="10373:68009">
+                    First, we talk 
+                  </h3>
+                  <p className="font-normal text-[14px] sm:text-[15px] lg:text-[16px] leading-[1.5] w-full text-center text-[#030a03]/80 sm:text-[#030a03]" data-node-id="10373:68010">
+                    We sit down and listen. Your goals, your fears, your numbers. Nothing is off the table.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Step 2 */}
+              <motion.div
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-col gap-3 sm:gap-6 lg:gap-[32px] items-center justify-center w-full overflow-hidden p-4 sm:p-5 lg:p-0 rounded-2xl bg-[#f8fbff] lg:bg-transparent border border-[rgba(30,144,255,0.12)] lg:border-none shadow-xs lg:shadow-none"
+                data-node-id="10373:68011"
+                data-name="Column"
+              >
+                <div className="h-[120px] sm:h-[200px] lg:h-[293px] relative w-full overflow-hidden flex items-center justify-center rounded-xl bg-white lg:bg-transparent" data-node-id="10391:1122" data-name="image 51">
+                  <img alt="Then, we plan" className="size-full object-contain pointer-events-none" src={imgProcessStep2} />
+                </div>
+                <div className="bg-[#1e90ff]/10 lg:bg-[#a0befe] border border-[#1e90ff]/20 lg:border-none flex items-center justify-center size-[36px] sm:size-[44px] lg:w-auto lg:h-auto lg:px-[20px] lg:py-[4px] rounded-full lg:rounded-[100px]" data-node-id="10391:1142">
+                  <span className="font-bold text-[18px] sm:text-[22px] lg:text-[40px] leading-none lg:leading-[1.3] text-[#1e90ff] lg:text-[#030a03] text-center tracking-[-0.4px] whitespace-nowrap" data-node-id="10391:1143">
+                    2
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1.5 sm:gap-3 lg:gap-[24px] items-center text-[#030a03] w-full text-center" data-node-id="10373:68013" data-name="Content">
+                  <h3 className="font-semibold text-[20px] sm:text-[28px] lg:text-[40px] leading-[1.3] tracking-[-0.3px] w-full text-center" data-node-id="10373:68014">
+                    Then, we plan 
+                  </h3>
+                  <p className="font-normal text-[14px] sm:text-[15px] lg:text-[16px] leading-[1.5] w-full text-center text-[#030a03]/80 sm:text-[#030a03]" data-node-id="10373:68015">
+                    You get a written plan. Clear, direct, and built only for you. No templates, no noise.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Step 3 */}
+              <motion.div
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-col gap-3 sm:gap-6 lg:gap-[32px] items-center justify-center w-full overflow-hidden p-4 sm:p-5 lg:p-0 rounded-2xl bg-[#f8fbff] lg:bg-transparent border border-[rgba(30,144,255,0.12)] lg:border-none shadow-xs lg:shadow-none"
+                data-node-id="10373:68016"
+                data-name="Column"
+              >
+                <div className="h-[120px] sm:h-[200px] lg:h-[299px] relative w-full overflow-hidden flex items-center justify-center rounded-xl bg-white lg:bg-transparent" data-node-id="10376:1166" data-name="Risk assessment illustration">
+                  <img alt="Finally, we act" className="size-full object-contain pointer-events-none" src={imgProcessStep3} />
+                </div>
+                <div className="bg-[#1e90ff]/10 lg:bg-[#a0befe] border border-[#1e90ff]/20 lg:border-none flex items-center justify-center size-[36px] sm:size-[44px] lg:w-auto lg:h-auto lg:px-[20px] lg:py-[4px] rounded-full lg:rounded-[100px]" data-node-id="10391:1145">
+                  <span className="font-bold text-[18px] sm:text-[22px] lg:text-[40px] leading-none lg:leading-[1.3] text-[#1e90ff] lg:text-[#030a03] text-center tracking-[-0.4px] whitespace-nowrap" data-node-id="10391:1146">
+                    3
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1.5 sm:gap-3 lg:gap-[24px] items-center text-[#030a03] w-full text-center" data-node-id="10373:68018" data-name="Content">
+                  <h3 className="font-semibold text-[20px] sm:text-[28px] lg:text-[40px] leading-[1.3] tracking-[-0.3px] w-full text-center" data-node-id="10373:68019">
+                    Finally, we act
+                  </h3>
+                  <p className="font-normal text-[14px] sm:text-[15px] lg:text-[16px] leading-[1.5] w-full text-center text-[#030a03]/80 sm:text-[#030a03]" data-node-id="10373:68020">
+                    We build the portfolio and manage it. You live your life, we watch the road.
+                  </p>
+                </div>
+              </motion.div>
+
+            </div>
+          </div>
+
+          <div className="flex gap-[24px] items-center" data-node-id="10373:67773" data-name="Actions">
+            <Link
+              href="/book"
+              className="border border-[rgba(3,10,3,0.15)] flex items-center justify-center px-[24px] py-[10px] font-medium text-[#030a03] text-[16px] leading-[1.5] whitespace-nowrap cursor-pointer transition-colors hover:bg-[rgba(3,10,3,0.03)]"
+              data-node-id="10373:67774"
+              data-name="Button"
+            >
+              Book a Call
+            </Link>
+            <motion.button
+              whileHover={{ x: 3 }}
+              onClick={() => scrollToSection("faq")}
+              className="flex gap-[8px] items-center justify-center font-medium text-[#030a03] text-[16px] leading-[1.5] whitespace-nowrap cursor-pointer"
+              data-node-id="10373:67775"
+              data-name="Button"
+            >
+              <span>More</span>
+              <div className="relative size-[24px]">
+                <img alt="" className="inset-0 size-full" src={imgChevronRight} />
+              </div>
+            </motion.button>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. FAQ / 4 / */}
+      <section id="faq" className="bg-white flex flex-col items-center overflow-hidden px-4 sm:px-8 md:px-[64px] py-10 sm:py-16 lg:py-[112px] relative w-full" data-node-id="10373:68374" data-name="FAQ / 4 /">
+        <div className="flex flex-col gap-6 sm:gap-12 lg:gap-[80px] items-center max-w-[1280px] w-full" data-node-id="10373:68375" data-name="Container">
+          
+          <div className="flex flex-col gap-2 sm:gap-[24px] items-center max-w-[768px] text-center text-[#030a03] w-full" data-node-id="10373:68376" data-name="Section Title">
+            <h2 className="font-semibold text-[26px] sm:text-[36px] lg:text-[48px] leading-[1.2] tracking-[-0.48px] w-full" data-node-id="10373:68377">
+              FAQs
+            </h2>
+            <p className="font-normal text-[14px] sm:text-[18px] leading-[1.5] w-full text-[#030a03]/80 sm:text-[#030a03]">
+              Straight answers to the questions that matter before you put money on the line.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3 sm:gap-[16px] items-start max-w-[768px] w-full" data-node-id="10373:68379" data-name="Accordion List">
+            {faqItems.map((item, index) => {
+              const isOpen = openFaqs.includes(index);
+              return (
+                <div
+                  key={index}
+                  className="bg-[#e8f3ff] border border-[rgba(3,10,3,0.12)] flex flex-col items-start w-full overflow-hidden transition-colors rounded-xl sm:rounded-sm shadow-xs"
+                  data-node-id="10373:68844"
+                  data-name="Accordion"
+                >
+                  <button
+                    onClick={() => toggleFaq(index)}
+                    className="flex gap-3 sm:gap-[24px] items-center justify-between p-3.5 sm:px-[24px] sm:py-[20px] w-full cursor-pointer text-left select-none"
+                    data-node-id="10373:68845"
+                    data-name="Question"
+                  >
+                    <p className="flex-1 font-semibold sm:font-bold text-[15px] sm:text-[18px] leading-[1.4] text-[#030a03]" data-node-id="10373:68846">
+                      {item.q}
+                    </p>
+                    <motion.div
+                      animate={{ rotate: isOpen ? 0 : 45 }}
+                      transition={{ duration: 0.2 }}
+                      className="relative size-[20px] sm:size-[24px] shrink-0"
+                      data-node-id="10373:68847"
+                      data-name="close"
+                    >
+                      <img alt="" className="inset-0 size-full" src={imgClose} />
+                    </motion.div>
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                        className="overflow-hidden w-full"
+                      >
+                        <div className="flex items-start pb-3.5 sm:pb-[24px] px-3.5 sm:px-[24px] w-full" data-node-id="10373:68848" data-name="Answer">
+                          <p className="flex-1 font-normal text-[13.5px] sm:text-[16px] leading-[1.5] text-[#030a03]/85 sm:text-[#030a03]" data-node-id="10373:68849">
+                            {item.a}
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex flex-col gap-2.5 sm:gap-[12px] items-center max-w-[560px] w-full text-center" data-node-id="10373:68410" data-name="Content">
+            <div className="flex flex-col items-center text-[#030a03] w-full" data-node-id="10373:68411" data-name="Content">
+              <p className="font-normal text-[15px] sm:text-[18px] leading-[1.5] text-[#030a03] text-center w-full" data-node-id="10373:68413">
+                Still have questions?
+              </p>
+            </div>
+            <div className="flex items-center" data-node-id="10373:68414" data-name="Actions">
+              <Link
+                href="/book"
+                className="border border-[#1e3a8a] flex items-center justify-center px-[20px] sm:px-[24px] py-[8px] sm:py-[10px] font-medium text-[#030a03] text-[14px] sm:text-[16px] leading-[1.5] whitespace-nowrap cursor-pointer transition-colors hover:bg-[#e8f3ff] rounded-sm"
+                data-node-id="10373:68415"
+                data-name="Button"
+              >
+                Contact Now
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 8. DIRECT CONTACT COORDINATES (Above Book a Call CTA) */}
+      <section id="contact" className="bg-white flex flex-col items-center overflow-hidden px-4 sm:px-8 md:px-[64px] py-10 sm:py-16 lg:py-[96px] relative w-full border-t border-[rgba(3,10,3,0.06)]" data-node-id="10373:68607" data-name="Contact / 24 /">
+        <div className="flex flex-col gap-6 sm:gap-12 lg:gap-[64px] items-start max-w-[1280px] w-full" data-node-id="10373:68608" data-name="Container">
+          
+          <div className="flex flex-col gap-2 sm:gap-[16px] items-start max-w-[768px] w-full" data-node-id="10373:68609" data-name="Section Title">
+            <div className="flex items-center w-full" data-node-id="10373:68610" data-name="Tagline Wrapper">
+              <span className="font-semibold text-[14px] sm:text-[16px] leading-[1.5] text-[#1e90ff]" data-node-id="10373:68611">
+                Direct Principal Access
+              </span>
+            </div>
+            <div className="flex flex-col gap-1.5 sm:gap-2 items-start text-[#030a03] w-full" data-node-id="10373:68612" data-name="Content">
+              <h2 className="font-semibold text-[26px] sm:text-[36px] lg:text-[48px] leading-[1.2] tracking-[-0.48px] w-full" data-node-id="10373:68613">
+                Reach out to me
+              </h2>
+              <p className="font-normal text-[14px] sm:text-[18px] leading-[1.5] text-[#030a03]/80 w-full" data-node-id="10373:68614">
+                The door is open. Bring your numbers and your questions.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-start w-full" data-node-id="10373:69404" data-name="Content">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-6 lg:gap-[48px] items-stretch w-full" data-node-id="10373:69403" data-name="Row">
+              
+              {/* Email */}
+              <motion.div
+                whileHover={{ y: -3 }}
+                className="flex flex-row md:flex-col gap-3.5 sm:gap-4 lg:gap-[20px] items-center md:items-start w-full p-4 md:p-0 rounded-xl bg-[#f8fbff] md:bg-transparent border border-[rgba(30,144,255,0.12)] md:border-none shadow-xs md:shadow-none"
+                data-node-id="10373:69342"
+                data-name="Content"
+              >
+                <div className="size-[42px] sm:size-[48px] rounded-xl bg-white md:bg-transparent border border-[rgba(3,10,3,0.06)] md:border-none flex items-center justify-center p-2.5 shrink-0 shadow-xs md:shadow-none" data-node-id="10373:69343" data-name="mail">
+                  <img alt="" className="size-full" src={imgMail} />
+                </div>
+                <div className="flex flex-col gap-1 md:gap-3 items-start text-[#030a03] flex-1 min-w-0" data-node-id="10373:69344" data-name="Contact Info">
+                  <div className="flex flex-col gap-0.5 md:gap-1 items-start w-full" data-node-id="10373:69345" data-name="Content">
+                    <h3 className="font-bold text-[18px] sm:text-[22px] md:text-[28px] lg:text-[32px] leading-[1.2] text-[#030a03] tracking-[-0.3px]" data-node-id="10373:69346">
+                      Email
+                    </h3>
+                    <p className="font-normal text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] leading-[1.4] text-[#030a03]/80" data-node-id="10373:69347">
+                      Write to me directly. I answer every letter myself.
+                    </p>
+                  </div>
+                  <a
+                    href="mailto:advice@sebiadvisor.in"
+                    className="font-medium text-[13px] sm:text-[15px] lg:text-[16px] leading-[1.4] underline text-[#1e90ff] md:text-[#030a03] md:hover:text-[#1e90ff] transition-colors truncate max-w-full"
+                    data-node-id="10373:69348"
+                  >
+                    advice@sebiadvisor.in
+                  </a>
+                </div>
+              </motion.div>
+
+              {/* Phone */}
+              <motion.div
+                whileHover={{ y: -3 }}
+                className="flex flex-row md:flex-col gap-3.5 sm:gap-4 lg:gap-[20px] items-center md:items-start w-full p-4 md:p-0 rounded-xl bg-[#f8fbff] md:bg-transparent border border-[rgba(30,144,255,0.12)] md:border-none shadow-xs md:shadow-none"
+                data-node-id="10373:69358"
+                data-name="Content"
+              >
+                <div className="size-[42px] sm:size-[48px] rounded-xl bg-white md:bg-transparent border border-[rgba(3,10,3,0.06)] md:border-none flex items-center justify-center p-2.5 shrink-0 shadow-xs md:shadow-none" data-node-id="10373:69359" data-name="call">
+                  <img alt="" className="size-full" src={imgCall} />
+                </div>
+                <div className="flex flex-col gap-1 md:gap-3 items-start text-[#030a03] flex-1 min-w-0" data-node-id="10373:69360" data-name="Contact Info">
+                  <div className="flex flex-col gap-0.5 md:gap-1 items-start w-full" data-node-id="10373:69361" data-name="Content">
+                    <h3 className="font-bold text-[18px] sm:text-[22px] md:text-[28px] lg:text-[32px] leading-[1.2] text-[#030a03] tracking-[-0.3px]" data-node-id="10373:69362">
+                      Phone
+                    </h3>
+                    <p className="font-normal text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] leading-[1.4] text-[#030a03]/80" data-node-id="10373:69363">
+                      Call during market hours. If I am with a client, leave a message.
+                    </p>
+                  </div>
+                  <a
+                    href="tel:+919820012345"
+                    className="font-medium text-[13px] sm:text-[15px] lg:text-[16px] leading-[1.4] underline text-[#1e90ff] md:text-[#030a03] md:hover:text-[#1e90ff] transition-colors"
+                    data-node-id="10373:69364"
+                  >
+                    +91 98200 12345
+                  </a>
+                </div>
+              </motion.div>
+
+              {/* Office */}
+              <motion.div
+                whileHover={{ y: -3 }}
+                className="flex flex-row md:flex-col gap-3.5 sm:gap-4 lg:gap-[20px] items-center md:items-start w-full p-4 md:p-0 rounded-xl bg-[#f8fbff] md:bg-transparent border border-[rgba(30,144,255,0.12)] md:border-none shadow-xs md:shadow-none"
+                data-node-id="10373:69366"
+                data-name="Content"
+              >
+                <div className="size-[42px] sm:size-[48px] rounded-xl bg-white md:bg-transparent border border-[rgba(3,10,3,0.06)] md:border-none flex items-center justify-center p-2.5 shrink-0 shadow-xs md:shadow-none" data-node-id="10373:69367" data-name="location_on">
+                  <img alt="" className="size-full" src={imgLocationOn} />
+                </div>
+                <div className="flex flex-col gap-1 md:gap-3 items-start text-[#030a03] flex-1 min-w-0" data-node-id="10373:69368" data-name="Contact Info">
+                  <div className="flex flex-col gap-0.5 md:gap-1 items-start w-full" data-node-id="10373:69369" data-name="Content">
+                    <h3 className="font-bold text-[18px] sm:text-[22px] md:text-[28px] lg:text-[32px] leading-[1.2] text-[#030a03] tracking-[-0.3px]" data-node-id="10373:69370">
+                      Office
+                    </h3>
+                    <p className="font-normal text-[13px] sm:text-[14px] md:text-[15px] lg:text-[16px] leading-[1.4] text-[#030a03]/80" data-node-id="10373:69371">
+                      A quiet room in Mumbai. Come for the first talk.
+                    </p>
+                  </div>
+                  <a
+                    href="https://maps.google.com/?q=42+Marine+Drive+Mumbai"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-medium text-[13px] sm:text-[15px] lg:text-[16px] leading-[1.4] underline text-[#1e90ff] md:text-[#030a03] md:hover:text-[#1e90ff] transition-colors truncate max-w-full"
+                    data-node-id="10373:69372"
+                  >
+                    42 Marine Drive, Mumbai 400020, India
+                  </a>
+                </div>
+              </motion.div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 9. CTA / 31 / (Begin Your Fiduciary Mandate Now !) */}
+      <section id="cta" className="bg-[#e8f3ff] flex flex-col items-center overflow-hidden px-4 sm:px-8 md:px-[64px] py-10 sm:py-16 lg:py-[112px] relative w-full" data-node-id="10373:68530" data-name="CTA / 31 /">
+        <div className="flex flex-col gap-6 sm:gap-12 lg:gap-[80px] items-center max-w-[1280px] w-full" data-node-id="10373:68531" data-name="Container">
+          
+          <div className="flex flex-col gap-4 sm:gap-[32px] items-center max-w-[768px] text-center w-full" data-node-id="10373:68532" data-name="Content">
+            <div className="flex flex-col gap-2.5 sm:gap-[24px] items-center text-[#030a03] w-full" data-node-id="10373:68533" data-name="Content">
+              <h2 className="font-semibold text-[26px] sm:text-[36px] lg:text-[48px] leading-[1.2] tracking-[-0.48px] w-full text-center" data-node-id="10373:68534">
+                Begin Your Fiduciary Mandate Now !
+              </h2>
+              <p className="font-normal text-[14px] sm:text-[18px] leading-[1.5] w-full text-center text-[#030a03]/85 sm:text-[#030a03]" data-node-id="10373:68535">
+                Direct principal engagement. Due to the high-touch nature of our written wealth governance, we onboard a maximum of three new client families each month.
+              </p>
+            </div>
+            <div className="flex items-start" data-node-id="10373:68536" data-name="Actions">
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                <Link
+                  href="/book"
+                  className="bg-[#1e90ff] border border-[#1e90ff] flex gap-[8px] h-[44px] items-center justify-center px-[20px] py-[8px] font-medium text-white text-[16px] leading-[1.5] whitespace-nowrap hover:bg-[#0077e6] transition-all cursor-pointer shadow-sm hover:shadow"
+                  data-node-id="10393:1875"
+                  data-name="Button"
+                >
+                  <div className="relative size-[24px] shrink-0" data-node-id="10393:1876">
+                    <img alt="" className="inset-0 size-full block" src={imgCallWhite} />
+                  </div>
+                  <span>Book a Call</span>
+                </Link>
+              </motion.div>
+            </div>
+          </div>
+
+          <div className="aspect-[16/9] sm:aspect-[1280/738] relative w-full overflow-hidden rounded-xl sm:rounded-sm shadow-sm" data-node-id="10393:1873" data-name="Indian currency financial mandate">
+            <img alt="Fiduciary financial mandate wealth planning with Indian currency and calculator" className="absolute inset-0 object-cover size-full pointer-events-none" src={imgCtaImage} />
+          </div>
+
+        </div>
+      </section>
+
+      {/* 11 & 12. FIGMA FOOTER & REGULATORY DISCLOSURES */}
+      <FigmaFooter />
+
     </div>
   );
 }

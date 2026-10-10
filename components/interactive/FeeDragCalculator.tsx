@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Slider } from "@/components/ui/slider";
-import { Scale, TrendingUp, AlertTriangle, CheckCircle2, ArrowRight, ShieldCheck, HelpCircle } from "lucide-react";
+import { Scale, ArrowRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 export default function FeeDragCalculator() {
@@ -67,28 +67,25 @@ export default function FeeDragCalculator() {
     chartData.find((d) => d.year === hoveredYear) || chartData[chartData.length - 1];
 
   return (
-    <div className="architectural-panel p-6 sm:p-10 shadow-2xl relative overflow-hidden text-slate-100">
-      {/* Background radial accent */}
-      <div className="absolute top-0 right-0 h-96 w-96 bg-[#BE9A48]/5 rounded-bl-full pointer-events-none blur-3xl" />
-
+    <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-10 shadow-[0_10px_40px_-15px_rgba(15,23,42,0.06)] relative overflow-hidden text-slate-800">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-8 pb-6 border-b border-slate-800">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-8 pb-6 border-b border-slate-100">
         <div className="space-y-2">
-          <div className="flex items-center space-x-2 text-[10px] font-mono uppercase tracking-[0.25em] text-[#D8BD80]">
-            <Scale className="h-4 w-4 text-[#BE9A48]" />
-            <span>Quantitative Portfolio Forensics // SEBI Size 10 Verified</span>
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
+            <Scale className="h-3.5 w-3.5 text-slate-900" />
+            <span>Quantitative Portfolio Forensics • SEBI Size 10 Verified</span>
           </div>
-          <h3 className="font-serif text-2xl sm:text-3xl text-slate-100 font-normal">
+          <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
             The Mathematical Toll of Distributor Commissions
           </h3>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
             Mutual fund distributors and bank wealth desks charge an invisible 1.0% to 1.5% trailer fee deducted daily from fund NAVs. Test any capital allocation below to see how direct fiduciary execution compounds over time.
           </p>
         </div>
 
         {/* Quick presets */}
         <div className="flex items-center space-x-2 text-xs">
-          <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">Presets:</span>
+          <span className="text-xs text-slate-500 font-medium hidden sm:inline">Presets:</span>
           {[
             { label: "₹1 Cr", val: 1.0 },
             { label: "₹5 Cr", val: 5.0 },
@@ -99,10 +96,10 @@ export default function FeeDragCalculator() {
               key={preset.label}
               type="button"
               onClick={() => setPortfolioCrores(preset.val)}
-              className={`px-3 py-1.5 rounded-sm text-xs font-mono transition-all ${
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
                 portfolioCrores === preset.val
-                  ? "bg-[#BE9A48] text-[#040915] font-bold shadow-md"
-                  : "bg-[#081022] text-slate-300 border border-slate-800 hover:border-slate-600"
+                  ? "bg-slate-900 text-white shadow-sm"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
               {preset.label}
@@ -112,28 +109,28 @@ export default function FeeDragCalculator() {
       </div>
 
       {/* Interactive Slider Area */}
-      <div className="p-6 rounded-sm bg-[#040915] border border-slate-800 space-y-6">
+      <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400 block">
+            <span className="text-xs uppercase font-semibold tracking-wider text-slate-500 block">
               Investable Liquid Surplus
             </span>
-            <span className="font-serif text-3xl sm:text-4xl text-[#F3ECDB] font-medium">
+            <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
               ₹{portfolioCrores.toFixed(1)} Crores{" "}
-              <span className="text-xs font-mono text-slate-400 font-normal">
+              <span className="text-sm font-semibold text-slate-500 font-normal">
                 (₹{Math.round(portfolioCrores * 100)} Lakhs)
               </span>
             </span>
           </div>
           <div className="text-right">
-            <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-sm bg-emerald-950/40 border border-emerald-500/40 text-emerald-400 font-mono text-xs">
-              <ShieldCheck className="h-3.5 w-3.5" />
+            <span className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-emerald-100/70 border border-emerald-300 text-emerald-800 text-xs font-semibold">
+              <ShieldCheck className="h-4 w-4 text-emerald-700" />
               <span>100% Commission-Free Direct Plans</span>
             </span>
           </div>
         </div>
 
-        {/* Radix Slider */}
+        {/* Slider */}
         <div className="space-y-2">
           <Slider
             value={[portfolioCrores]}
@@ -143,7 +140,7 @@ export default function FeeDragCalculator() {
             step={0.5}
             className="w-full py-2"
           />
-          <div className="flex justify-between text-[10px] font-mono text-slate-400">
+          <div className="flex justify-between text-xs text-slate-500 font-medium">
             <span>₹50 Lakhs (Min. Fiduciary Hurdle)</span>
             <span>₹10 Crores (Established HNI)</span>
             <span>₹25 Crores (Family Office Mandate)</span>
@@ -152,24 +149,24 @@ export default function FeeDragCalculator() {
       </div>
 
       {/* DUAL-CURVE COMPOUNDING CHART */}
-      <div className="mt-8 p-6 rounded-sm bg-[#040915] border border-slate-800 space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+      <div className="mt-8 p-6 rounded-2xl bg-white border border-slate-200 space-y-6 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-4 text-xs font-medium">
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2">
-              <span className="h-3 w-3 rounded-full bg-[#BE9A48] inline-block shadow-sm shadow-[#BE9A48]" />
-              <span className="text-[#F3ECDB] font-medium">Aurum Direct Fiduciary</span>
+              <span className="h-3 w-3 rounded-full bg-red-600 inline-block shadow-sm" />
+              <span className="text-slate-900 font-semibold">Aurum Direct Fiduciary</span>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="h-3 w-3 rounded-full bg-slate-500 inline-block" />
-              <span className="text-slate-400">Distributor Regular Plan</span>
+              <span className="h-3 w-3 rounded-full bg-slate-400 inline-block" />
+              <span className="text-slate-500">Distributor Regular Plan</span>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="h-2 w-4 rounded-sm bg-emerald-500/30 border border-emerald-500/50 inline-block" />
-              <span className="text-emerald-400">Cumulative Wealth Preserved</span>
+              <span className="h-2.5 w-4 rounded bg-emerald-100 border border-emerald-300 inline-block" />
+              <span className="text-emerald-700 font-semibold">Cumulative Wealth Preserved</span>
             </div>
           </div>
-          <div className="text-slate-400 text-[11px]">
-            Selected Horizon: <strong className="text-[#D8BD80]">Year {hoveredYear}</strong>
+          <div className="text-slate-500 text-xs">
+            Selected Horizon: <strong className="text-slate-900 font-bold">Year {hoveredYear}</strong>
           </div>
         </div>
 
@@ -181,8 +178,8 @@ export default function FeeDragCalculator() {
           >
             <defs>
               <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#BE9A48" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="#BE9A48" stopOpacity="0.02" />
+                <stop offset="0%" stopColor="#EF4444" stopOpacity="0.18" />
+                <stop offset="100%" stopColor="#EF4444" stopOpacity="0.01" />
               </linearGradient>
             </defs>
 
@@ -196,7 +193,7 @@ export default function FeeDragCalculator() {
                   y1={y}
                   x2={svgWidth - paddingX}
                   y2={y}
-                  stroke="#142445"
+                  stroke="#E2E8F0"
                   strokeDasharray="4 4"
                   strokeWidth="1"
                 />
@@ -210,18 +207,17 @@ export default function FeeDragCalculator() {
             <path
               d={regularPath}
               fill="none"
-              stroke="#64748B"
+              stroke="#94A3B8"
               strokeWidth="2.5"
               strokeDasharray="5 5"
             />
 
-            {/* Direct Plan Curve (Gold Highlight) */}
+            {/* Direct Plan Curve (Red Highlight) */}
             <path
               d={directPath}
               fill="none"
-              stroke="#BE9A48"
+              stroke="#DC2626"
               strokeWidth="3.5"
-              filter="drop-shadow(0px 2px 8px rgba(190, 154, 72, 0.4))"
             />
 
             {/* Data point pins */}
@@ -237,8 +233,8 @@ export default function FeeDragCalculator() {
                     cx={getX(d.year)}
                     cy={getY(d.direct)}
                     r={isSelected ? 6 : 3.5}
-                    fill={isSelected ? "#FFF9EB" : "#BE9A48"}
-                    stroke="#040915"
+                    fill={isSelected ? "#DC2626" : "#EF4444"}
+                    stroke="#FFFFFF"
                     strokeWidth="2"
                     className="transition-all"
                   />
@@ -246,9 +242,9 @@ export default function FeeDragCalculator() {
                     x={getX(d.year)}
                     y={svgHeight - 6}
                     textAnchor="middle"
-                    fill={isSelected ? "#D8BD80" : "#64748B"}
-                    fontSize="10"
-                    fontFamily="monospace"
+                    fill={isSelected ? "#0F172A" : "#64748B"}
+                    fontSize="11"
+                    fontWeight={isSelected ? "bold" : "normal"}
                   >
                     Yr {d.year}
                   </text>
@@ -259,28 +255,28 @@ export default function FeeDragCalculator() {
         </div>
 
         {/* Dynamic Metric Readout */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-sm bg-[#081022] border border-slate-800 text-center font-mono">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-200 text-center">
           <div className="space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
-              At Year {currentHoverPoint.year}: Direct Fiduciary Corpus
+            <span className="text-xs text-slate-500 uppercase tracking-wider block font-semibold">
+              At Year {currentHoverPoint.year}: Direct Fiduciary
             </span>
-            <span className="font-serif text-xl sm:text-2xl text-[#F3ECDB] font-semibold">
+            <span className="text-xl sm:text-2xl text-slate-900 font-extrabold">
               {formatCrores(currentHoverPoint.direct)}
             </span>
           </div>
           <div className="space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
-              At Year {currentHoverPoint.year}: Distributor Corpus
+            <span className="text-xs text-slate-500 uppercase tracking-wider block font-semibold">
+              At Year {currentHoverPoint.year}: Distributor Plan
             </span>
-            <span className="font-serif text-xl sm:text-2xl text-slate-400 font-semibold">
+            <span className="text-xl sm:text-2xl text-slate-500 font-bold">
               {formatCrores(currentHoverPoint.regular)}
             </span>
           </div>
           <div className="space-y-1">
-            <span className="text-[10px] text-emerald-400 uppercase tracking-wider block font-bold">
-              Net Wealth Retained by Client
+            <span className="text-xs text-emerald-700 uppercase tracking-wider block font-bold">
+              Net Wealth Retained
             </span>
-            <span className="font-serif text-xl sm:text-2xl text-emerald-400 font-semibold">
+            <span className="text-xl sm:text-2xl text-emerald-600 font-extrabold">
               +{formatCrores(currentHoverPoint.saved)}
             </span>
           </div>
@@ -288,36 +284,36 @@ export default function FeeDragCalculator() {
 
         {/* Tabular Forensics Breakdown */}
         <div className="space-y-3 pt-2">
-          <div className="flex items-center justify-between text-xs font-mono uppercase text-slate-400">
+          <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
             <span>Audited Fee Breakdown Comparison Table</span>
             <span>Tabular Economics (12% Gross CAGR)</span>
           </div>
 
-          <div className="border border-slate-800 rounded-sm overflow-hidden text-xs font-mono">
-            <table className="w-full text-left divide-y divide-slate-800">
-              <thead className="bg-[#081022] text-slate-400 text-[10px] uppercase tracking-wider">
+          <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
+            <table className="w-full text-left divide-y divide-slate-200">
+              <thead className="bg-slate-50 text-slate-600 text-xs font-semibold">
                 <tr>
-                  <th className="py-2.5 px-4">Compounding Period</th>
-                  <th className="py-2.5 px-4">Distributor Regular Plan</th>
-                  <th className="py-2.5 px-4 text-[#D8BD80]">Aurum Direct Fiduciary</th>
-                  <th className="py-2.5 px-4 text-emerald-400 text-right">Capital Saved</th>
+                  <th className="py-3 px-4">Compounding Period</th>
+                  <th className="py-3 px-4">Distributor Regular Plan</th>
+                  <th className="py-3 px-4 text-slate-900">Aurum Direct Fiduciary</th>
+                  <th className="py-3 px-4 text-emerald-700 text-right">Capital Saved</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/80 bg-[#040915] text-slate-300">
+              <tbody className="divide-y divide-slate-100 bg-white text-slate-700">
                 {[5, 10, 15, 20].map((yr) => {
                   const pt = chartData.find((d) => d.year === yr) || chartData[0];
                   return (
                     <tr
                       key={yr}
                       onClick={() => setHoveredYear(yr)}
-                      className={`hover:bg-[#0c1833] cursor-pointer transition-colors ${
-                        hoveredYear === yr ? "bg-[#0d1e3f]" : ""
+                      className={`hover:bg-slate-50 cursor-pointer transition-colors ${
+                        hoveredYear === yr ? "bg-red-50/40" : ""
                       }`}
                     >
-                      <td className="py-2.5 px-4 font-semibold text-slate-200">Year {yr}</td>
-                      <td className="py-2.5 px-4 text-slate-400">{formatCrores(pt.regular)}</td>
-                      <td className="py-2.5 px-4 text-[#F3ECDB] font-medium">{formatCrores(pt.direct)}</td>
-                      <td className="py-2.5 px-4 text-right text-emerald-400 font-bold">
+                      <td className="py-3 px-4 font-semibold text-slate-900">Year {yr}</td>
+                      <td className="py-3 px-4 text-slate-500">{formatCrores(pt.regular)}</td>
+                      <td className="py-3 px-4 text-slate-900 font-medium">{formatCrores(pt.direct)}</td>
+                      <td className="py-3 px-4 text-right text-emerald-600 font-bold">
                         +{formatCrores(pt.saved)}
                       </td>
                     </tr>
@@ -330,17 +326,17 @@ export default function FeeDragCalculator() {
       </div>
 
       {/* Disclaimers & Action */}
-      <div className="mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-6 border-t border-slate-800 text-xs">
-        <p className="text-[10px] text-slate-500 font-mono max-w-xl">
+      <div className="mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-6 border-t border-slate-100 text-xs">
+        <p className="text-[11px] text-slate-500 max-w-xl">
           Statutory Disclosure: Direct Mutual Fund schemes feature identical underlying portfolios to Regular schemes but carry zero distribution expense ratio pursuant to SEBI circular CIR/IMD/DF/21/2012.
         </p>
 
         <Link
-          href="/rpq"
-          className="btn-gold-foil inline-flex items-center justify-center px-6 py-3 rounded-sm text-xs uppercase tracking-widest font-bold shrink-0"
+          href="/book"
+          className="btn-primary-pill inline-flex items-center justify-center px-6 py-3 text-xs font-semibold shrink-0 shadow-md group"
         >
-          <span>Initiate Suitability Assessment</span>
-          <ArrowRight className="h-4 w-4 ml-2" />
+          <span>Book a Portfolio Review</span>
+          <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-0.5 transition-transform" />
         </Link>
       </div>
     </div>

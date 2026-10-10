@@ -1,34 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
-  ShieldAlert,
   ArrowRight,
   ArrowLeft,
-  Lock,
-  Building,
   AlertTriangle,
-  FileCheck2,
-  Sliders,
-  DollarSign,
-  UserCheck,
   CheckCircle2,
-  Activity,
-  Layers,
   Scale,
   ShieldCheck,
-  Award,
-  Clock,
-  Landmark,
-  User,
-  Briefcase,
-  HelpCircle,
 } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { useOnboarding } from "@/context/OnboardingContext";
 
 const rpqSchema = z.object({
@@ -103,7 +88,6 @@ export default function RPQForm() {
   const selectedAge = watch("age");
   const selectedIncome = watch("income");
   const selectedExperience = watch("experience");
-  const fullName = watch("fullName");
 
   // Dynamic Risk Score calculation for live gauge
   const computeRiskScore = () => {
@@ -176,44 +160,44 @@ export default function RPQForm() {
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       {/* LEFT COLUMN: STATUTORY AUDIT RAIL & SUITABILITY SCORECARD */}
       <div className="lg:col-span-4 space-y-6">
-        <div className="architectural-panel p-5 sm:p-6 space-y-5 text-slate-100">
-          <div className="flex items-center justify-between pb-3 border-b border-[#BE9A48]/20">
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-5 text-slate-800">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center space-x-2">
-              <Scale className="h-4 w-4 text-[#BE9A48]" />
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#D8BD80] font-semibold">
+              <Scale className="h-4 w-4 text-slate-900" />
+              <span className="text-xs uppercase tracking-wider font-bold text-slate-900">
                 Statutory Dossier Rail
               </span>
             </div>
-            <span className="font-mono text-[10px] text-slate-400">SEBI Reg. 16/17</span>
+            <span className="text-xs text-slate-500 font-mono">SEBI Reg. 16/17</span>
           </div>
 
           {/* Real-time Risk Capacity Dial */}
-          <div className="p-4 rounded-sm bg-[#040915] border border-slate-800 space-y-3">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
+              <span className="text-xs uppercase tracking-wider text-slate-500 font-semibold">
                 Risk Capacity Index
               </span>
-              <span className="font-mono text-xs text-[#BE9A48] font-bold">{riskScore} / 100</span>
+              <span className="text-xs text-slate-900 font-bold">{riskScore} / 100</span>
             </div>
 
             {/* Gauge Graphic */}
             <div className="relative pt-2">
-              <div className="h-2 w-full bg-slate-800 rounded-sm overflow-hidden flex">
+              <div className="h-2.5 w-full bg-slate-200 rounded-full overflow-hidden flex">
                 <div
-                  className="h-full bg-gradient-to-r from-emerald-500 via-[#BE9A48] to-amber-500 transition-all duration-300"
+                  className="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-red-600 transition-all duration-300"
                   style={{ width: `${riskScore}%` }}
                 />
               </div>
-              <div className="flex justify-between text-[9px] font-mono text-slate-400 pt-1">
+              <div className="flex justify-between text-[10px] font-semibold text-slate-500 pt-1.5">
                 <span>CONSERVATIVE</span>
                 <span>BALANCED</span>
                 <span>ACCRETION</span>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-slate-800/80">
-              <span className="text-[10px] text-slate-400 block">Indicated Mandate:</span>
-              <span className="font-serif text-sm text-[#F3ECDB] font-medium block">
+            <div className="pt-2 border-t border-slate-200/80">
+              <span className="text-[11px] text-slate-500 block">Indicated Mandate:</span>
+              <span className="text-xs text-slate-900 font-bold block mt-0.5">
                 {getProfileTitle()}
               </span>
             </div>
@@ -221,23 +205,23 @@ export default function RPQForm() {
 
           {/* Spam Wall Clearance Status */}
           <div
-            className={`p-3.5 rounded-sm border ${
+            className={`p-4 rounded-2xl border transition-all ${
               isQualified
-                ? "bg-emerald-950/20 border-emerald-500/30 text-emerald-300"
-                : "bg-rose-950/25 border-rose-500/40 text-rose-300"
+                ? "bg-emerald-50/70 border-emerald-200 text-emerald-900"
+                : "bg-rose-50/70 border-rose-200 text-rose-900"
             }`}
           >
             <div className="flex items-center space-x-2.5">
               {isQualified ? (
-                <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
+                <ShieldCheck className="h-5 w-5 text-emerald-600 shrink-0" />
               ) : (
-                <AlertTriangle className="h-4 w-4 text-rose-400 shrink-0" />
+                <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0" />
               )}
               <div>
-                <span className="font-mono text-[10px] uppercase tracking-wider block font-bold">
+                <span className="text-xs uppercase tracking-wider block font-bold">
                   {isQualified ? "Hurdle Gate: PASSED" : "Hurdle Gate: SUB-THRESHOLD"}
                 </span>
-                <span className="text-[10px] opacity-80 block leading-tight">
+                <span className="text-[11px] opacity-80 block leading-tight mt-0.5">
                   {isQualified
                     ? "Portfolio >= ₹50L qualifies for direct RIA fee-only mandate"
                     : "Net worth < ₹50L will be redirected to educational waitlist"}
@@ -248,45 +232,45 @@ export default function RPQForm() {
 
           {/* Compliance Audit Trail Checkpoints */}
           <div className="space-y-2 text-xs">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 block">
+            <span className="text-xs uppercase tracking-wider text-slate-500 font-bold block">
               SEBI Audit Trail Verification
             </span>
-            <div className="space-y-1.5 font-mono text-[11px]">
-              <div className="flex items-center space-x-2 text-slate-300">
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center space-x-2.5 text-slate-700">
                 <div
-                  className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${
-                    step >= 1 ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-slate-800 text-slate-500"
+                  className={`h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                    step >= 1 ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-400"
                   }`}
                 >
                   1
                 </div>
-                <span className={step === 1 ? "text-[#D8BD80] font-semibold" : ""}>
+                <span className={step === 1 ? "text-slate-900 font-bold" : "font-medium"}>
                   PAN & Domicile Clearance
                 </span>
               </div>
 
-              <div className="flex items-center space-x-2 text-slate-300">
+              <div className="flex items-center space-x-2.5 text-slate-700">
                 <div
-                  className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${
-                    step >= 2 ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-slate-800 text-slate-500"
+                  className={`h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                    step >= 2 ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-400"
                   }`}
                 >
                   2
                 </div>
-                <span className={step === 2 ? "text-[#D8BD80] font-semibold" : ""}>
+                <span className={step === 2 ? "text-slate-900 font-bold" : "font-medium"}>
                   Capital Capacity (Spam Wall)
                 </span>
               </div>
 
-              <div className="flex items-center space-x-2 text-slate-300">
+              <div className="flex items-center space-x-2.5 text-slate-700">
                 <div
-                  className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${
-                    step >= 3 ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-slate-800 text-slate-500"
+                  className={`h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                    step >= 3 ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-400"
                   }`}
                 >
                   3
                 </div>
-                <span className={step === 3 ? "text-[#D8BD80] font-semibold" : ""}>
+                <span className={step === 3 ? "text-slate-900 font-bold" : "font-medium"}>
                   Crisis Drawdown & Fiduciary Oath
                 </span>
               </div>
@@ -294,10 +278,10 @@ export default function RPQForm() {
           </div>
 
           {/* Principal Officer Endorsement */}
-          <div className="pt-3 border-t border-slate-800/80 space-y-1 text-[11px] text-slate-400 font-mono">
-            <span className="text-[#BE9A48] block font-semibold">Supervising Principal Officer:</span>
+          <div className="pt-3 border-t border-slate-100 space-y-1 text-xs text-slate-600">
+            <span className="text-slate-900 block font-bold">Supervising Principal Officer:</span>
             <span>Rajesh V. Mehta (SEBI RIA: INA000019842)</span>
-            <div className="text-[10px] text-slate-500 pt-0.5">
+            <div className="text-[11px] text-slate-400 pt-0.5">
               Strict 1:25 partner-to-family ratio enforced.
             </div>
           </div>
@@ -306,22 +290,22 @@ export default function RPQForm() {
 
       {/* RIGHT COLUMN: THE INTERACTIVE QUALIFICATION MATRIX */}
       <div className="lg:col-span-8">
-        <form onSubmit={handleSubmit(onSubmit)} className="architectural-panel p-6 sm:p-9 space-y-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-9 shadow-sm space-y-8">
           {/* Stage Breadcrumb Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-[#BE9A48]/20">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div className="space-y-0.5">
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#D8BD80]">
+              <span className="text-xs uppercase tracking-wider text-red-600 font-bold">
                 Stage 0{step} of 0{totalSteps}
               </span>
-              <h2 className="font-serif text-xl sm:text-2xl text-slate-100 font-normal">
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
                 {step === 1 && "Identity, Entity Classification & Investment Horizon"}
                 {step === 2 && "Capital Allocation Capacity & Economic Hurdle Gate"}
                 {step === 3 && "Crisis Drawdown Stress Testing & Fiduciary Execution"}
               </h2>
             </div>
             <div className="text-right">
-              <span className="font-mono text-[10px] text-emerald-400 block">ENCRYPTED</span>
-              <span className="font-mono text-[9px] text-slate-500">256-Bit SSL</span>
+              <span className="text-xs font-bold text-emerald-700 block">ENCRYPTED</span>
+              <span className="text-[10px] text-slate-400">256-Bit SSL</span>
             </div>
           </div>
 
@@ -335,10 +319,10 @@ export default function RPQForm() {
             >
               {/* Entity Type Selector */}
               <div className="space-y-2">
-                <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                <label className="text-xs uppercase font-semibold text-slate-700 block">
                   Legal Entity Classification *
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                   {[
                     { id: "individual_hni", label: "Individual HNI" },
                     { id: "family_trust", label: "Private Family Trust" },
@@ -349,13 +333,13 @@ export default function RPQForm() {
                       key={ent.id}
                       type="button"
                       onClick={() => setValue("entityType", ent.id)}
-                      className={`p-3 text-left rounded-sm border text-xs font-mono transition-all ${
+                      className={`p-3 text-left rounded-2xl border text-xs font-semibold transition-all ${
                         selectedEntityType === ent.id
-                          ? "bg-[#142445] border-[#BE9A48] text-[#F3ECDB] shadow-inner"
-                          : "bg-[#040915] border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200"
+                          ? "bg-slate-900 border-slate-900 text-white shadow-xs"
+                          : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
                       }`}
                     >
-                      <span className="block font-medium">{ent.label}</span>
+                      <span className="block">{ent.label}</span>
                     </button>
                   ))}
                 </div>
@@ -363,54 +347,54 @@ export default function RPQForm() {
 
               {/* Legal Name */}
               <div className="space-y-1.5">
-                <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                <label className="text-xs uppercase font-semibold text-slate-700 block">
                   Full Legal Name (as per Income Tax PAN) *
                 </label>
                 <input
                   type="text"
                   placeholder="e.g. Vikramaditya Singhania"
                   {...register("fullName")}
-                  className="w-full rounded-sm border border-slate-800 bg-[#040915] px-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:border-[#BE9A48] focus:bg-[#071022] focus:outline-none transition-all font-sans"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-100 focus:outline-none transition-all"
                 />
                 {errors.fullName && (
-                  <p className="text-[11px] text-rose-400 font-mono">{errors.fullName.message}</p>
+                  <p className="text-xs text-rose-600 font-semibold">{errors.fullName.message}</p>
                 )}
               </div>
 
               {/* Email & Phone */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                  <label className="text-xs uppercase font-semibold text-slate-700 block">
                     Official Communication Email *
                   </label>
                   <input
                     type="email"
                     placeholder="v.singhania@familyoffice.in"
                     {...register("email")}
-                    className="w-full rounded-sm border border-slate-800 bg-[#040915] px-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:border-[#BE9A48] focus:bg-[#071022] focus:outline-none transition-all font-sans"
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-100 focus:outline-none transition-all"
                   />
                   {errors.email && (
-                    <p className="text-[11px] text-rose-400 font-mono">{errors.email.message}</p>
+                    <p className="text-xs text-rose-600 font-semibold">{errors.email.message}</p>
                   )}
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                  <label className="text-xs uppercase font-semibold text-slate-700 block">
                     Aadhaar-Linked Mobile Number *
                   </label>
-                  <div className="flex items-center rounded-sm border border-slate-800 bg-[#040915] px-3 focus-within:border-[#BE9A48]">
-                    <span className="font-mono text-xs text-slate-400 mr-2 border-r border-slate-800 pr-2">
+                  <div className="flex items-center rounded-2xl border border-slate-200 bg-slate-50 px-3 focus-within:bg-white focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-100 transition-all">
+                    <span className="text-xs font-semibold text-slate-500 mr-2 border-r border-slate-200 pr-2">
                       +91
                     </span>
                     <input
                       type="tel"
                       placeholder="9820012345"
                       {...register("phone")}
-                      className="w-full bg-transparent py-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none font-mono"
+                      className="w-full bg-transparent py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
                     />
                   </div>
                   {errors.phone && (
-                    <p className="text-[11px] text-rose-400 font-mono">{errors.phone.message}</p>
+                    <p className="text-xs text-rose-600 font-semibold">{errors.phone.message}</p>
                   )}
                 </div>
               </div>
@@ -418,8 +402,8 @@ export default function RPQForm() {
               {/* Age Bracket & Investment Horizon */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
-                    Principal Officer / Investor Age Bracket *
+                  <label className="text-xs uppercase font-semibold text-slate-700 block">
+                    Investor Age Bracket *
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     {[
@@ -432,10 +416,10 @@ export default function RPQForm() {
                         key={ag.id}
                         type="button"
                         onClick={() => setValue("age", ag.id)}
-                        className={`p-2.5 text-center rounded-sm border text-xs font-mono transition-all ${
+                        className={`p-2.5 text-center rounded-xl border text-xs font-semibold transition-all ${
                           selectedAge === ag.id
-                            ? "bg-[#142445] border-[#BE9A48] text-[#F3ECDB]"
-                            : "bg-[#040915] border-slate-800 text-slate-400 hover:border-slate-700"
+                            ? "bg-slate-900 border-slate-900 text-white"
+                            : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
                         }`}
                       >
                         {ag.label}
@@ -445,7 +429,7 @@ export default function RPQForm() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                  <label className="text-xs uppercase font-semibold text-slate-700 block">
                     Mandate Time Horizon *
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -459,10 +443,10 @@ export default function RPQForm() {
                         key={hz.id}
                         type="button"
                         onClick={() => setValue("horizon", hz.id)}
-                        className={`p-2.5 text-center rounded-sm border text-xs font-mono transition-all ${
+                        className={`p-2.5 text-center rounded-xl border text-xs font-semibold transition-all ${
                           selectedHorizon === hz.id
-                            ? "bg-[#142445] border-[#BE9A48] text-[#F3ECDB]"
-                            : "bg-[#040915] border-slate-800 text-slate-400 hover:border-slate-700"
+                            ? "bg-slate-900 border-slate-900 text-white"
+                            : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
                         }`}
                       >
                         {hz.label}
@@ -473,14 +457,14 @@ export default function RPQForm() {
               </div>
 
               {/* Next Stage Button */}
-              <div className="pt-4 border-t border-slate-800/80 flex justify-end">
+              <div className="pt-4 border-t border-slate-100 flex justify-end">
                 <button
                   type="button"
                   onClick={handleNextStep}
-                  className="btn-gold-foil px-8 py-3.5 rounded-sm text-xs uppercase tracking-widest font-bold flex items-center space-x-2"
+                  className="btn-primary-pill px-8 py-3.5 text-xs font-semibold flex items-center space-x-2 shadow-md group"
                 >
                   <span>Proceed to Capital Capacity Hurdle</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
                 </button>
               </div>
             </motion.div>
@@ -497,10 +481,10 @@ export default function RPQForm() {
               {/* THE SPAM WALL MATRIX: 4 BESPOKE CARDS */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                  <label className="text-xs uppercase font-semibold text-slate-700 block">
                     Statutory Net Worth Disclosure (Liquid Investable Surplus) *
                   </label>
-                  <span className="font-mono text-[10px] text-[#BE9A48]">
+                  <span className="text-xs text-red-600 font-semibold">
                     Hurdle Mandate: Minimum ₹50 Lakhs
                   </span>
                 </div>
@@ -509,24 +493,24 @@ export default function RPQForm() {
                   {/* TIER 0: SUB-50L (THE FILTER) */}
                   <div
                     onClick={() => setValue("netWorth", "under_50l")}
-                    className={`p-4 rounded-sm border cursor-pointer transition-all relative ${
+                    className={`p-5 rounded-2xl border cursor-pointer transition-all relative ${
                       selectedNetWorth === "under_50l"
-                        ? "bg-[#1a0a10] border-rose-500/70 ring-1 ring-rose-500"
-                        : "bg-[#040915] border-slate-800 hover:border-slate-700"
+                        ? "bg-rose-50/80 border-rose-400 ring-2 ring-rose-300"
+                        : "bg-slate-50 border-slate-200 hover:bg-slate-100"
                     }`}
                   >
                     <div className="flex items-center justify-between pb-2">
-                      <span className="font-mono text-[10px] uppercase font-bold text-rose-400">
+                      <span className="text-[10px] uppercase font-bold text-rose-700">
                         Sub-Fiduciary Hurdle
                       </span>
-                      <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-rose-950/60 text-rose-300 border border-rose-800/50">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-200 text-rose-800">
                         FILTER ACTIVE
                       </span>
                     </div>
-                    <span className="font-serif text-lg text-slate-200 block font-medium">
+                    <span className="text-lg text-slate-900 block font-bold">
                       Below ₹50 Lakhs
                     </span>
-                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                    <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                       At this capital scale, RIA fixed retainers incur adverse fee drag. Re-routed to direct index guidelines.
                     </p>
                   </div>
@@ -534,24 +518,24 @@ export default function RPQForm() {
                   {/* TIER 1: 50L - 2CR */}
                   <div
                     onClick={() => setValue("netWorth", "50l_to_2cr")}
-                    className={`p-4 rounded-sm border cursor-pointer transition-all relative ${
+                    className={`p-5 rounded-2xl border cursor-pointer transition-all relative ${
                       selectedNetWorth === "50l_to_2cr"
-                        ? "bg-[#0d1c3a] border-[#BE9A48] ring-1 ring-[#BE9A48]"
-                        : "bg-[#040915] border-slate-800 hover:border-slate-700"
+                        ? "bg-red-50/40 border-red-500 ring-2 ring-red-200"
+                        : "bg-slate-50 border-slate-200 hover:bg-slate-100"
                     }`}
                   >
                     <div className="flex items-center justify-between pb-2">
-                      <span className="font-mono text-[10px] uppercase font-bold text-emerald-400">
+                      <span className="text-[10px] uppercase font-bold text-emerald-700">
                         Statutory Hurdle Met
                       </span>
-                      <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-950/60 text-emerald-300 border border-emerald-800/50">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
                         QUALIFIED
                       </span>
                     </div>
-                    <span className="font-serif text-lg text-slate-100 block font-medium">
+                    <span className="text-lg text-slate-900 block font-bold">
                       ₹50 Lakhs – ₹2 Crores
                     </span>
-                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                    <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                       Emerging HNI core mandate. Direct mutual fund architecture, sovereign debt allocation, zero commission.
                     </p>
                   </div>
@@ -559,24 +543,24 @@ export default function RPQForm() {
                   {/* TIER 2: 2CR - 10CR */}
                   <div
                     onClick={() => setValue("netWorth", "2cr_to_10cr")}
-                    className={`p-4 rounded-sm border cursor-pointer transition-all relative ${
+                    className={`p-5 rounded-2xl border cursor-pointer transition-all relative ${
                       selectedNetWorth === "2cr_to_10cr"
-                        ? "bg-[#0d1c3a] border-[#BE9A48] ring-1 ring-[#BE9A48]"
-                        : "bg-[#040915] border-slate-800 hover:border-slate-700"
+                        ? "bg-red-50/40 border-red-500 ring-2 ring-red-200"
+                        : "bg-slate-50 border-slate-200 hover:bg-slate-100"
                     }`}
                   >
                     <div className="flex items-center justify-between pb-2">
-                      <span className="font-mono text-[10px] uppercase font-bold text-emerald-400">
+                      <span className="text-[10px] uppercase font-bold text-emerald-700">
                         Multi-Asset Architecture
                       </span>
-                      <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-950/60 text-emerald-300 border border-emerald-800/50">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
                         CORE WEALTH
                       </span>
                     </div>
-                    <span className="font-serif text-lg text-[#F3ECDB] block font-medium">
+                    <span className="text-lg text-slate-900 block font-bold">
                       ₹2 Crores – ₹10 Crores
                     </span>
-                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                    <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                       Established private wealth. Direct stock mandates, SGB hedging, multi-account family portfolio governance.
                     </p>
                   </div>
@@ -584,24 +568,24 @@ export default function RPQForm() {
                   {/* TIER 3: ABOVE 10CR */}
                   <div
                     onClick={() => setValue("netWorth", "above_10cr")}
-                    className={`p-4 rounded-sm border cursor-pointer transition-all relative ${
+                    className={`p-5 rounded-2xl border cursor-pointer transition-all relative ${
                       selectedNetWorth === "above_10cr"
-                        ? "bg-[#0d1c3a] border-[#BE9A48] ring-1 ring-[#BE9A48]"
-                        : "bg-[#040915] border-slate-800 hover:border-slate-700"
+                        ? "bg-red-50/40 border-red-500 ring-2 ring-red-200"
+                        : "bg-slate-50 border-slate-200 hover:bg-slate-100"
                     }`}
                   >
                     <div className="flex items-center justify-between pb-2">
-                      <span className="font-mono text-[10px] uppercase font-bold text-[#BE9A48]">
+                      <span className="text-[10px] uppercase font-bold text-slate-900">
                         Single Family Office Desk
                       </span>
-                      <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-[#1C3360] text-[#D8BD80] border border-[#BE9A48]/50">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-900 text-white">
                         ULTRA-HNI
                       </span>
                     </div>
-                    <span className="font-serif text-lg text-[#F3ECDB] block font-medium">
+                    <span className="text-lg text-slate-900 block font-bold">
                       Above ₹10 Crores
                     </span>
-                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                    <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                       Institutional family office retainer. Dedicated Investment Committee, private trust succession, global hedging.
                     </p>
                   </div>
@@ -611,7 +595,7 @@ export default function RPQForm() {
               {/* Taxable Income & Experience Matrices */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                  <label className="text-xs uppercase font-semibold text-slate-700 block">
                     Annual Taxable Household Income *
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -625,10 +609,10 @@ export default function RPQForm() {
                         key={inc.id}
                         type="button"
                         onClick={() => setValue("income", inc.id)}
-                        className={`p-2.5 text-center rounded-sm border text-xs font-mono transition-all ${
+                        className={`p-2.5 text-center rounded-xl border text-xs font-semibold transition-all ${
                           selectedIncome === inc.id
-                            ? "bg-[#142445] border-[#BE9A48] text-[#F3ECDB]"
-                            : "bg-[#040915] border-slate-800 text-slate-400 hover:border-slate-700"
+                            ? "bg-slate-900 border-slate-900 text-white"
+                            : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
                         }`}
                       >
                         {inc.label}
@@ -638,7 +622,7 @@ export default function RPQForm() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="font-mono text-[10px] uppercase tracking-wider text-slate-300 block">
+                  <label className="text-xs uppercase font-semibold text-slate-700 block">
                     Capital Market Experience *
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -652,10 +636,10 @@ export default function RPQForm() {
                         key={exp.id}
                         type="button"
                         onClick={() => setValue("experience", exp.id)}
-                        className={`p-2.5 text-center rounded-sm border text-xs font-mono transition-all ${
+                        className={`p-2.5 text-center rounded-xl border text-xs font-semibold transition-all ${
                           selectedExperience === exp.id
-                            ? "bg-[#142445] border-[#BE9A48] text-[#F3ECDB]"
-                            : "bg-[#040915] border-slate-800 text-slate-400 hover:border-slate-700"
+                            ? "bg-slate-900 border-slate-900 text-white"
+                            : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
                         }`}
                       >
                         {exp.label}
@@ -666,11 +650,11 @@ export default function RPQForm() {
               </div>
 
               {/* Navigation Buttons */}
-              <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between">
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="px-4 py-2.5 text-xs font-mono uppercase text-slate-400 hover:text-slate-200 flex items-center space-x-1.5"
+                  className="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center space-x-1.5"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   <span>Previous Stage</span>
@@ -679,10 +663,10 @@ export default function RPQForm() {
                 <button
                   type="button"
                   onClick={handleNextStep}
-                  className="btn-gold-foil px-8 py-3.5 rounded-sm text-xs uppercase tracking-widest font-bold flex items-center space-x-2"
+                  className="btn-primary-pill px-8 py-3.5 text-xs font-semibold flex items-center space-x-2 shadow-md group"
                 >
                   <span>Proceed to Crisis Stress Testing</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
                 </button>
               </div>
             </motion.div>
@@ -697,20 +681,20 @@ export default function RPQForm() {
               className="space-y-6"
             >
               {/* Historical Crisis Stress Test */}
-              <div className="p-5 rounded-sm bg-[#040915] border border-slate-800 space-y-4">
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
                 <div className="flex items-center justify-between text-xs">
                   <div className="space-y-0.5">
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 block">
+                    <span className="text-xs uppercase tracking-wider text-slate-500 font-bold block">
                       Historical Crisis Scenario Simulation
                     </span>
-                    <span className="text-slate-200 font-medium">
+                    <span className="text-slate-800 font-semibold">
                       Simulated -25% Broad Market Dislocation (e.g. March 2020 Covid Crash)
                     </span>
                   </div>
-                  <span className="font-mono text-rose-400 text-xs font-bold">-25.0% Drawdown</span>
+                  <span className="text-rose-600 text-xs font-bold">-25.0% Drawdown</span>
                 </div>
 
-                <div className="h-1.5 w-full bg-slate-800 rounded-sm overflow-hidden">
+                <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-rose-500 to-amber-500 w-[25%]" />
                 </div>
 
@@ -739,24 +723,24 @@ export default function RPQForm() {
                     <div
                       key={proto.id}
                       onClick={() => setValue("drawdownReaction", proto.id)}
-                      className={`p-4 rounded-sm border cursor-pointer transition-all ${
+                      className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                         selectedReaction === proto.id
-                          ? "bg-[#0e1c3b] border-[#BE9A48] shadow-md"
-                          : "bg-[#040915] border-slate-800 hover:border-slate-700"
+                          ? "bg-white border-red-500 ring-2 ring-red-100 shadow-sm"
+                          : "bg-white border-slate-200 hover:border-slate-300"
                       }`}
                     >
                       <div className="flex items-center justify-between pb-1">
-                        <span className="font-mono text-[9px] uppercase tracking-wider text-[#D8BD80] font-bold">
+                        <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">
                           {proto.badge}
                         </span>
                         {selectedReaction === proto.id && (
-                          <CheckCircle2 className="h-4 w-4 text-[#BE9A48]" />
+                          <CheckCircle2 className="h-4 w-4 text-red-600" />
                         )}
                       </div>
-                      <span className="font-serif text-sm text-slate-100 font-medium block">
+                      <span className="text-sm text-slate-900 font-bold block">
                         {proto.title}
                       </span>
-                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                      <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                         {proto.desc}
                       </p>
                     </div>
@@ -765,15 +749,15 @@ export default function RPQForm() {
               </div>
 
               {/* SEBI Statutory Acknowledgement Checkbox */}
-              <div className="p-4 rounded-sm border border-[#BE9A48]/30 bg-[#061022] space-y-3">
+              <div className="p-4 rounded-2xl border border-slate-200 bg-slate-50 space-y-3">
                 <label className="flex items-start space-x-3 cursor-pointer">
                   <input
                     type="checkbox"
                     {...register("sebiAcknowledge")}
-                    className="mt-1 h-4 w-4 rounded-sm border-slate-700 text-[#BE9A48] focus:ring-[#BE9A48]"
+                    className="mt-1 h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-500"
                   />
-                  <div className="text-xs text-slate-300 leading-relaxed">
-                    <strong className="text-[#F3ECDB] block font-medium">
+                  <div className="text-xs text-slate-700 leading-relaxed">
+                    <strong className="text-slate-900 block font-bold mb-0.5">
                       Statutory Investor Charter & Risk Disclosure Acknowledgement
                     </strong>
                     <span>
@@ -782,18 +766,18 @@ export default function RPQForm() {
                   </div>
                 </label>
                 {errors.sebiAcknowledge && (
-                  <p className="text-[11px] text-rose-400 font-mono">
+                  <p className="text-xs text-rose-600 font-semibold">
                     {errors.sebiAcknowledge.message}
                   </p>
                 )}
               </div>
 
               {/* Submit Buttons */}
-              <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between">
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="px-4 py-2.5 text-xs font-mono uppercase text-slate-400 hover:text-slate-200 flex items-center space-x-1.5"
+                  className="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center space-x-1.5"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   <span>Previous Stage</span>
@@ -801,10 +785,10 @@ export default function RPQForm() {
 
                 <button
                   type="submit"
-                  className="btn-gold-foil px-9 py-4 rounded-sm text-xs uppercase tracking-widest font-bold flex items-center space-x-2"
+                  className="btn-primary-pill px-9 py-4 text-xs font-semibold flex items-center space-x-2 shadow-lg group"
                 >
                   <span>Submit Dossier & Verify Suitability</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
                 </button>
               </div>
             </motion.div>

@@ -1,72 +1,71 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import { Scale, ArrowRight, ShieldCheck } from "lucide-react";
+import { Scale, ArrowRight, ShieldCheck, CheckCircle2 } from "lucide-react";
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#1E293B] bg-[#050B17]/90 backdrop-blur-md">
-      {/* Top micro-bar for regulatory verification */}
-      <div className="bg-[#030712] border-b border-slate-900 py-1.5 px-4 sm:px-6 lg:px-8 text-[11px] text-slate-400">
-        <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center space-x-3">
-            <span className="flex items-center text-[#C5A059]">
-              <ShieldCheck className="h-3 w-3 mr-1 inline" />
-              SEBI Registered Investment Adviser
-            </span>
-            <span className="text-slate-600">|</span>
-            <span className="font-mono text-slate-300">Reg: INA000019842</span>
-            <span className="text-slate-600 hidden sm:inline">|</span>
-            <span className="font-mono text-slate-400 hidden sm:inline">BASL: BASL-1892</span>
-          </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-emerald-400 font-mono text-[10px] tracking-wide flex items-center">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block mr-1.5 animate-pulse"></span>
-              CeFCoM Gateway Active
-            </span>
-            <span className="text-slate-500 hidden md:inline">Pure Fee-Only • Zero Distribution Commissions</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Main navigation */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between">
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="h-10 w-10 rounded border border-[#C5A059]/80 bg-[#0A1226] flex items-center justify-center group-hover:border-[#DFC68E] transition-colors shadow-inner">
-              <Scale className="h-5 w-5 text-[#C5A059] group-hover:text-[#DFC68E] transition-colors" />
+    <header className="sticky top-0 z-50 w-full pt-4 pb-2 px-4 sm:px-6 pointer-events-none">
+      <div className="mx-auto max-w-5xl pointer-events-auto">
+        <div className="bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-full px-4 sm:px-6 py-2.5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] flex items-center justify-between gap-4 transition-all">
+          {/* Brand Logo */}
+          <Link href="/" className="flex items-center space-x-2.5 group">
+            <div className="h-9 w-9 rounded-full bg-slate-900 text-white flex items-center justify-center group-hover:bg-red-600 transition-colors shadow-sm">
+              <Scale className="h-4 w-4 text-white" />
             </div>
-            <div>
-              <span className="font-serif text-lg tracking-wider text-slate-100 font-bold block uppercase">
-                Aurum Fiduciary
-              </span>
-              <span className="text-[10px] tracking-widest text-[#C5A059] uppercase block font-medium">
-                Private Wealth Advisory
+            <div className="flex flex-col">
+              <div className="flex items-center space-x-1.5">
+                <span className="font-bold text-sm tracking-tight text-slate-900">
+                  Aurum Fiduciary
+                </span>
+                <span className="px-1.5 py-0.5 rounded-full bg-emerald-50 text-[10px] font-semibold text-emerald-700 border border-emerald-200/60 hidden sm:inline-flex items-center">
+                  <CheckCircle2 className="h-2.5 w-2.5 mr-0.5" />
+                  RIA
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-500 font-medium tracking-tight hidden sm:block">
+                SEBI Reg: INA000019842
               </span>
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-8 text-xs tracking-wider uppercase font-medium text-slate-300">
-            <Link href="/#fiduciary-standard" className="hover:text-[#C5A059] transition-colors">
-              Fiduciary Charter
+          {/* Navigation Links */}
+          <nav className="hidden md:flex items-center space-x-7 text-xs font-medium text-slate-600">
+            <Link
+              href="/#mandates"
+              className="hover:text-slate-900 transition-colors"
+            >
+              Fiduciary Mandates
             </Link>
-            <Link href="/#framework" className="hover:text-[#C5A059] transition-colors">
-              Advisory Framework
+            <Link
+              href="/#comparison"
+              className="hover:text-slate-900 transition-colors"
+            >
+              Fee Transparency
             </Link>
-            <Link href="/#insights" className="hover:text-[#C5A059] transition-colors">
-              Thought Leadership
+            <Link
+              href="/#calculator"
+              className="hover:text-slate-900 transition-colors"
+            >
+              Fee Drag Calculator
             </Link>
-            <Link href="/#fees" className="hover:text-[#C5A059] transition-colors">
-              Statutory Fee Schedule
+            <Link
+              href="/charter"
+              className="hover:text-slate-900 transition-colors"
+            >
+              Investor Charter
             </Link>
           </nav>
 
-          <div className="flex items-center space-x-4">
+          {/* Action CTAs */}
+          <div className="flex items-center space-x-2.5">
             <Link
-              href="/rpq"
-              className="inline-flex items-center justify-center px-4 py-2.5 rounded border border-[#C5A059] bg-gradient-to-r from-[#C5A059]/10 to-[#DFC68E]/20 text-[#DFC68E] text-xs font-semibold tracking-wide uppercase hover:from-[#C5A059]/20 hover:to-[#DFC68E]/30 hover:border-[#DFC68E] transition-all duration-200 shadow-sm group"
+              href="/book"
+              className="btn-primary-pill inline-flex items-center justify-center px-4 sm:px-5 py-2 text-xs font-semibold tracking-tight shadow-md group"
             >
-              <span>Suitability Assessment</span>
-              <ArrowRight className="h-3.5 w-3.5 ml-2 group-hover:translate-x-0.5 transition-transform" />
+              <span>Consult Now</span>
+              <ArrowRight className="h-3.5 w-3.5 ml-1.5 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
         </div>
