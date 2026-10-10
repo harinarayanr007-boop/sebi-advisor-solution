@@ -155,22 +155,12 @@ export default function FigmaNavbar() {
           </motion.div>
         </div>
 
-        {/* Mobile/Tablet Header Actions: Direct "Book Call" CTA + Hamburger Menu */}
-        <div className="flex lg:hidden items-center gap-2 sm:gap-3">
-          <Link
-            href="/book"
-            className="bg-[#1e90ff] hover:bg-[#0077e6] text-white text-[13px] sm:text-[14px] font-medium px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-sm transition-all shadow-sm flex items-center gap-1.5 shrink-0"
-          >
-            <div className="relative size-[14px] sm:size-[16px] shrink-0">
-              <img alt="" className="size-full inset-0 block" src={imgCallWhite} />
-            </div>
-            <span>Book Call</span>
-          </Link>
-
+        {/* Mobile/Tablet Hamburger Button */}
+        <div className="flex lg:hidden items-center">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle mobile menu"
-            className="p-1.5 text-[#030a03] hover:text-[#1e90ff] transition-colors cursor-pointer focus:outline-none"
+            className="p-2 text-[#030a03] hover:text-[#1e90ff] transition-colors cursor-pointer focus:outline-none"
           >
             {mobileMenuOpen ? (
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
