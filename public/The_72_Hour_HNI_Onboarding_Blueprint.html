@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The 72-Hour HNI Onboarding Blueprint for SEBI RIAs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #060d17;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      height: 297mm;
+      padding: 20mm 20mm;
+      margin: 0 auto;
+      background: #0a1322;
+      position: relative;
+      page-break-after: always;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      border-bottom: 1px solid #1e293b;
+    }
+    /* Page background accents */
+    .page::before {
+      content: "";
+      position: absolute;
+      top: -150px;
+      right: -150px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(30, 144, 255, 0.12) 0%, rgba(10, 19, 34, 0) 70%);
+      pointer-events: none;
+    }
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+    .page-header .brand {
+      color: #38bdf8;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .page-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 11px;
+      color: #64748b;
+    }
+    .content-area {
+      flex: 1;
+      padding: 24px 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    /* Typography */
+    h1, h2, h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 18px;
+    }
+    .card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .card-accent {
+      border-left: 4px solid #38bdf8;
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.08) 0%, rgba(15, 23, 42, 0.7) 100%);
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+    /* Timeline styling */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 85px 1fr;
+      gap: 16px;
+      align-items: start;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+    .timeline-tag {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #38bdf8;
+      font-weight: 700;
+      font-size: 12px;
+      text-align: center;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .timeline-body h4 {
+      font-size: 14px;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+    .timeline-body p {
+      font-size: 12.5px;
+      color: #94a3b8;
+      line-height: 1.45;
+    }
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: #cbd5e1;
+      margin-bottom: 10px;
+      padding: 10px 14px;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .check-icon {
+      color: #10b981;
+      font-weight: bold;
+      font-size: 14px;
+      line-height: 1;
+    }
+    .cta-box {
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.5) 0%, rgba(15, 23, 42, 0.9) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 14px;
+      padding: 22px 24px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PAGE 1: COVER -->
+  <div class="page">
+    <div class="page-header">
+      <div class="brand">⚡ ADVISORTECH BLUEPRINT SERIES</div>
+      <div>FOR SEBI REGISTERED INVESTMENT ADVISERS</div>
+    </div>
+
+    <div class="content-area" style="justify-content: center; text-align: left; padding: 40px 0;">
+      <div class="badge">Institutional Practice Framework • 2026 Edition</div>
+      
+      <h1 style="font-size: 42px; line-height: 1.15; font-weight: 800; margin-bottom: 20px; color: #ffffff;">
+        The 72-Hour HNI<br>
+        <span style="color: #38bdf8;">Onboarding Blueprint</span>
+      </h1>
+      
+      <p style="font-size: 18px; color: #94a3b8; max-width: 520px; line-height: 1.5; margin-bottom: 40px;">
+        How top fee-only SEBI RIAs eliminate prospect drop-offs during KYC, automate Circular 0686 compliance, and command year-2 client retention.
+      </p>
+
+      <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 22px 26px; max-width: 520px;">
+        <div style="font-size: 12px; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 8px;">What You'll Unlock in This Guide:</div>
+        <div style="font-size: 13.5px; color: #e2e8f0; display: flex; flex-direction: column; gap: 8px;">
+          <div>🔹 <strong>The ₹50 Lakh HNI Leak:</strong> Why 60% of high-intent prospects ghost after discovery</div>
+          <div>🔹 <strong>The 72-Hour Timeline:</strong> The friction-free digital onboarding journey</div>
+          <div>🔹 <strong>The Fee Drag Revelation:</strong> Mathematically proving the fiduciary advantage</div>
+          <div>🔹 <strong>The 2026 Audit Shield:</strong> Mandatory Circular 0686 & Reg 15A checklists</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <div>Author: <strong>Hari Narayan</strong> • Fintech Product Designer</div>
+      <div>CONFIDENTIAL &bull; FOR RIA PRACTICE GROWTH ONLY</div>
+    </div>
+  </div>
+
+  <!-- PAGE 2: THE PROBLEM -->
+  <div class="page">
+    <div class="page-header">
+      <div class="brand">THE 72-HOUR HNI ONBOARDING BLUEPRINT</div>
+      <div>PAGE 02 &bull; THE CLIENT RETENTION LEAK</div>
+    </div>
+
+    <div class="content-area">
+      <div class="badge" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #f87171;">The Diagnosis</div>
+      <h2 style="font-size: 26px; margin-bottom: 8px;">The ₹50 Lakh HNI Ghosting Trap</h2>
+      <p style="font-size: 13.5px; color: #94a3b8; margin-bottom: 22px;">
+        Most Indian SEBI RIAs are world-class financial planners, but their onboarding experience causes 60% of qualified leads to abandon before signing the advisory agreement.
+      </p>
+
+      <div class="card card-accent" style="border-left-color: #f87171;">
+        <div class="card-title">1. The "Free Advice" Illusion Barrier</div>
+        <div class="card-desc">
+          When an HNI lands on your website, they subconsciously compare your ₹50,000–₹85,000 flat fee with bank relationship managers who offer "free" wealth management. Without an instant mathematical tool demonstrating the 1.5% hidden commission drag of regular mutual funds, prospects bounce.
+        </div>
+      </div>
+
+      <div class="card card-accent" style="border-left-color: #f59e0b;">
+        <div class="card-title">2. The 5-Day Manual Friction Wall</div>
+        <div class="card-desc">
+          After an initial inquiry, sending a 10-page Word document or static PDF for risk profiling creates immediate cognitive fatigue. Busy founders, doctors, and CXOs postpone filling it out, leading to severe drop-offs before the discovery call ever happens.
+        </div>
+      </div>
+
+      <div class="card card-accent" style="border-left-color: #38bdf8;">
+        <div class="card-title">3. The Compounding Revenue Loss</div>
+        <div class="card-desc">
+          Every lost HNI prospect isn't just a lost ₹50,000 annual fee—it is a lost 5-year lifetime value of <strong>₹2,50,000 to ₹4,50,000</strong> plus lost HNI referrals. Planners don't have a lead problem; they have an <strong>onboarding friction problem</strong>.
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <div>AdvisorTech Practice Systems</div>
+      <div>Page 02</div>
+    </div>
+  </div>
+
+  <!-- PAGE 3: THE 72-HOUR TIMELINE -->
+  <div class="page">
+    <div class="page-header">
+      <div class="brand">THE 72-HOUR HNI ONBOARDING BLUEPRINT</div>
+      <div>PAGE 03 &bull; THE CORE FRAMEWORK</div>
+    </div>
+
+    <div class="content-area">
+      <div class="badge">The Implementation</div>
+      <h2 style="font-size: 26px; margin-bottom: 8px;">The Friction-Free 72-Hour Timeline</h2>
+      <p style="font-size: 13.5px; color: #94a3b8; margin-bottom: 18px;">
+        How top fee-only practices compress weeks of back-and-forth into 72 hours of high-trust momentum.
+      </p>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-tag">HOUR 0</div>
+          <div class="timeline-body">
+            <h4>Instant Value Proof (The Fee Drag Calculator)</h4>
+            <p>The prospect visits your portal and slides their portfolio value. They immediately see that paying direct fees saves them <strong>₹35 Lakhs+</strong> over regular plan commissions. Trust is established in 10 seconds.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-tag">HOUR 24</div>
+          <div class="timeline-body">
+            <h4>Automated Reg 17/18 Risk Suitability (5-Min Mobile Flow)</h4>
+            <p>Instead of a 10-page PDF, the prospect completes an intuitive, mobile-optimized risk profiling questionnaire. Data is automatically scored into Conservative, Moderate, or Aggressive bands.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-tag">HOUR 48</div>
+          <div class="timeline-body">
+            <h4>The High-Conversion Fiduciary Discovery Session</h4>
+            <p>The adviser reviews pre-filled suitability metrics beforehand. The 30-minute Zoom/Meet is 100% focused on family goals and fiduciary alignment rather than collecting administrative data.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-tag">HOUR 72</div>
+          <div class="timeline-body">
+            <h4>Instant Advisory Agreement & Upfront Retainer</h4>
+            <p>SEBI-compliant advisory agreement generated digitally. Client e-signs and completes fee payment online. Reg 19 five-year compliance audit trail is archived automatically.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <div>AdvisorTech Practice Systems</div>
+      <div>Page 03</div>
+    </div>
+  </div>
+
+  <!-- PAGE 4: CLIENT RETENTION & YEAR-2 RENEWALS -->
+  <div class="page">
+    <div class="page-header">
+      <div class="brand">THE 72-HOUR HNI ONBOARDING BLUEPRINT</div>
+      <div>PAGE 04 &bull; RETENTION ANCHORS</div>
+    </div>
+
+    <div class="content-area">
+      <div class="badge">Maximizing LTV</div>
+      <h2 style="font-size: 26px; margin-bottom: 8px;">The Year-2 Retention Anchor</h2>
+      <p style="font-size: 13.5px; color: #94a3b8; margin-bottom: 22px;">
+        Why do clients churn after 12 months? Because when markets rise, they credit luck; when markets fall, they blame the fee. Here is how onboarding sets up 90%+ annual renewals:
+      </p>
+
+      <div class="card card-accent" style="border-left-color: #10b981;">
+        <div class="card-title">1. Anchor as a Fiduciary Coach, Not a Stock Picker</div>
+        <div class="card-desc">
+          Your onboarding portal must clearly communicate your direct-plan, evidence-based asset allocation ethos. When clients understand that your job is behavioral risk management and direct-cost elimination, renewal is never tied to short-term market fluctuations.
+        </div>
+      </div>
+
+      <div class="card card-accent" style="border-left-color: #38bdf8;">
+        <div class="card-title">2. Transparent Milestones Defined Upfront</div>
+        <div class="card-desc">
+          Set crystal-clear quarterly deliverables inside the onboarding flow: (Q1) Risk & Asset Allocation Plan, (Q2) Insurance & Estate Review, (Q3) Tax-Loss Harvesting & Direct Rebalancing, (Q4) Annual Progress Audit. Clients renew when they see an ongoing roadmap.
+        </div>
+      </div>
+
+      <div class="card card-accent" style="border-left-color: #8b5cf6;">
+        <div class="card-title">3. The Ongoing "Fee Drag Offset" Metric</div>
+        <div class="card-desc">
+          Every annual review report reminds the client: <em>"By using direct mutual funds through our advisory, you saved ₹1,42,000 in trail commissions this year, offsetting our ₹65,000 fee by more than double."</em> The fee pays for itself.
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <div>AdvisorTech Practice Systems</div>
+      <div>Page 04</div>
+    </div>
+  </div>
+
+  <!-- PAGE 5: COMPLIANCE CHECKLIST & CTA -->
+  <div class="page">
+    <div class="page-header">
+      <div class="brand">THE 72-HOUR HNI ONBOARDING BLUEPRINT</div>
+      <div>PAGE 05 &bull; AUDIT SHIELD & NEXT STEPS</div>
+    </div>
+
+    <div class="content-area">
+      <div class="badge">Zero Penalty Shield</div>
+      <h2 style="font-size: 24px; margin-bottom: 6px;">2026 SEBI Website Audit Checklist</h2>
+      <p style="font-size: 13px; color: #94a3b8; margin-bottom: 14px;">
+        Mandatory elements under Circular 0686 & Reg 15A to prevent Section 15HB penalties:
+      </p>
+
+      <div style="margin-bottom: 18px;">
+        <div class="checklist-item"><span class="check-icon">✓</span> <strong>Circular 0686 Annexure A:</strong> Verbatim Investor Charter with 3-Tier Grievance Escalation Matrix.</div>
+        <div class="checklist-item"><span class="check-icon">✓</span> <strong>Circular 0686 Annexure B:</strong> All 3 complaint tables (Current Month, FY Monthly, 3-Year Trend) updated by 7th.</div>
+        <div class="checklist-item"><span class="check-icon">✓</span> <strong>Regulation 15A Fee Notice:</strong> Explicit declaration adhering to SEBI's ₹1,25,000 statutory ceiling.</div>
+        <div class="checklist-item"><span class="check-icon">✓</span> <strong>Statutory Footer:</strong> SEBI Reg No, BASL ID, Principal & Compliance Officer, SCORES & SMART ODR links.</div>
+      </div>
+
+      <!-- CTA BOX -->
+      <div class="cta-box">
+        <h3 style="font-size: 19px; color: #ffffff; margin-bottom: 6px;">Want This Entire 72-Hour System Pre-Built for Your Practice?</h3>
+        <p style="font-size: 12.5px; color: #cbd5e1; max-width: 480px; margin: 0 auto 14px; line-height: 1.45;">
+          We build turnkey, audit-proof web platforms for fee-only SEBI RIAs with the Fee Drag Calculator, digital risk profiling, and Circular 0686 compliance—live on your domain in 48 hours.
+        </p>
+        <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 8px; padding: 10px 16px; display: inline-flex; gap: 18px; font-size: 12px; font-weight: 600; color: #38bdf8;">
+          <span>💬 WhatsApp: +91 93456 19420</span>
+          <span>✉️ harinarayanr007@gmail.com</span>
+          <span>🔗 linkedin.com/in/harinarayanfintech</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <div>AdvisorTech Practice Systems &bull; Built with Next.js</div>
+      <div>Page 05 &bull; End of Blueprint</div>
+    </div>
+  </div>
+
+</body>
+</html>
