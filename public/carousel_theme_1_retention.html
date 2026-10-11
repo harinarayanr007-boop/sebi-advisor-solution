@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Theme 1: Client Retention Carousel (Swiss Edition)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: 1080px 1350px;
+      margin: 0;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+      padding: 40px 0;
+    }
+    .slide {
+      width: 1080px;
+      height: 1350px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 80px 80px 72px;
+      page-break-after: always;
+      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Color Palettes */
+    .slide-white {
+      background: #fbfbfc;
+      color: #090e17;
+    }
+    .slide-blue {
+      background: linear-gradient(155deg, #1e3a8a 0%, #1d4ed8 45%, #2563eb 75%, #3b82f6 100%);
+      color: #ffffff;
+    }
+
+    /* Swiss Layout Elements */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+    .circle-arrow {
+      width: 58px;
+      height: 58px;
+      border-radius: 9999px;
+      border: 1.5px solid currentColor;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+    }
+    .header-tag {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+    .asterisk-orange {
+      font-size: 32px;
+      line-height: 1;
+      color: #ea580c;
+    }
+    .asterisk-blue {
+      font-size: 32px;
+      line-height: 1;
+      color: #93c5fd;
+    }
+
+    /* Typography */
+    .serif-display {
+      font-family: 'Newsreader', serif;
+      font-weight: 500;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+    }
+    .sans-display {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+      text-transform: uppercase;
+    }
+    .grotesk-sub {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.01em;
+    }
+
+    /* Chips & Badges */
+    .pill-chip {
+      display: inline-flex;
+      align-self: flex-start;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 22px;
+      border-radius: 9999px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: 'Space Grotesk', sans-serif;
+      width: fit-content;
+      margin-bottom: 24px;
+    }
+    .pill-chip-blue {
+      background: rgba(29, 78, 216, 0.08);
+      border: 1.5px solid #1d4ed8;
+      color: #1d4ed8;
+    }
+    .pill-chip-red {
+      background: rgba(220, 38, 38, 0.08);
+      border: 1.5px solid #dc2626;
+      color: #dc2626;
+    }
+    .pill-chip-white {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      color: #ffffff;
+    }
+
+    .oval-ring {
+      display: inline-block;
+      border: 2.5px solid #ea580c;
+      border-radius: 9999px;
+      padding: 2px 24px 6px;
+      margin: 0 4px;
+      color: #ea580c;
+    }
+
+    /* Footers */
+    .footer-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding-top: 24px;
+    }
+    .author-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: #090e17;
+      color: #ffffff;
+      padding: 14px 26px;
+      border-radius: 9999px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .author-badge .live-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 9999px;
+      background: #22c55e;
+      box-shadow: 0 0 8px #22c55e;
+    }
+    .page-index {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      opacity: 0.55;
+    }
+    .swipe-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================================================
+       SLIDE 1: THE COVER (Swiss Editorial Hook)
+       =================================================== -->
+  <div class="slide slide-white" id="slide-1">
+    <!-- Top Header -->
+    <div class="header-bar">
+      <div class="circle-arrow">→</div>
+      <div class="header-tag">[ ADVISOR PRACTICE SERIES ]</div>
+      <div class="asterisk-orange">✳</div>
+    </div>
+
+    <!-- Main Content -->
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 30px 0;">
+      <div class="pill-chip pill-chip-blue">
+        THE FIRST 72 HOURS
+      </div>
+
+      <h1 class="serif-display" style="font-size: 86px; color: #090e17; margin-bottom: 28px; max-width: 920px;">
+        “The secret to <br>
+        <span style="font-style: italic; font-weight: 400; color: #1d4ed8;">client retention?</span><br>
+        What happens right after they pay.”
+      </h1>
+
+      <p style="font-size: 28px; line-height: 1.45; color: #475569; max-width: 820px;">
+        Why onboarded clients lose motivation on long timelines—and how top fee-only RIAs lock in 5-year loyalty in the first 3 days.
+      </p>
+    </div>
+
+    <!-- Bottom Footer -->
+    <div class="footer-bar">
+      <div class="author-badge">
+        <span class="live-dot"></span>
+        <span>HARI NARAYAN</span>
+        <span style="opacity: 0.35;">|</span>
+        <span style="font-weight: 500; opacity: 0.85;">harinarayan.me</span>
+      </div>
+      <div class="swipe-label" style="color: #090e17;">
+        <span>SWIPE</span>
+        <span style="font-size: 24px;">→</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       SLIDE 2: THE PROBLEM (High-Contrast Bold Layout)
+       =================================================== -->
+  <div class="slide slide-white" id="slide-2">
+    <!-- Top Header -->
+    <div class="header-bar">
+      <div class="circle-arrow" style="color: #dc2626; border-color: #dc2626;">!</div>
+      <div class="header-tag" style="color: #dc2626;">[ 01 // THE RETENTION TRAP ]</div>
+      <div class="asterisk-orange" style="color: #dc2626;">✳</div>
+    </div>
+
+    <!-- Main Content -->
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px 0;">
+      <h2 class="sans-display" style="font-size: 68px; color: #090e17; margin-bottom: 24px;">
+        ONBOARDED CLIENTS<br>
+        LOSE MOTIVATION ON<br>
+        <span class="oval-ring">LONG TIMELINES</span>
+      </h2>
+
+      <p style="font-size: 26px; color: #475569; line-height: 1.45; max-width: 840px; margin-bottom: 36px;">
+        The moment a client pays your ₹50k–₹85k fee, their excitement is at peak levels. Then, the classic trap happens:
+      </p>
+
+      <!-- Problem Cards -->
+      <div style="display: flex; flex-direction: column; gap: 24px;">
+        <div style="background: #ffffff; border-left: 6px solid #dc2626; border-radius: 18px; padding: 32px 36px; box-shadow: 0 6px 20px rgba(0,0,0,0.04); border-top: 1px solid rgba(0,0,0,0.05); border-right: 1px solid rgba(0,0,0,0.05); border-bottom: 1px solid rgba(0,0,0,0.05);">
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 800; color: #090e17; margin-bottom: 8px;">
+            1. The "Radio Silence" Black Hole
+          </div>
+          <div style="font-size: 21px; color: #64748b; line-height: 1.48;">
+            The adviser goes dark for 10–14 days to analyze spreadsheets. In that silence, <strong>buyer's remorse creeps in</strong>: <em>"Did I just waste my money?"</em>
+          </div>
+        </div>
+
+        <div style="background: #ffffff; border-left: 6px solid #ea580c; border-radius: 18px; padding: 32px 36px; box-shadow: 0 6px 20px rgba(0,0,0,0.04); border-top: 1px solid rgba(0,0,0,0.05); border-right: 1px solid rgba(0,0,0,0.05); border-bottom: 1px solid rgba(0,0,0,0.05);">
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 800; color: #090e17; margin-bottom: 8px;">
+            2. Initial Motivation Opportunities Wasted
+          </div>
+          <div style="font-size: 21px; color: #64748b; line-height: 1.48;">
+            When you ask for bank statements a week later, the client delays. Momentum dies, and renewal at Year 2 becomes an uphill battle.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Footer -->
+    <div class="footer-bar">
+      <div class="page-index">PAGE 02 // 04</div>
+      <div class="swipe-label" style="color: #090e17;">
+        <span>SWIPE FOR THE FIX</span>
+        <span style="font-size: 24px;">→</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       SLIDE 3: THE FIX (Vibrant Cobalt Blue & Proof)
+       =================================================== -->
+  <div class="slide slide-blue" id="slide-3">
+    <!-- Top Header -->
+    <div class="header-bar">
+      <div class="circle-arrow" style="color: #ffffff; border-color: #ffffff;">✓</div>
+      <div class="header-tag" style="color: #bfdbfe;">[ 02 // THE 72-HOUR BLUEPRINT ]</div>
+      <div class="asterisk-blue">✳</div>
+    </div>
+
+    <!-- Main Content -->
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px 0;">
+      <h2 class="sans-display" style="font-size: 68px; color: #ffffff; margin-bottom: 18px;">
+        CAPITALIZE ON THE<br>
+        <span style="color: #bfdbfe;">FIRST 72 HOURS</span>
+      </h2>
+
+      <p style="font-size: 26px; color: rgba(255,255,255,0.9); line-height: 1.45; max-width: 840px; margin-bottom: 32px;">
+        How top fee-only practices turn initial excitement into lifelong trust:
+      </p>
+
+      <!-- 3 Steps -->
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 26px 32px; border-radius: 20px; background: rgba(255, 255, 255, 0.1); border: 1.5px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(8px);">
+          <div style="max-width: 720px;">
+            <div style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 800; color: #bfdbfe; margin-bottom: 4px;">
+              DAY 1: Instant Visual Roadmap
+            </div>
+            <div style="font-size: 20px; color: rgba(255,255,255,0.85); line-height: 1.4;">
+              A 14-day milestone screen immediately after payment. Zero uncertainty.
+            </div>
+          </div>
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 44px; font-weight: 800; color: #bfdbfe;">01</div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 26px 32px; border-radius: 20px; background: rgba(255, 255, 255, 0.1); border: 1.5px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(8px);">
+          <div style="max-width: 720px;">
+            <div style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 800; color: #bfdbfe; margin-bottom: 4px;">
+              DAY 2: Frictionless Digital Capture
+            </div>
+            <div style="font-size: 20px; color: rgba(255,255,255,0.85); line-height: 1.4;">
+              5-minute digital portal for portfolio upload. No emailing passwords or scanned PDFs.
+            </div>
+          </div>
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 44px; font-weight: 800; color: #bfdbfe;">02</div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 26px 32px; border-radius: 20px; background: rgba(255, 255, 255, 0.14); border: 1.5px solid rgba(255, 255, 255, 0.3); backdrop-filter: blur(8px);">
+          <div style="max-width: 720px;">
+            <div style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 800; color: #ffffff; margin-bottom: 4px;">
+              DAY 3: The "Quick-Win" First Value
+            </div>
+            <div style="font-size: 20px; color: rgba(255,255,255,0.9); line-height: 1.4;">
+              A 1-page report revealing ₹40k+ in hidden regular fund commission leaks. <em>You paid for yourself on Day 3.</em>
+            </div>
+          </div>
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 44px; font-weight: 800; color: #ffffff;">03</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Footer -->
+    <div class="footer-bar">
+      <div class="page-index" style="color: rgba(255,255,255,0.7);">PAGE 03 // 04</div>
+      <div class="swipe-label" style="color: #ffffff;">
+        <span>SEE THE CTA</span>
+        <span style="font-size: 24px;">→</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       SLIDE 4: THE CTA (Minimal Swiss Closing Slide)
+       =================================================== -->
+  <div class="slide slide-white" id="slide-4">
+    <!-- Top Header -->
+    <div class="header-bar">
+      <div class="circle-arrow">↗</div>
+      <div class="header-tag">[ 03 // NEXT STEPS ]</div>
+      <div class="asterisk-orange">✳</div>
+    </div>
+
+    <!-- Main Content -->
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px 0;">
+      <div class="pill-chip pill-chip-blue">
+        FREE 10-MINUTE AUDIT
+      </div>
+
+      <h2 class="serif-display" style="font-size: 78px; color: #090e17; margin-bottom: 24px; max-width: 900px;">
+        Want to upgrade your <br>
+        <span style="color: #1d4ed8; font-style: italic;">client onboarding</span> <br>
+        experience?
+      </h2>
+
+      <p style="font-size: 26px; color: #475569; line-height: 1.45; max-width: 820px; margin-bottom: 36px;">
+        I help SEBI Registered Investment Advisers build turnkey web platforms that automate compliance and eliminate client ghosting.
+      </p>
+
+      <!-- Action Card -->
+      <div style="background: #ffffff; border: 2px solid #090e17; border-radius: 24px; padding: 36px 40px; box-shadow: 0 12px 36px rgba(0,0,0,0.06);">
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 800; color: #090e17; margin-bottom: 12px;">
+          Send me your current website or onboarding flow:
+        </div>
+        <p style="font-size: 20px; color: #64748b; line-height: 1.45; margin-bottom: 24px;">
+          I’ll send you a personalized 3-minute video breakdown of where clients get stuck and how to fix it. Zero pitch, just real feedback.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 14px; font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="color: #1d4ed8;">💬 WhatsApp:</span>
+            <span style="color: #090e17;">+91 93456 19420</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="color: #1d4ed8;">🌐 Website:</span>
+            <span style="color: #090e17;">harinarayan.me</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="color: #1d4ed8;">✉️ Email:</span>
+            <span style="color: #090e17;">harinarayanr007@gmail.com</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Footer -->
+    <div class="footer-bar">
+      <div class="author-badge">
+        <span class="live-dot"></span>
+        <span>HARI NARAYAN</span>
+        <span style="opacity: 0.35;">|</span>
+        <span style="font-weight: 500; opacity: 0.85;">Fintech Product Designer</span>
+      </div>
+      <div class="page-index">PAGE 04 // 04</div>
+    </div>
+  </div>
+
+</body>
+</html>
