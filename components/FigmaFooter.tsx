@@ -212,7 +212,7 @@ export default function FigmaFooter() {
                     Type : Individual SEBI Registered Investment Adviser
                   </p>
                   <p className="font-normal text-[14px] max-w-[620px]" data-node-id="10384:1200">
-                    SEBI Reg No. : INA000015678 (Earlier Ref: INA0000019842)
+                    SEBI Reg No. : INA000015678
                   </p>
                   <p className="font-normal text-[14px] max-w-[620px]" data-node-id="10384:1201">
                     BASL Membership : BASL - 1892
@@ -228,7 +228,7 @@ export default function FigmaFooter() {
                       Principal Officer: Dr. Aurum Mamal
                     </p>
                     <p className="font-normal text-[14px] w-full" data-node-id="10384:1213">
-                      Grievance Email : advice@sebiadvisor.in (Escalation: fafniu@gmail.com)
+                      Grievance Email : advice@sebiadvisor.in
                     </p>
                     <p className="font-normal text-[14px] w-full" data-node-id="10384:1214">
                       Compliance Officer: Dr. Aurum Mamal

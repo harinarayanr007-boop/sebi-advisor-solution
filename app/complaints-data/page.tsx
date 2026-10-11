@@ -21,7 +21,7 @@ export default function ComplaintsDataPage() {
         <div className="flex flex-col gap-6 items-start max-w-[1280px] w-full">
           <div className="flex items-center">
             <span className="font-semibold text-[16px] leading-[1.5] text-[#1e90ff]">
-              SEBI RIA Compliance &bull; Circular Ref: SEBI/HO/IMD/DF1/CIR/P/2021/676
+              SEBI RIA Compliance &bull; Circular Ref: SEBI/HO/IMD/IMD-II CIS/P/CIR/2021/0686
             </span>
           </div>
           <h1 className="font-bold text-[36px] sm:text-[48px] lg:text-[64px] leading-[1.15] text-[#030a03] tracking-[-0.03em] max-w-[960px]">
