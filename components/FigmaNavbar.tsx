@@ -142,17 +142,25 @@ export default function FigmaNavbar() {
             </div>
           </nav>
 
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+          <div className="flex items-center gap-3">
             <Link
-              href="/book"
-              className="bg-[#1e90ff] border border-[#1e90ff] flex gap-[8px] h-[44px] items-center justify-center px-[20px] py-[8px] font-medium text-white text-[16px] leading-[1.5] whitespace-nowrap hover:bg-[#0077e6] transition-all cursor-pointer shadow-sm hover:shadow"
+              href="/login"
+              className="text-[#030a03] hover:text-[#1e90ff] text-[15px] font-semibold px-3.5 py-2 transition-colors whitespace-nowrap"
             >
-              <div className="relative size-[24px] shrink-0">
-                <img alt="" className="size-full inset-0 block" src={imgCallWhite} />
-              </div>
-              <span>Consult Now</span>
+              Portals Login
             </Link>
-          </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/book"
+                className="bg-[#1e90ff] border border-[#1e90ff] flex gap-[8px] h-[44px] items-center justify-center px-[20px] py-[8px] font-medium text-white text-[16px] leading-[1.5] whitespace-nowrap hover:bg-[#0077e6] transition-all cursor-pointer shadow-sm hover:shadow"
+              >
+                <div className="relative size-[24px] shrink-0">
+                  <img alt="" className="size-full inset-0 block" src={imgCallWhite} />
+                </div>
+                <span>Consult Now</span>
+              </Link>
+            </motion.div>
+          </div>
         </div>
 
         {/* Mobile/Tablet Hamburger Button */}
@@ -299,16 +307,25 @@ export default function FigmaNavbar() {
               </div>
             </nav>
 
-            <Link
-              href="/book"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full bg-[#1e90ff] text-white py-3 font-medium text-[16px] text-center rounded-sm hover:bg-[#0077e6] transition-colors mt-2 shadow-sm flex items-center justify-center gap-2"
-            >
-              <div className="relative size-[20px] shrink-0">
-                <img alt="" className="size-full inset-0 block" src={imgCallWhite} />
-              </div>
-              <span>Consult Now</span>
-            </Link>
+            <div className="flex flex-col gap-2 mt-2">
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full bg-white border border-[#030a03]/20 text-[#030a03] py-2.5 font-medium text-[15px] text-center rounded-sm hover:border-[#1e90ff] hover:text-[#1e90ff] transition-colors"
+              >
+                Portals Login (Client & RIA)
+              </Link>
+              <Link
+                href="/book"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full bg-[#1e90ff] text-white py-3 font-medium text-[16px] text-center rounded-sm hover:bg-[#0077e6] transition-colors shadow-sm flex items-center justify-center gap-2"
+              >
+                <div className="relative size-[20px] shrink-0">
+                  <img alt="" className="size-full inset-0 block" src={imgCallWhite} />
+                </div>
+                <span>Consult Now</span>
+              </Link>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

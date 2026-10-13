@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Roboto } from "next/font/google";
 import "./globals.css";
 import { OnboardingProvider } from "@/context/OnboardingContext";
+import { FiduciaryProvider } from "@/context/FiduciaryContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -52,7 +53,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-white text-[#030a03] font-sans selection:bg-[#1e90ff]/20 selection:text-[#1e90ff]">
         <OnboardingProvider>
-          <main className="flex-1 flex flex-col w-full">{children}</main>
+          <FiduciaryProvider>
+            <main className="flex-1 flex flex-col w-full">{children}</main>
+          </FiduciaryProvider>
         </OnboardingProvider>
       </body>
     </html>
