@@ -1,0 +1,1759 @@
+const fs = require('fs');
+const path = require('path');
+
+const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Fiduciary Digital Playbook // 20-Page RIA Conversion Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: 1080px 1350px;
+      margin: 0;
+    }
+    @media print {
+      body {
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        gap: 0 !important;
+        display: block !important;
+      }
+      .page {
+        margin: 0 !important;
+        box-shadow: none !important;
+        page-break-after: always !important;
+        break-after: page !important;
+      }
+      .page:last-child {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+      }
+    }
+    html, body {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar {
+      display: none !important;
+      width: 0px !important;
+      height: 0px !important;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background: #060810;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 50px;
+      padding: 50px 0;
+    }
+
+    /* 1080x1350 Standard Page Base */
+    .page {
+      width: 1080px;
+      height: 1350px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 68px 84px;
+      background: #ffffff;
+      color: #0b0f19;
+      page-break-after: always;
+      box-shadow: 0 35px 80px -15px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Inverted Obsidian Dark Mode Pages */
+    .page-inverted {
+      background: #080a11 !important;
+      color: #ffffff !important;
+    }
+
+    /* Ambient Lighting */
+    .glow-cyan {
+      position: absolute;
+      bottom: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 420px;
+      background: radial-gradient(ellipse, rgba(6, 182, 212, 0.3) 0%, rgba(59, 130, 246, 0.18) 40%, rgba(255, 255, 255, 0) 75%);
+      filter: blur(65px);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .glow-amber {
+      position: absolute;
+      top: -120px;
+      right: -120px;
+      width: 650px;
+      height: 650px;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.22) 0%, rgba(239, 68, 68, 0.12) 45%, rgba(255, 255, 255, 0) 75%);
+      filter: blur(70px);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .glow-emerald {
+      position: absolute;
+      bottom: -140px;
+      right: -100px;
+      width: 750px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(16, 185, 129, 0.25) 0%, rgba(6, 182, 212, 0.15) 45%, rgba(255, 255, 255, 0) 75%);
+      filter: blur(65px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Meta Header */
+    .meta-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      z-index: 10;
+    }
+    .header-book-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: #94a3b8;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .page-counter {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: #0284c7;
+      letter-spacing: 0.08em;
+      background: rgba(2, 132, 199, 0.08);
+      padding: 4px 14px;
+      border-radius: 9999px;
+      border: 1px solid rgba(2, 132, 199, 0.2);
+    }
+    .page-counter-dark {
+      color: #38bdf8 !important;
+      background: rgba(56, 189, 248, 0.12) !important;
+      border-color: rgba(56, 189, 248, 0.3) !important;
+    }
+
+    /* Meta Footer */
+    .meta-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      z-index: 10;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.05em;
+      border-top: 1px solid rgba(15, 23, 42, 0.06);
+      padding-top: 18px;
+    }
+    .footer-dark {
+      border-top-color: rgba(255, 255, 255, 0.1) !important;
+      color: #64748b !important;
+    }
+
+    /* Typography */
+    .title-hero {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 900;
+      font-size: 68px;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      color: #0b0f19;
+    }
+    .title-section {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 900;
+      font-size: 52px;
+      line-height: 1.1;
+      letter-spacing: -0.035em;
+      color: #0b0f19;
+    }
+    .title-white {
+      color: #ffffff !important;
+    }
+    .lead-text {
+      font-size: 23px;
+      line-height: 1.5;
+      color: #475569;
+      font-weight: 500;
+      margin-top: 14px;
+    }
+    .lead-text-dark {
+      color: #94a3b8 !important;
+    }
+
+    /* Pill Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 7px 18px;
+      border-radius: 9999px;
+      border: 1.5px solid;
+      width: fit-content;
+      margin-bottom: 16px;
+    }
+    .badge-blue {
+      background: rgba(2, 132, 199, 0.08);
+      border-color: rgba(2, 132, 199, 0.3);
+      color: #0284c7;
+    }
+    .badge-amber {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.35);
+      color: #b45309;
+    }
+    .badge-red {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: #b91c1c;
+    }
+    .badge-emerald {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.35);
+      color: #047857;
+    }
+
+    /* Classified & Audit Stamps */
+    .stamp {
+      display: inline-block;
+      padding: 6px 14px;
+      border: 2px dashed #dc2626;
+      color: #dc2626;
+      font-family: 'Space Grotesk', monospace;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 6px;
+      transform: rotate(-2deg);
+    }
+    .stamp-emerald {
+      border-color: #059669;
+      color: #059669;
+      transform: rotate(2deg);
+    }
+
+    /* Tabbed Folder Container */
+    .folder-box {
+      background: #f8fafc;
+      border: 2px solid #cbd5e1;
+      border-radius: 0 24px 24px 24px;
+      position: relative;
+      padding: 34px 36px;
+      box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.05);
+      margin-top: 26px;
+      z-index: 10;
+    }
+    .folder-tab {
+      position: absolute;
+      top: -33px;
+      left: -2px;
+      background: #f1f5f9;
+      border: 2px solid #cbd5e1;
+      border-bottom: 2px solid #f8fafc;
+      padding: 6px 22px;
+      border-radius: 14px 14px 0 0;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 13px;
+      font-weight: 800;
+      color: #334155;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .folder-box-dark {
+      background: #0f172a;
+      border-color: #334155;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+    }
+    .folder-box-dark .folder-tab {
+      background: #1e293b;
+      border-color: #334155;
+      border-bottom-color: #0f172a;
+      color: #94a3b8;
+    }
+
+    /* Browser Mockup Window */
+    .browser-window {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 24px 50px -15px rgba(0, 0, 0, 0.09);
+      margin-top: 20px;
+      z-index: 10;
+    }
+    .browser-header {
+      background: #f8fafc;
+      border-bottom: 2px solid #e2e8f0;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .dots {
+      display: flex;
+      gap: 6px;
+    }
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+    .browser-url {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 4px 14px;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 13px;
+      color: #64748b;
+      flex-grow: 1;
+    }
+
+    /* Comparison Cards */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      margin-top: 24px;
+      z-index: 10;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 24px;
+      z-index: 10;
+    }
+    .card-comparison-bad {
+      background: #fff5f5;
+      border: 2px dashed #fca5a5;
+      border-radius: 20px;
+      padding: 26px;
+    }
+    .card-comparison-good {
+      background: #f0fdf4;
+      border: 2px solid #86efac;
+      border-radius: 20px;
+      padding: 26px;
+    }
+
+    /* Floating White Card (for Dark Inverted Pages) */
+    .floating-white-card {
+      background: #ffffff;
+      color: #0b0f19;
+      border-radius: 28px;
+      padding: 46px;
+      box-shadow: 0 35px 80px rgba(0, 0, 0, 0.6);
+      z-index: 10;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Checklist Item */
+    .scorecard-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 18px;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    /* Polaroid Card */
+    .polaroid {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 18px 18px 24px 18px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.08);
+      display: inline-block;
+      transform: rotate(-1.5deg);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================================================
+       PAGE 01: COVER DOSSIER
+       =================================================== -->
+  <div class="page" id="page-1" style="justify-content: space-between;">
+    <div class="glow-cyan"></div>
+    <div class="glow-amber"></div>
+
+    <div class="meta-header">
+      <div class="header-book-title">📁 DOSSIER // RIA-SPEC-2026</div>
+      <div class="page-counter">VOL. 01 // 2026 EDITION</div>
+    </div>
+
+    <div style="z-index: 10; margin-top: 40px;">
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 24px;">
+        <span class="stamp">CONFIDENTIAL SPEC</span>
+        <span class="badge badge-blue">SEBI RIA CONVERSION ARCHITECTURE</span>
+      </div>
+
+      <h1 class="title-hero" style="font-size: 74px;">
+        THE FIDUCIARY<br>
+        <span style="color: #0284c7;">DIGITAL PLAYBOOK.</span>
+      </h1>
+
+      <p class="lead-text" style="font-size: 26px; max-width: 860px; margin-top: 24px;">
+        Why an institutional website & digital intake portal is non-negotiable for SEBI Registered Investment Advisers looking to attract ₹5 Cr+ HNI clients.
+      </p>
+
+      <!-- Manila Folder Preview File -->
+      <div class="folder-box" style="margin-top: 48px; background: #fafafa; border-color: #cbd5e1;">
+        <div class="folder-tab">📂 CASE FILE: HN-RIA-2026-X</div>
+        
+        <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; align-items: center;">
+          <div>
+            <h3 style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 10px;">The 20-Page Conversion Manual</h3>
+            <p style="font-size: 16px; color: #475569; line-height: 1.5;">
+              A step-by-step architectural breakdown for fee-only wealth managers, CFP/CFA charterholders, and advisory firm founders.
+            </p>
+          </div>
+          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 18px;">
+            <div style="font-size: 12px; font-weight: 800; color: #94a3b8; font-family: 'Space Grotesk';">PREPARED BY</div>
+            <div style="font-size: 18px; font-weight: 900; color: #0f172a; margin-top: 4px;">HARI NARAYAN</div>
+            <div style="font-size: 13px; color: #0284c7; font-weight: 700; margin-top: 2px;">Fintech Product Designer & Conversion Architect</div>
+            <div style="font-size: 12px; color: #64748b; margin-top: 6px;">🌐 harinarayan.me | 💬 +91 93456 19420</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>THE FIDUCIARY DIGITAL PLAYBOOK // COVER</div>
+      <div>PAGE 01 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 02: TABLE OF CONTENTS & EXECUTIVE BRIEF
+       =================================================== -->
+  <div class="page" id="page-2">
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 02 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div class="badge badge-blue">⚡ EXECUTIVE BRIEF & ROADMAP</div>
+      <h2 class="title-section">The 5 Core Pillars of Fiduciary Conversion</h2>
+      <p class="lead-text">
+        Most advisory websites read like 2011 retail brochures. This playbook breaks down the exact digital mechanics that transform passive clicks into qualified HNI mandates.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 32px;">
+        <!-- Item 1 -->
+        <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 18px 24px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-family: 'Space Grotesk'; font-size: 20px; font-weight: 800; color: #0284c7;">PILLAR 01</span>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: #0f172a;">The Invisible Bleed & The 5-Second Gut Check</div>
+              <div style="font-size: 14px; color: #64748b;">Why 84% of warm word-of-mouth referrals drop off before contacting you.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-weight: 800; color: #94a3b8;">PP. 03–05</span>
+        </div>
+
+        <!-- Item 2 -->
+        <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 18px 24px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-family: 'Space Grotesk'; font-size: 20px; font-weight: 800; color: #0284c7;">PILLAR 02</span>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: #0f172a;">The Above-the-Fold Fiduciary Hero Architecture</div>
+              <div style="font-size: 14px; color: #64748b;">Positioning clarity, trust badges, and eliminating vague financial jargon.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-weight: 800; color: #94a3b8;">PP. 06–08</span>
+        </div>
+
+        <!-- Item 3 -->
+        <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 18px 24px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-family: 'Space Grotesk'; font-size: 20px; font-weight: 800; color: #0284c7;">PILLAR 03</span>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: #0f172a;">Interactive Intake: Fee Drag & 60-Second Desks</div>
+              <div style="font-size: 14px; color: #64748b;">Replacing the dead "Contact Us" box with instant WhatsApp routing.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-weight: 800; color: #94a3b8;">PP. 09–12</span>
+        </div>
+
+        <!-- Item 4 -->
+        <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 18px 24px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-family: 'Space Grotesk'; font-size: 20px; font-weight: 800; color: #0284c7;">PILLAR 04</span>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: #0f172a;">SEBI Trust Architecture & Mobile-First Realities</div>
+              <div style="font-size: 14px; color: #64748b;">How to display regulatory disclosures while maintaining Apple-level luxury UX.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-weight: 800; color: #94a3b8;">PP. 13–15</span>
+        </div>
+
+        <!-- Item 5 -->
+        <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 18px 24px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-family: 'Space Grotesk'; font-size: 20px; font-weight: 800; color: #0284c7;">PILLAR 05</span>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: #0f172a;">The 10-Point Audit Scorecard & 14-Day Sprint</div>
+              <div style="font-size: 14px; color: #64748b;">Diagnose your firm's leaks and implement the high-converting stack.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-weight: 800; color: #94a3b8;">PP. 16–20</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 00 // CONTENTS & OVERVIEW</div>
+      <div>HARINARAYAN.ME</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 03: THE SILENT BLEED (THE LEAKING FUNNEL)
+       =================================================== -->
+  <div class="page" id="page-3">
+    <div class="glow-cyan"></div>
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 03 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div class="badge badge-red">🚨 DIAGNOSTIC // THE LEAKING FUNNEL</div>
+      <h2 class="title-section">The Silent Bleed of Word-of-Mouth Referrals</h2>
+      <p class="lead-text">
+        You have 15+ years of market mastery. Your existing clients love you. Yet your inbound pipeline is dry. Here is the uncomfortable truth of where your referrals disappear:
+      </p>
+
+      <!-- Funnel Leak Diagram -->
+      <div style="margin-top: 36px; display: flex; flex-direction: column; gap: 14px;">
+        
+        <!-- Stage 1 -->
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 16px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 44px; height: 44px; background: #e0f2fe; color: #0369a1; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: 'Space Grotesk';">01</div>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: #0f172a;">Satisfied Client Recommends Your Firm</div>
+              <div style="font-size: 14px; color: #64748b;">"You should talk to my adviser, they manage all our family trusts."</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-weight: 800; color: #0284c7; font-size: 18px;">100% REFERRED</span>
+        </div>
+
+        <!-- Stage 2 -->
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 16px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 44px; height: 44px; background: #e0f2fe; color: #0369a1; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: 'Space Grotesk';">02</div>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: #0f172a;">Prospect Searches Your Name & Firm on Google</div>
+              <div style="font-size: 14px; color: #64748b;">Before calling, 84% of HNI decision-makers check your website on mobile.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-weight: 800; color: #0284c7; font-size: 18px;">84% SEARCH</span>
+        </div>
+
+        <!-- Stage 3 (The Drop-off) -->
+        <div style="background: #fff5f5; border: 2px solid #fecaca; border-radius: 16px; padding: 22px 24px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 44px; height: 44px; background: #fee2e2; color: #dc2626; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: 'Space Grotesk';">03</div>
+            <div>
+              <div style="font-size: 18px; font-weight: 900; color: #991b1b;">THE 5-SECOND DIGITAL GUT CHECK (THE DROP-OFF)</div>
+              <div style="font-size: 14px; color: #b91c1c;">Site looks outdated, stock photos appear, no clear fiduciary thesis.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-weight: 900; color: #dc2626; font-size: 20px;">💥 68% BOUNCE</span>
+        </div>
+
+        <!-- Stage 4 -->
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 16px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 44px; height: 44px; background: #f1f5f9; color: #64748b; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: 'Space Grotesk';">04</div>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: #0f172a;">Blank "Contact Us" Form / Generic Gmail Email</div>
+              <div style="font-size: 14px; color: #64748b;">No intake qualification. HNIs refuse to enter contact info into a void.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-weight: 800; color: #dc2626; font-size: 18px;">-8% LOSS</span>
+        </div>
+
+        <!-- Stage 5 -->
+        <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 16px; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 44px; height: 44px; background: #dcfce7; color: #15803d; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: 'Space Grotesk';">05</div>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: #166534;">Prospects Who Actually Schedule a Discovery Call</div>
+              <div style="font-size: 14px; color: #15803d;">Out of 10 warm referrals, you only hear from 1. The other 9 leaked away.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-weight: 900; color: #16a34a; font-size: 20px;">ONLY 8% REACH YOU</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 01 // THE REFERRAL BLEED</div>
+      <div>PAGE 03 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 04: THE 5-SECOND GUT CHECK (COMPARISON)
+       =================================================== -->
+  <div class="page" id="page-4">
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 04 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div class="badge badge-amber">⚖️ PERCEPTION AUDIT</div>
+      <h2 class="title-section">Retail Broker Vibe vs. Institutional Family Office</h2>
+      <p class="lead-text">
+        High-net-worth investors don't read every paragraph. In the first 5 seconds, their subconscious categorizes your practice into one of two buckets:
+      </p>
+
+      <div class="grid-2">
+        <!-- Bad Side -->
+        <div class="card-comparison-bad">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <span style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 800; color: #dc2626;">THE COMMODITY PERCEPTION</span>
+            <span style="font-size: 22px;">❌</span>
+          </div>
+          <h3 style="font-size: 22px; font-weight: 900; color: #991b1b; margin-bottom: 14px;">"Looks Like a Retail Mutual Fund Distributor"</h3>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 15px; color: #7f1d1d;">
+            <li>• Stock photos of handshakes, chess boards, or green seedlings.</li>
+            <li>• Vague generic slogan: <em>"We craft tailored solutions for your future."</em></li>
+            <li>• Hidden or absent SEBI RIA registration details.</li>
+            <li>• Monolithic 5-field contact form with zero qualification.</li>
+            <li>• 4.5-second sluggish WordPress page load on mobile.</li>
+          </ul>
+          <div style="margin-top: 24px; padding: 12px; background: rgba(239, 68, 68, 0.1); border-radius: 10px; font-size: 13px; font-weight: 700; color: #991b1b;">
+            RESULT: HNI prospect assumes you push commission products and exits.
+          </div>
+        </div>
+
+        <!-- Good Side -->
+        <div class="card-comparison-good">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <span style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 800; color: #059669;">THE FIDUCIARY PERCEPTION</span>
+            <span style="font-size: 22px;">✅</span>
+          </div>
+          <h3 style="font-size: 22px; font-weight: 900; color: #065f46; margin-bottom: 14px;">"Looks Like an Institutional Family Office"</h3>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 15px; color: #064e3b;">
+            <li>• High-end Swiss typography & editorial whitespace.</li>
+            <li>• Precision positioning: <em>"Fee-Only Fiduciary for Tech Executives & Family Offices."</em></li>
+            <li>• SEBI Trust Shield prominently verified in hero header.</li>
+            <li>• Interactive Portfolio Leak & Fee Drag diagnostic tool.</li>
+            <li>• Sub-second instantaneous load speed on iOS & Android.</li>
+          </ul>
+          <div style="margin-top: 24px; padding: 12px; background: rgba(16, 185, 129, 0.12); border-radius: 10px; font-size: 13px; font-weight: 700; color: #047857;">
+            RESULT: Prospect feels understood, engages with tools, books intro call.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 01 // THE 5-SECOND GUT CHECK</div>
+      <div>PAGE 04 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 05: FOLDER EXHIBIT A (THE 3 DEADLY SINS)
+       =================================================== -->
+  <div class="page" id="page-5">
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 05 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <span class="stamp">AUTOPSY EXHIBIT</span>
+        <span class="badge badge-red">CRITICAL FLAWS</span>
+      </div>
+      <h2 class="title-section">The 3 Deadly Sins of RIA Websites</h2>
+
+      <!-- Tabbed Folder Container -->
+      <div class="folder-box">
+        <div class="folder-tab">📁 EXHIBIT A // TEARDOWN DOSSIER</div>
+
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <!-- Sin 1 -->
+          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 20px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-family: 'Space Grotesk'; font-size: 14px; font-weight: 800; color: #dc2626;">DEADLY SIN #01</span>
+              <span style="font-size: 18px;">♟️</span>
+            </div>
+            <h4 style="font-size: 19px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Stock Chess Boards & Piggy Banks</h4>
+            <p style="font-size: 15px; color: #475569; line-height: 1.45;">
+              HNIs managing ₹10 Cr+ do not want to see clip-art concepts of wealth. It telegraphs that you bought a $20 WordPress theme and don't take your brand seriously. Replace with high-end typography and clean data visualizations.
+            </p>
+          </div>
+
+          <!-- Sin 2 -->
+          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 20px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-family: 'Space Grotesk'; font-size: 14px; font-weight: 800; color: #dc2626;">DEADLY SIN #02</span>
+              <span style="font-size: 18px;">📩</span>
+            </div>
+            <h4 style="font-size: 19px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">The 5-Field Blank "Message Us" Box</h4>
+            <p style="font-size: 15px; color: #475569; line-height: 1.45;">
+              Asking a busy high-ticket prospect to type their thoughts into a blank text box results in a <strong>94% abandonment rate</strong>. High-net-worth prospects want structured, discrete 60-second micro-assessments.
+            </p>
+          </div>
+
+          <!-- Sin 3 -->
+          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 20px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-family: 'Space Grotesk'; font-size: 14px; font-weight: 800; color: #dc2626;">DEADLY SIN #03</span>
+              <span style="font-size: 18px;">📑</span>
+            </div>
+            <h4 style="font-size: 19px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Burying Insights in 40-Page PDF Reports</h4>
+            <p style="font-size: 15px; color: #475569; line-height: 1.45;">
+              Nobody downloads a 40-page market report on their phone. Replace static lead magnets with an interactive <strong>Fee Drag & Asset Allocation Diagnostic</strong> that shows instant monetary value.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 01 // THE 3 DEADLY SINS</div>
+      <div>PAGE 05 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 06: WIREFRAME BLUEPRINT 01 (HERO ARCHITECTURE)
+       =================================================== -->
+  <div class="page" id="page-6">
+    <div class="glow-cyan"></div>
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 06 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div class="badge badge-blue">📐 ARCHITECTURAL BLUEPRINT 01</div>
+      <h2 class="title-section">The Above-the-Fold Fiduciary Hero</h2>
+      <p class="lead-text">
+        The first 800 pixels determine 80% of your conversion rate. Here is the anatomical breakdown of an institutional hero section:
+      </p>
+
+      <!-- Browser Window Wireframe -->
+      <div class="browser-window">
+        <div class="browser-header">
+          <div class="dots">
+            <div class="dot" style="background: #ef4444;"></div>
+            <div class="dot" style="background: #f59e0b;"></div>
+            <div class="dot" style="background: #10b981;"></div>
+          </div>
+          <div class="browser-url">https://aurum-fiduciary.in/practice</div>
+        </div>
+
+        <div style="padding: 32px 36px; background: #fafafa;">
+          <!-- Navbar Mock -->
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 24px;">
+            <div style="font-weight: 900; font-size: 18px; color: #0f172a;">AURUM FIDUCIARY</div>
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <span style="font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 999px; font-weight: 800; font-family: 'Space Grotesk';">SEBI REG: INA000018492</span>
+              <span style="font-size: 12px; background: #0f172a; color: #ffffff; padding: 6px 14px; border-radius: 8px; font-weight: 700;">Client Portal ➔</span>
+            </div>
+          </div>
+
+          <!-- Hero Content Mock -->
+          <div style="text-align: left;">
+            <div style="display: inline-block; background: #f1f5f9; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 800; color: #475569; font-family: 'Space Grotesk'; margin-bottom: 12px;">
+              🛡️ INDEPENDENT FEE-ONLY WEALTH ADVISORY
+            </div>
+            <h3 style="font-size: 32px; font-weight: 900; color: #0f172a; line-height: 1.15; margin-bottom: 12px;">
+              Fiduciary Wealth Management for<br>
+              Tech Founders & Family Offices.
+            </h3>
+            <p style="font-size: 15px; color: #64748b; max-width: 650px; margin-bottom: 20px;">
+              Zero distribution commissions. Zero product bias. Transparent fee-only management protecting ₹140 Cr+ in multi-generational wealth.
+            </p>
+
+            <!-- CTA Row -->
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <div style="background: #0284c7; color: #ffffff; padding: 10px 20px; border-radius: 8px; font-weight: 800; font-size: 13px;">
+                Calculate Fee Drag ➔
+              </div>
+              <div style="border: 1.5px solid #cbd5e1; color: #0f172a; padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 13px; background: #ffffff;">
+                Book 15-Min Fiduciary Intro
+              </div>
+            </div>
+
+            <!-- Trust Bar -->
+            <div style="display: flex; gap: 28px; margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+              <div>
+                <div style="font-size: 18px; font-weight: 900; color: #0f172a; font-family: 'Space Grotesk';">₹140 Cr+</div>
+                <div style="font-size: 11px; color: #64748b; font-weight: 600;">AUM Advised</div>
+              </div>
+              <div>
+                <div style="font-size: 18px; font-weight: 900; color: #0f172a; font-family: 'Space Grotesk';">0%</div>
+                <div style="font-size: 11px; color: #64748b; font-weight: 600;">Brokerage Drag</div>
+              </div>
+              <div>
+                <div style="font-size: 18px; font-weight: 900; color: #0f172a; font-family: 'Space Grotesk';">100%</div>
+                <div style="font-size: 11px; color: #64748b; font-weight: 600;">SEBI Compliant</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 02 // HERO ARCHITECTURE</div>
+      <div>PAGE 06 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 07: POSITIONING MATRIX (CLARITY > COMPLEXITY)
+       =================================================== -->
+  <div class="page" id="page-7">
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 07 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div class="badge badge-amber">🎯 COPYWRITING & CLARITY</div>
+      <h2 class="title-section">The Fiduciary Positioning Matrix</h2>
+      <p class="lead-text">
+        High-net-worth clients crave clarity. When your copy is full of generic buzzwords, HNIs assume you offer generic commodity advice. Look at the contrast:
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 18px; margin-top: 36px;">
+        <!-- Matrix 1 -->
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 18px; padding: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div style="border-right: 2px dashed #e2e8f0; padding-right: 20px;">
+            <div style="font-family: 'Space Grotesk'; font-size: 12px; font-weight: 800; color: #dc2626; margin-bottom: 6px;">❌ WHAT MOST ADVISERS WRITE</div>
+            <div style="font-size: 16px; font-weight: 700; color: #991b1b; line-height: 1.4;">"We provide 360-degree holistic financial planning solutions for all your lifecycle wealth goals."</div>
+            <div style="font-size: 13px; color: #64748b; margin-top: 8px;">What HNI hears: <em>"Zero specialisation. Probably selling me insurance."</em></div>
+          </div>
+          <div>
+            <div style="font-family: 'Space Grotesk'; font-size: 12px; font-weight: 800; color: #059669; margin-bottom: 6px;">✅ INSTITUTIONAL REWRITE</div>
+            <div style="font-size: 16px; font-weight: 700; color: #065f46; line-height: 1.4;">"Fee-only investment advisory & tax architecture for tech executives with ₹5 Cr+ liquid capital."</div>
+            <div style="font-size: 13px; color: #059669; margin-top: 8px;">What HNI hears: <em>"They understand my exact tax bracket and equity structure."</em></div>
+          </div>
+        </div>
+
+        <!-- Matrix 2 -->
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 18px; padding: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div style="border-right: 2px dashed #e2e8f0; padding-right: 20px;">
+            <div style="font-family: 'Space Grotesk'; font-size: 12px; font-weight: 800; color: #dc2626; margin-bottom: 6px;">❌ WHAT MOST ADVISERS WRITE</div>
+            <div style="font-size: 16px; font-weight: 700; color: #991b1b; line-height: 1.4;">"Contact us today for a free financial consultation with our expert team."</div>
+            <div style="font-size: 13px; color: #64748b; margin-top: 8px;">What HNI hears: <em>"A sales pitch masquerading as a consultation."</em></div>
+          </div>
+          <div>
+            <div style="font-family: 'Space Grotesk'; font-size: 12px; font-weight: 800; color: #059669; margin-bottom: 6px;">✅ INSTITUTIONAL REWRITE</div>
+            <div style="font-size: 16px; font-weight: 700; color: #065f46; line-height: 1.4;">"Schedule a 15-minute fiduciary intake desk call to audit your existing portfolio expense ratio."</div>
+            <div style="font-size: 13px; color: #059669; margin-top: 8px;">What HNI hears: <em>"Low commitment, high analytical utility, objective review."</em></div>
+          </div>
+        </div>
+
+        <!-- Matrix 3 -->
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 18px; padding: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div style="border-right: 2px dashed #e2e8f0; padding-right: 20px;">
+            <div style="font-family: 'Space Grotesk'; font-size: 12px; font-weight: 800; color: #dc2626; margin-bottom: 6px;">❌ WHAT MOST ADVISERS WRITE</div>
+            <div style="font-size: 16px; font-weight: 700; color: #991b1b; line-height: 1.4;">"We are SEBI Registered Investment Advisers with great integrity and trust."</div>
+            <div style="font-size: 13px; color: #64748b; margin-top: 8px;">What HNI hears: <em>"Empty claim without proof or verification."</em></div>
+          </div>
+          <div>
+            <div style="font-family: 'Space Grotesk'; font-size: 12px; font-weight: 800; color: #059669; margin-bottom: 6px;">✅ INSTITUTIONAL REWRITE</div>
+            <div style="font-size: 16px; font-weight: 700; color: #065f46; line-height: 1.4;">"SEBI RIA INA000018492 // Strict Fiduciary Oath: 100% Commission-Free Mandates."</div>
+            <div style="font-size: 13px; color: #059669; margin-top: 8px;">What HNI hears: <em>"Legally binding fiduciary alignment."</em></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 02 // POSITIONING MATRIX</div>
+      <div>PAGE 07 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 08: INVERTED OBSIDIAN (THE DIGITAL FRONT DOOR)
+       =================================================== -->
+  <div class="page page-inverted" id="page-8">
+    <div class="meta-header">
+      <div class="header-book-title" style="color: #64748b;">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter page-counter-dark">PAGE 08 // 20</div>
+    </div>
+
+    <div class="floating-white-card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <span class="badge badge-blue">⚖️ THE FIDUCIARY PRINCIPLE</span>
+        <span style="font-family: 'Space Grotesk'; font-size: 14px; font-weight: 800; color: #64748b;">MINDSET SHIFT</span>
+      </div>
+
+      <h2 style="font-size: 46px; font-weight: 900; line-height: 1.15; color: #0b0f19; letter-spacing: -0.03em;">
+        “Your website is the digital front door to your fiduciary practice.”
+      </h2>
+
+      <p style="font-size: 22px; color: #475569; line-height: 1.5; margin-top: 24px; font-weight: 500;">
+        You wouldn't invite a ₹10 Cr prospect into a conference room with peeling wallpaper, broken chairs, and dusty paperwork.
+      </p>
+
+      <p style="font-size: 22px; color: #475569; line-height: 1.5; margin-top: 16px; font-weight: 500;">
+        Don't let your website give them that exact same feeling before you even pick up the phone.
+      </p>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 36px; padding-top: 28px; border-top: 2px solid #f1f5f9;">
+        <div>
+          <div style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 800; color: #0284c7; text-transform: uppercase;">INDUSTRY CONVERSION DATA</div>
+          <div style="font-size: 16px; color: #64748b; font-weight: 600; margin-top: 4px;">Institutional redesign benchmark across Indian wealth practices</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-family: 'Space Grotesk'; font-size: 44px; font-weight: 900; color: #0284c7; line-height: 1;">2.8x</div>
+          <div style="font-size: 12px; font-weight: 700; color: #64748b;">Higher Inbound Conversion</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-footer footer-dark">
+      <div>PILLAR 02 // THE FRONT DOOR RULE</div>
+      <div>HARINARAYAN.ME</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 09: THE LEAD MAGNET TRAP (FOLDER MEMO)
+       =================================================== -->
+  <div class="page" id="page-9">
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 09 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div class="badge badge-amber">📁 STRATEGY MEMO</div>
+      <h2 class="title-section">The Lead Magnet Trap vs. The Interactive Diagnostic</h2>
+      <p class="lead-text">
+        Most marketing agencies advise wealth advisers to gate a generic "2026 Indian Budget Outlook PDF". Here is why that strategy fails in the HNI wealth sector:
+      </p>
+
+      <div class="folder-box">
+        <div class="folder-tab">📂 MEMO: LEAD-MAGNET-VS-TOOL</div>
+
+        <div class="grid-2" style="margin-top: 8px;">
+          <!-- Left: The PDF Trap -->
+          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 22px;">
+            <div style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 800; color: #dc2626; margin-bottom: 8px;">❌ THE STATIC PDF TRAP</div>
+            <h4 style="font-size: 20px; font-weight: 900; color: #0f172a; margin-bottom: 10px;">"Download Our 40-Page Outlook"</h4>
+            <p style="font-size: 14px; color: #64748b; line-height: 1.45;">
+              • High friction: Prospect must surrender personal email for generic macro data.<br>
+              • Unreadable on mobile: 82% of users abandon within 2 pages.<br>
+              • Zero qualification: You have no idea if the downloader has ₹5 Lakhs or ₹50 Crores.<br>
+              • High unsubscribes & spam flags.
+            </p>
+          </div>
+
+          <!-- Right: The Diagnostic Tool -->
+          <div style="background: #ffffff; border: 2px solid #86efac; border-radius: 16px; padding: 22px;">
+            <div style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 800; color: #059669; margin-bottom: 8px;">✅ THE INTERACTIVE DIAGNOSTIC</div>
+            <h4 style="font-size: 20px; font-weight: 900; color: #0f172a; margin-bottom: 10px;">Fee Drag & Leak Calculator</h4>
+            <p style="font-size: 14px; color: #065f46; line-height: 1.45;">
+              • Immediate gratification: Shows the exact rupee cost of hidden regular fund commissions.<br>
+              • Self-qualifying: Prospect voluntarily slides portfolio size (₹5 Cr, ₹10 Cr, ₹25 Cr).<br>
+              • Pre-conditioned trust: Establishes your fiduciary credibility before the first call.
+            </p>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px; padding: 16px 20px; background: #e0f2fe; border-radius: 12px; border: 1.5px solid #bae6fd;">
+          <div style="font-size: 14px; font-weight: 800; color: #0369a1; font-family: 'Space Grotesk';">KEY CONVERSION METRIC:</div>
+          <div style="font-size: 15px; color: #075985; margin-top: 4px;">
+            Interactive financial calculators produce <strong>4.2x longer dwell time</strong> and a <strong>68% completion rate</strong> compared to static PDF download opt-ins.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 03 // THE LEAD MAGNET TRAP</div>
+      <div>PAGE 09 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 10: BLUEPRINT 02 (THE FEE DRAG CALCULATOR)
+       =================================================== -->
+  <div class="page" id="page-10">
+    <div class="glow-cyan"></div>
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 10 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div class="badge badge-blue">📐 ARCHITECTURAL BLUEPRINT 02</div>
+      <h2 class="title-section">The Interactive Fee Drag Calculator</h2>
+      <p class="lead-text">
+        How an interactive diagnostic converts a passive visitor into an urgent, qualified discovery call:
+      </p>
+
+      <!-- Calculator Mockup -->
+      <div class="browser-window">
+        <div class="browser-header">
+          <div class="dots">
+            <div class="dot" style="background: #ef4444;"></div>
+            <div class="dot" style="background: #f59e0b;"></div>
+            <div class="dot" style="background: #10b981;"></div>
+          </div>
+          <div class="browser-url">https://aurum-fiduciary.in/diagnostic/fee-drag</div>
+        </div>
+
+        <div style="padding: 32px 36px; background: #fafafa;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div>
+              <div style="font-size: 13px; font-weight: 800; color: #0284c7; font-family: 'Space Grotesk';">FIDUCIARY DIAGNOSTIC TOOL</div>
+              <h3 style="font-size: 26px; font-weight: 900; color: #0f172a;">Portfolio Fee Drag Simulator</h3>
+            </div>
+            <span class="badge badge-emerald">PRE-QUALIFYING TOOL</span>
+          </div>
+
+          <!-- Slider 1 -->
+          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-bottom: 14px;">
+            <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 15px; margin-bottom: 10px;">
+              <span>Current Liquid Portfolio Size</span>
+              <span style="color: #0284c7; font-family: 'Space Grotesk'; font-size: 18px;">₹ 10.00 Crores</span>
+            </div>
+            <div style="height: 8px; background: #e2e8f0; border-radius: 999px; position: relative;">
+              <div style="width: 55%; height: 100%; background: #0284c7; border-radius: 999px;"></div>
+              <div style="position: absolute; left: 54%; top: -6px; width: 20px; height: 20px; background: #ffffff; border: 3px solid #0284c7; border-radius: 50%;"></div>
+            </div>
+          </div>
+
+          <!-- Calculation Result Card -->
+          <div style="background: #fff5f5; border: 2px solid #fecaca; border-radius: 16px; padding: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div>
+              <div style="font-size: 12px; font-weight: 800; color: #991b1b; font-family: 'Space Grotesk';">ESTIMATED 10-YEAR COMMISSIONS DRAG</div>
+              <div style="font-size: 36px; font-weight: 900; color: #dc2626; font-family: 'Space Grotesk'; margin-top: 4px;">₹ 48.2 Lakhs</div>
+              <div style="font-size: 13px; color: #7f1d1d; margin-top: 4px;">Based on typical 1.15% hidden regular mutual fund distribution trail</div>
+            </div>
+            <div style="border-left: 2px dashed #fca5a5; padding-left: 20px;">
+              <div style="font-size: 12px; font-weight: 800; color: #047857; font-family: 'Space Grotesk';">WITH FLAT-FEE RIA MANAGEMENT</div>
+              <div style="font-size: 36px; font-weight: 900; color: #16a34a; font-family: 'Space Grotesk'; margin-top: 4px;">+ ₹ 36.4 L Saved</div>
+              <div style="font-size: 13px; color: #166534; margin-top: 4px;">Compounded into your family trust rather than distributor payouts</div>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <div style="background: #0f172a; color: #ffffff; padding: 14px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 15px;">
+            Book 15-Minute Fiduciary Intake Call (Includes Full Audit) ➔
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 03 // INTERACTIVE TOOLS</div>
+      <div>PAGE 10 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 11: THE 60-SECOND QUALIFIED INTAKE DESK
+       =================================================== -->
+  <div class="page" id="page-11">
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 11 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div class="badge badge-emerald">🚀 LEAD CAPTURE ARCHITECTURE</div>
+      <h2 class="title-section">The 60-Second Qualified Intake Desk</h2>
+      <p class="lead-text">
+        Replace the monolithic contact form with <strong>progressive disclosure</strong>. Step-by-step micro-interactions feel like a private concierge rather than a generic database form.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 36px;">
+        <!-- Step 1 -->
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 18px; padding: 22px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span style="font-family: 'Space Grotesk'; font-size: 14px; font-weight: 800; color: #0284c7;">STEP 01 // MANDATE SCOPE</span>
+            <span style="font-size: 12px; font-weight: 700; color: #94a3b8; font-family: 'Space Grotesk';">10 SECONDS</span>
+          </div>
+          <div style="font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 12px;">"What is the current scale of your investable liquid assets?"</div>
+          <div style="display: flex; gap: 10px;">
+            <div style="padding: 10px 18px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 700; color: #64748b;">₹1 Cr – ₹5 Cr</div>
+            <div style="padding: 10px 18px; border: 2px solid #0284c7; background: #e0f2fe; border-radius: 8px; font-size: 13px; font-weight: 800; color: #0369a1;">₹5 Cr – ₹20 Cr (Primary Target)</div>
+            <div style="padding: 10px 18px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 700; color: #64748b;">₹20 Cr+ (Family Office)</div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 18px; padding: 22px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span style="font-family: 'Space Grotesk'; font-size: 14px; font-weight: 800; color: #0284c7;">STEP 02 // PRIMARY PAIN POINT</span>
+            <span style="font-size: 12px; font-weight: 700; color: #94a3b8; font-family: 'Space Grotesk';">15 SECONDS</span>
+          </div>
+          <div style="font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 12px;">"What is the single biggest friction in your current portfolio?"</div>
+          <div style="display: flex; gap: 10px;">
+            <div style="padding: 10px 18px; border: 2px solid #0284c7; background: #e0f2fe; border-radius: 8px; font-size: 13px; font-weight: 800; color: #0369a1;">Hidden Commission Drag</div>
+            <div style="padding: 10px 18px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 700; color: #64748b;">Tax Inefficiency</div>
+            <div style="padding: 10px 18px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 700; color: #64748b;">Lack of Fiduciary Oversight</div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 18px; padding: 22px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span style="font-family: 'Space Grotesk'; font-size: 14px; font-weight: 800; color: #0284c7;">STEP 03 // DISCRETE CONCIERGE CONNECTION</span>
+            <span style="font-size: 12px; font-weight: 700; color: #94a3b8; font-family: 'Space Grotesk';">FINAL STEP</span>
+          </div>
+          <div style="font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 12px;">"Where should the principal adviser send your confidential audit breakdown?"</div>
+          <div style="display: flex; gap: 12px;">
+            <input type="text" placeholder="Full Name (e.g. Vikram Singhania)" style="padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 8px; flex-grow: 1; font-size: 14px; font-family: inherit;">
+            <input type="text" placeholder="WhatsApp Number" style="padding: 12px 16px; border: 1.5px solid #cbd5e1; border-radius: 8px; width: 220px; font-size: 14px; font-family: inherit;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 03 // QUALIFIED INTAKE</div>
+      <div>PAGE 11 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 12: BLUEPRINT 03 (INSTANT WHATSAPP PIPELINE)
+       =================================================== -->
+  <div class="page" id="page-12">
+    <div class="glow-cyan"></div>
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 12 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div class="badge badge-blue">📐 ARCHITECTURAL BLUEPRINT 03</div>
+      <h2 class="title-section">The Instant WhatsApp Routing Pipeline</h2>
+      <p class="lead-text">
+        High-net-worth clients move fast. If you reply to a website lead 24 hours later by email, the mandate is already cold. Here is the modern zero-latency webhook pipeline:
+      </p>
+
+      <!-- Flow Diagram -->
+      <div style="margin-top: 36px; display: flex; flex-direction: column; gap: 16px;">
+        
+        <!-- Step 1 -->
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 48px; height: 48px; background: #e0f2fe; color: #0284c7; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px;">📱</div>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: #0f172a;">Prospect Completes 60-Second Intake Desk</div>
+              <div style="font-size: 14px; color: #64748b;">Self-selected ₹10 Cr portfolio size + fee drag diagnostic results.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-size: 14px; font-weight: 800; color: #0284c7;">SECOND 00</span>
+        </div>
+
+        <div style="text-align: center; color: #94a3b8; font-weight: 800; font-size: 20px;">↓ Webhook Triggered (Next.js Edge Function)</div>
+
+        <!-- Step 2 -->
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 48px; height: 48px; background: #dcfce7; color: #16a34a; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px;">💬</div>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: #0f172a;">Instant WhatsApp Alert Pings Adviser's Phone</div>
+              <div style="font-size: 14px; color: #64748b;">Full dossier sent to your WhatsApp: Name, Phone, Portfolio size, Primary goal.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-size: 14px; font-weight: 800; color: #16a34a;">&lt; 5 SECONDS</span>
+        </div>
+
+        <div style="text-align: center; color: #94a3b8; font-weight: 800; font-size: 20px;">↓ 5-Minute Warm Outreach Window</div>
+
+        <!-- Step 3 -->
+        <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 48px; height: 48px; background: #16a34a; color: #ffffff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px;">📞</div>
+            <div>
+              <div style="font-size: 18px; font-weight: 900; color: #166534;">Adviser Initiates 5-Minute Call / WhatsApp Voice Note</div>
+              <div style="font-size: 14px; color: #15803d;">"Hi Vikram, I received your fee drag calculation for your ₹10 Cr portfolio..."</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-size: 16px; font-weight: 900; color: #16a34a;">+400% CLOSE RATE</span>
+        </div>
+
+      </div>
+
+      <div style="margin-top: 32px; padding: 18px 24px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 14px;">
+        <div style="font-size: 14px; font-weight: 800; color: #334155; font-family: 'Space Grotesk';">CONVERSION RESEARCH FINDING:</div>
+        <p style="font-size: 15px; color: #475569; margin-top: 4px; line-height: 1.45;">
+          Firms that reach an inbound high-net-worth inquiry within <strong>5 minutes</strong> are <strong>21x more likely</strong> to qualify the lead than those who respond after 30 minutes.
+        </p>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 03 // INSTANT ROUTING PIPELINE</div>
+      <div>PAGE 12 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 13: SEBI COMPLIANCE & TRUST ARCHITECTURE
+       =================================================== -->
+  <div class="page" id="page-13">
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 13 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div class="badge badge-blue">⚖️ REGULATORY ALIGNMENT</div>
+      <h2 class="title-section">SEBI Compliance as a Conversion Weapon</h2>
+      <p class="lead-text">
+        Many advisers treat SEBI disclaimers like an ugly legal chore. An institutional conversion architect turns compliance into your <strong>#1 competitive differentiator</strong>:
+      </p>
+
+      <div class="folder-box">
+        <div class="folder-tab">📂 COMPLIANCE SHIELD ARCHITECTURE</div>
+
+        <div style="display: flex; flex-direction: column; gap: 18px;">
+          <!-- Point 1 -->
+          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 20px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-family: 'Space Grotesk'; font-size: 14px; font-weight: 800; color: #0284c7;">RULE 01 // HEADER REGISTRATION VERIFICATION</span>
+              <span class="stamp-emerald">SEBI VERIFIED</span>
+            </div>
+            <p style="font-size: 15px; color: #475569; line-height: 1.45;">
+              Display your <strong>SEBI Registration Number</strong> and <strong>BASL Membership ID</strong> directly in the sticky navigation bar alongside a live SEBI portal verification link. This builds immediate regulatory legitimacy before the prospect even scrolls.
+            </p>
+          </div>
+
+          <!-- Point 2 -->
+          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 20px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-family: 'Space Grotesk'; font-size: 14px; font-weight: 800; color: #0284c7;">RULE 02 // TRANSPARENT FEE MATRICES</span>
+              <span class="badge badge-emerald" style="margin: 0; padding: 4px 10px; font-size: 11px;">100% CLEAN</span>
+            </div>
+            <p style="font-size: 15px; color: #475569; line-height: 1.45;">
+              Show your exact fee schedule (Fixed retainer or AUM tiers under SEBI caps). HNIs despise opaque pricing. When you publish transparent fee terms, prospects realize you have nothing to hide.
+            </p>
+          </div>
+
+          <!-- Point 3 -->
+          <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 20px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-family: 'Space Grotesk'; font-size: 14px; font-weight: 800; color: #0284c7;">RULE 03 // ELEGANT ESCALATION & SCORES FOOTNOTES</span>
+              <span class="badge badge-blue" style="margin: 0; padding: 4px 10px; font-size: 11px;">MANDATORY FOOTNOTE</span>
+            </div>
+            <p style="font-size: 15px; color: #475569; line-height: 1.45;">
+              Embed the mandatory SEBI SCORES / Smart ODR links and investor charter in an institutional, Swiss-style footer. Clean typography keeps the site compliant without ruining visual luxury.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 04 // COMPLIANCE AS AN ASSET</div>
+      <div>PAGE 13 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 14: MOBILE-FIRST FIDUCIARY DESIGN
+       =================================================== -->
+  <div class="page" id="page-14">
+    <div class="glow-cyan"></div>
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 14 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div class="badge badge-blue">📱 THE 76% MOBILE REALITY</div>
+      <h2 class="title-section">Mobile-First Fiduciary UX (The iPhone Rule)</h2>
+      <p class="lead-text">
+        Wealth advisers often review their website on office desktop monitors. But their clients aren't on desktops:
+      </p>
+
+      <div class="grid-2">
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 20px; padding: 28px;">
+          <div style="font-family: 'Space Grotesk'; font-size: 48px; font-weight: 900; color: #0284c7; line-height: 1;">76%</div>
+          <div style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 8px;">Of HNI Traffic is Mobile</div>
+          <p style="font-size: 15px; color: #64748b; line-height: 1.45; margin-top: 12px;">
+            Tech founders, senior corporate VPs, and family office heads check recommendations on their iPhones while commuting, in transit between meetings, or via WhatsApp links.
+          </p>
+          <div style="margin-top: 20px; padding: 12px; background: #f1f5f9; border-radius: 10px; font-size: 13px; font-weight: 700; color: #475569;">
+            ⚠️ If your website takes &gt;2 seconds to load or requires pinch-zooming, they leave immediately.
+          </div>
+        </div>
+
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 20px; padding: 28px;">
+          <div style="font-family: 'Space Grotesk'; font-size: 48px; font-weight: 900; color: #10b981; line-height: 1;">0.8s</div>
+          <div style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 8px;">The Edge CDN Speed Standard</div>
+          <p style="font-size: 15px; color: #64748b; line-height: 1.45; margin-top: 12px;">
+            Modern Next.js platforms load statically pre-rendered assets from edge servers across Mumbai, Bangalore, and Delhi. Every interaction feels instant, like opening Apple Stocks.
+          </p>
+          <div style="margin-top: 20px; padding: 12px; background: #ecfdf5; border-radius: 10px; font-size: 13px; font-weight: 700; color: #047857;">
+            ✅ Sub-second load speeds signal institutional competence and technical excellence.
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 28px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 16px; padding: 20px 24px;">
+        <h4 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">The 3 Non-Negotiable Mobile Standards:</h4>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; font-size: 14px; color: #475569;">
+          <div><strong>1. Thumb-Zone CTA:</strong> The "Book Fiduciary Intro" button must be pinned within natural thumb reach.</div>
+          <div><strong>2. No PDF Downloads:</strong> All diagnostics and disclosures must render cleanly inside responsive web views.</div>
+          <div><strong>3. Direct WhatsApp Pill:</strong> One-tap discrete connection to the adviser's verified line.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 04 // MOBILE-FIRST UX</div>
+      <div>PAGE 14 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 15: FOLDER EXHIBIT C (AURUM CASE STUDY)
+       =================================================== -->
+  <div class="page" id="page-15">
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 15 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <span class="stamp-emerald">VERIFIED DATA</span>
+        <span class="badge badge-blue">CASE STUDY DOSSIER</span>
+      </div>
+      <h2 class="title-section">Before vs. After: Aurum Fiduciary Redesign</h2>
+
+      <div class="folder-box">
+        <div class="folder-tab">📂 CASE FILE // AURUM-FIDUCIARY-30D</div>
+
+        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px;">
+          <div>
+            <h4 style="font-size: 20px; font-weight: 900; color: #0f172a; margin-bottom: 8px;">₹120 Cr Practice Transformation</h4>
+            <p style="font-size: 15px; color: #475569; line-height: 1.5;">
+              An established SEBI RIA in Bangalore with 14 years of advisory pedigree was relying on a slow WordPress site built in 2016. Inbound consultation bookings averaged 2/month despite strong word-of-mouth chatter.
+            </p>
+            <div style="margin-top: 16px; padding: 14px; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px;">
+              <div style="font-size: 12px; font-weight: 800; color: #0284c7; font-family: 'Space Grotesk';">THE ARCHITECTURAL INTERVENTION:</div>
+              <p style="font-size: 14px; color: #334155; margin-top: 4px;">
+                Rebuilt as a custom Next.js institutional platform with Fee Drag Simulator, 60-second intake desk, and direct WhatsApp advisor alerts.
+              </p>
+            </div>
+          </div>
+
+          <div style="background: #ffffff; border: 2px solid #86efac; border-radius: 16px; padding: 20px;">
+            <div style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 800; color: #059669; margin-bottom: 12px;">30-DAY OUTCOMES</div>
+            
+            <div style="margin-bottom: 14px;">
+              <div style="font-size: 11px; font-weight: 700; color: #64748b;">QUALIFIED INBOUND CALLS</div>
+              <div style="font-size: 28px; font-weight: 900; color: #065f46; font-family: 'Space Grotesk';">2/mo ➔ 9/mo (+350%)</div>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+              <div style="font-size: 11px; font-weight: 700; color: #64748b;">AVERAGE INBOUND PORTFOLIO</div>
+              <div style="font-size: 28px; font-weight: 900; color: #065f46; font-family: 'Space Grotesk';">₹ 8.4 Crores</div>
+            </div>
+
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: #64748b;">ADDITIONAL AD SPEND</div>
+              <div style="font-size: 28px; font-weight: 900; color: #0284c7; font-family: 'Space Grotesk';">₹ 0 (Zero Paid Ads)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 04 // CASE STUDY AUDIT</div>
+      <div>PAGE 15 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 16: THE 10-POINT CONVERSION SCORECARD
+       =================================================== -->
+  <div class="page" id="page-16">
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 16 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div class="badge badge-amber">📝 AUDIT TOOL // SELF-ASSESSMENT</div>
+      <h2 class="title-section">The 10-Point Website Conversion Scorecard</h2>
+      <p class="lead-text" style="font-size: 20px;">
+        Grade your firm's current website. Each item is worth 10 points (Total: 100 Points):
+      </p>
+
+      <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 8px;">
+        <div class="scorecard-item">
+          <span>01. Mobile page load completes in under 1.5 seconds on 4G/5G</span>
+          <span style="font-family: 'Space Grotesk'; color: #0284c7;">[ 10 PTS ]</span>
+        </div>
+        <div class="scorecard-item">
+          <span>02. SEBI RIA registration number & BASL verification link in header</span>
+          <span style="font-family: 'Space Grotesk'; color: #0284c7;">[ 10 PTS ]</span>
+        </div>
+        <div class="scorecard-item">
+          <span>03. Zero generic stock photos (handshakes, chess boards, sprout plants)</span>
+          <span style="font-family: 'Space Grotesk'; color: #0284c7;">[ 10 PTS ]</span>
+        </div>
+        <div class="scorecard-item">
+          <span>04. Hero headline clearly names your target client (e.g. tech founders)</span>
+          <span style="font-family: 'Space Grotesk'; color: #0284c7;">[ 10 PTS ]</span>
+        </div>
+        <div class="scorecard-item">
+          <span>05. Fiduciary fee model (Flat/Tiered) explained transparently</span>
+          <span style="font-family: 'Space Grotesk'; color: #0284c7;">[ 10 PTS ]</span>
+        </div>
+        <div class="scorecard-item">
+          <span>06. Interactive tool (Fee Drag / Portfolio Leak Diagnostic) present</span>
+          <span style="font-family: 'Space Grotesk'; color: #0284c7;">[ 10 PTS ]</span>
+        </div>
+        <div class="scorecard-item">
+          <span>07. 60-Second structured intake desk instead of a blank "Contact Us" box</span>
+          <span style="font-family: 'Space Grotesk'; color: #0284c7;">[ 10 PTS ]</span>
+        </div>
+        <div class="scorecard-item">
+          <span>08. Instant WhatsApp webhook notifies adviser within 10 seconds of submission</span>
+          <span style="font-family: 'Space Grotesk'; color: #0284c7;">[ 10 PTS ]</span>
+        </div>
+        <div class="scorecard-item">
+          <span>09. Professional custom domain email (No @gmail.com or @yahoo.com)</span>
+          <span style="font-family: 'Space Grotesk'; color: #0284c7;">[ 10 PTS ]</span>
+        </div>
+        <div class="scorecard-item">
+          <span>10. Clear SEBI compliance footnotes & grievance escalation matrix</span>
+          <span style="font-family: 'Space Grotesk'; color: #0284c7;">[ 10 PTS ]</span>
+        </div>
+      </div>
+
+      <!-- Score Guide -->
+      <div style="display: flex; justify-content: space-between; margin-top: 18px; padding: 14px 20px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; font-size: 13px; font-weight: 700; color: #475569;">
+        <span>🔴 &lt; 50: Severe Referral Leakage</span>
+        <span>🟡 50–70: Average Commodity Tier</span>
+        <span>🟢 80+: Institutional Family Office Calibre</span>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 05 // 10-POINT AUDIT</div>
+      <div>PAGE 16 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 17: THE MODERN RIA TECH STACK
+       =================================================== -->
+  <div class="page" id="page-17">
+    <div class="glow-cyan"></div>
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 17 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div class="badge badge-blue">⚙️ CODE & INFRASTRUCTURE</div>
+      <h2 class="title-section">Why WordPress is Costing You HNI Mandates</h2>
+      <p class="lead-text">
+        Most wealth websites are built on bloated WordPress installations that break on mobile and leak client data. The modern fiduciary standard uses enterprise-grade fintech architecture:
+      </p>
+
+      <div class="grid-2">
+        <!-- Legacy -->
+        <div class="card-comparison-bad">
+          <div style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 800; color: #dc2626; margin-bottom: 6px;">❌ THE LEGACY COMMODITY STACK</div>
+          <h4 style="font-size: 20px; font-weight: 900; color: #991b1b; margin-bottom: 12px;">WordPress + Elementor + 38 Plugins</h4>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14px; color: #7f1d1d;">
+            <li>• 4.2-second slow time-to-first-byte (TTFB).</li>
+            <li>• Vulnerable to PHP malware and SQL injections.</li>
+            <li>• Constant plugin updates that break mobile layouts.</li>
+            <li>• Generic shared server hosting prone to crashes.</li>
+            <li>• Looks clunky and cheap to tech executives.</li>
+          </ul>
+        </div>
+
+        <!-- Modern -->
+        <div class="card-comparison-good">
+          <div style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 800; color: #059669; margin-bottom: 6px;">✅ THE INSTITUTIONAL FINTECH STACK</div>
+          <h4 style="font-size: 20px; font-weight: 900; color: #065f46; margin-bottom: 12px;">Next.js + Tailwind + Edge CDN</h4>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14px; color: #064e3b;">
+            <li>• 0.4-second sub-second edge pre-rendering.</li>
+            <li>• Bank-grade TLS encryption & zero database exposure.</li>
+            <li>• Pure responsive CSS designed down to the pixel.</li>
+            <li>• Global edge network reliability (99.99% uptime).</li>
+            <li>• Feels as fast and modern as Apple or Stripe.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top: 28px; padding: 20px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 16px;">
+        <h4 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Tech Founder Alignment:</h4>
+        <p style="font-size: 15px; color: #475569; line-height: 1.45;">
+          When a startup founder or SaaS executive visits your advisory website, they notice code quality instantly. A blazing-fast, modern web stack silently proves that your practice is technologically forward-looking.
+        </p>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 05 // INFRASTRUCTURE AUDIT</div>
+      <div>PAGE 17 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 18: INVERTED OBSIDIAN (THE COST OF INACTION)
+       =================================================== -->
+  <div class="page page-inverted" id="page-18">
+    <div class="meta-header">
+      <div class="header-book-title" style="color: #64748b;">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter page-counter-dark">PAGE 18 // 20</div>
+    </div>
+
+    <div class="floating-white-card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <span class="badge badge-red">💰 ECONOMIC REALITY</span>
+        <span style="font-family: 'Space Grotesk'; font-size: 13px; font-weight: 800; color: #dc2626;">THE COST OF INACTION</span>
+      </div>
+
+      <h2 style="font-size: 42px; font-weight: 900; line-height: 1.15; color: #0b0f19; letter-spacing: -0.03em;">
+        What Does an Outdated Website Actually Cost Your Practice?
+      </h2>
+
+      <p style="font-size: 20px; color: #475569; line-height: 1.5; margin-top: 18px; font-weight: 500;">
+        Advisers often think maintaining a mediocre website is "free." But the opportunity cost of lost word-of-mouth mandates is staggering:
+      </p>
+
+      <div style="margin-top: 28px; background: #fff5f5; border: 2px solid #fecaca; border-radius: 18px; padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 800; color: #991b1b; font-family: 'Space Grotesk';">SINGLE LOST MANDATE (₹ 5 CR AUM)</div>
+          <div style="font-size: 38px; font-weight: 900; color: #dc2626; font-family: 'Space Grotesk'; margin-top: 6px;">₹ 3.5 Lakhs / Yr</div>
+          <div style="font-size: 13px; color: #7f1d1d; margin-top: 4px;">In direct annual fiduciary advisory fees (0.70% retainer)</div>
+        </div>
+        <div style="border-left: 2px dashed #fca5a5; padding-left: 20px;">
+          <div style="font-size: 13px; font-weight: 800; color: #991b1b; font-family: 'Space Grotesk';">5-YEAR CUMULATIVE LIFETIME LEAK</div>
+          <div style="font-size: 38px; font-weight: 900; color: #991b1b; font-family: 'Space Grotesk'; margin-top: 6px;">₹ 25.0 Lakhs+</div>
+          <div style="font-size: 13px; color: #7f1d1d; margin-top: 4px;">Compounded revenue lost across client tenure + second-degree referrals</div>
+        </div>
+      </div>
+
+      <p style="font-size: 18px; color: #047857; margin-top: 24px; font-weight: 700; background: #ecfdf5; padding: 14px 20px; border-radius: 12px; border: 1.5px solid #a7f3d0;">
+        💡 A modern conversion redesign pays for itself within the first 60 days of closing ONE qualified mandate.
+      </p>
+    </div>
+
+    <div class="meta-footer footer-dark">
+      <div>PILLAR 05 // ECONOMIC AUDIT</div>
+      <div>HARINARAYAN.ME</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 19: THE 14-DAY IMPLEMENTATION SPRINT
+       =================================================== -->
+  <div class="page" id="page-19">
+    <div class="glow-cyan"></div>
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 19 // 20</div>
+    </div>
+
+    <div style="z-index: 10;">
+      <div class="badge badge-blue">🗓️ IMPLEMENTATION SPRINT</div>
+      <h2 class="title-section">The 14-Day Fiduciary Launch Roadmap</h2>
+      <p class="lead-text">
+        Transforming your firm's digital front door doesn't take 6 months of agency meetings. Here is the exact 14-day execution sprint:
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 32px;">
+        <!-- Sprint 1 -->
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 44px; height: 44px; background: #e0f2fe; color: #0284c7; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-family: 'Space Grotesk';">01</div>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: #0f172a;">Days 1–3: Positioning Architecture & Wireframing</div>
+              <div style="font-size: 14px; color: #64748b;">Define target HNI bracket, clarify fee model, craft high-converting hero messaging.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-weight: 800; color: #0284c7;">DISCOVERY</span>
+        </div>
+
+        <!-- Sprint 2 -->
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 44px; height: 44px; background: #e0f2fe; color: #0284c7; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-family: 'Space Grotesk';">02</div>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: #0f172a;">Days 4–7: High-Fidelity UI & Diagnostic Design</div>
+              <div style="font-size: 14px; color: #64748b;">Design the custom Fee Drag Simulator, 60-second intake desk, and Swiss typography.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-weight: 800; color: #0284c7;">DESIGN</span>
+        </div>
+
+        <!-- Sprint 3 -->
+        <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 44px; height: 44px; background: #e0f2fe; color: #0284c7; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-family: 'Space Grotesk';">03</div>
+            <div>
+              <div style="font-size: 18px; font-weight: 800; color: #0f172a;">Days 8–11: Next.js Code Build & WhatsApp Routing</div>
+              <div style="font-size: 14px; color: #64748b;">Build with Next.js edge functions, integrate SEBI trust shield, connect instant alerts.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-weight: 800; color: #0284c7;">BUILD</span>
+        </div>
+
+        <!-- Sprint 4 -->
+        <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 44px; height: 44px; background: #dcfce7; color: #15803d; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-family: 'Space Grotesk';">04</div>
+            <div>
+              <div style="font-size: 18px; font-weight: 900; color: #166534;">Days 12–14: Compliance Review, Speed Audit & Go-Live</div>
+              <div style="font-size: 14px; color: #15803d;">Lighthouse 95+ performance test, DNS cutover, live institutional launch.</div>
+            </div>
+          </div>
+          <span style="font-family: 'Space Grotesk'; font-weight: 900; color: #16a34a;">LAUNCH</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>PILLAR 05 // 14-DAY ROADMAP</div>
+      <div>PAGE 19 // 20</div>
+    </div>
+  </div>
+
+
+  <!-- ===================================================
+       PAGE 20: BACK COVER & COMPLIMENTARY VIDEO AUDIT
+       =================================================== -->
+  <div class="page" id="page-20" style="justify-content: space-between; text-align: center;">
+    <div class="glow-cyan"></div>
+    <div class="glow-amber"></div>
+
+    <div class="meta-header">
+      <div class="header-book-title">THE FIDUCIARY DIGITAL PLAYBOOK</div>
+      <div class="page-counter">PAGE 20 // 20</div>
+    </div>
+
+    <div style="z-index: 10; margin-top: 20px;">
+      <div class="badge badge-amber">🎁 COMPLIMENTARY 1-ON-1 AUDIT</div>
+
+      <h2 class="title-section" style="font-size: 58px; line-height: 1.1;">
+        Want a Free 3-Minute Video<br>
+        <span style="color: #0284c7;">Teardown of Your Practice?</span>
+      </h2>
+
+      <p class="lead-text" style="max-width: 760px; margin: 16px auto 0 auto; font-size: 22px;">
+        Send me your current website link (or firm name if you have no website). I'll record a personalized 3-minute video showing the 3 biggest conversion leaks on your site and how to fix them.
+      </p>
+
+      <!-- Polaroid Video Card -->
+      <div class="polaroid" style="margin-top: 32px;">
+        <div style="width: 440px; height: 230px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #ffffff;">
+          <div style="width: 52px; height: 52px; background: rgba(2, 132, 199, 0.2); border: 2px solid #38bdf8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #38bdf8; margin-bottom: 12px;">
+            ▶
+          </div>
+          <div style="font-size: 18px; font-weight: 900; letter-spacing: -0.02em;">HARI NARAYAN</div>
+          <div style="font-size: 12px; color: #94a3b8; font-weight: 700; margin-top: 4px;">Fintech Product Designer & Conversion Architect</div>
+          <div style="font-size: 11px; color: #38bdf8; font-family: 'Space Grotesk'; margin-top: 6px;">ria_fiduciary_audit_session.mov</div>
+        </div>
+        <div style="font-size: 12px; color: #94a3b8; font-weight: 700; font-family: 'Space Grotesk'; margin-top: 10px;">
+          3-MINUTE CANDID CONVERSION TEARDOWN
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; justify-content: center; gap: 16px; margin-top: 36px;">
+        <a href="https://wa.me/919345619420" style="text-decoration: none; background: #0284c7; color: #ffffff; padding: 14px 28px; border-radius: 999px; font-weight: 800; font-size: 16px; display: inline-flex; align-items: center; gap: 8px;">
+          <span>💬 WhatsApp: +91 93456 19420</span>
+        </a>
+        <a href="https://harinarayan.me" style="text-decoration: none; background: #ffffff; color: #0f172a; border: 2px solid #cbd5e1; padding: 14px 28px; border-radius: 999px; font-weight: 800; font-size: 16px;">
+          <span>🌐 harinarayan.me</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="meta-footer">
+      <div>THE FIDUCIARY DIGITAL PLAYBOOK // FINAL PAGE</div>
+      <div>PAGE 20 // 20</div>
+    </div>
+  </div>
+
+</body>
+</html>
+`;
+
+fs.writeFileSync(path.join(__dirname, '../public/playbook_20_pages.html'), htmlContent, 'utf8');
+console.log("Successfully wrote public/playbook_20_pages.html (20 Pages)");

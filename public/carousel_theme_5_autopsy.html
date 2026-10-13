@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Theme 5: The Advisory Website Autopsy (SCAMPER: Eliminate Edition)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: 1080px 1350px;
+      margin: 0;
+    }
+    @media print {
+      body {
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        gap: 0 !important;
+        display: block !important;
+      }
+      .slide {
+        margin: 0 !important;
+        box-shadow: none !important;
+        page-break-after: always !important;
+        break-after: page !important;
+      }
+      .slide:last-child {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+      }
+    }
+    html, body {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar {
+      display: none !important;
+      width: 0px !important;
+      height: 0px !important;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background: #0b0c10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 60px;
+      padding: 60px 0;
+    }
+
+    /* Base 1080x1350 Slide with Generous ~8% Margins (88px) */
+    .slide {
+      width: 1080px;
+      height: 1350px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 72px 88px;
+      background: #ffffff;
+      color: #0b0f19;
+      page-break-after: always;
+      box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Crimson & Amber Ambient Auras (Audit / Warning Aesthetic) */
+    .glow-bottom {
+      position: absolute;
+      bottom: -160px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 980px;
+      height: 460px;
+      background: radial-gradient(ellipse, rgba(239, 68, 68, 0.32) 0%, rgba(245, 158, 11, 0.2) 40%, rgba(59, 130, 246, 0.08) 65%, rgba(255, 255, 255, 0) 80%);
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .glow-right {
+      position: absolute;
+      top: 25%;
+      right: -240px;
+      width: 780px;
+      height: 820px;
+      background: radial-gradient(circle, rgba(239, 68, 68, 0.35) 0%, rgba(245, 158, 11, 0.22) 45%, rgba(59, 130, 246, 0.08) 65%, rgba(255, 255, 255, 0) 80%);
+      filter: blur(65px);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .glow-center {
+      position: absolute;
+      top: 38%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 620px;
+      height: 480px;
+      background: radial-gradient(ellipse, rgba(239, 68, 68, 0.2) 0%, rgba(245, 158, 11, 0.12) 50%, rgba(255, 255, 255, 0) 75%);
+      filter: blur(55px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Recurring Top Bar */
+    .meta-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      z-index: 10;
+    }
+    .page-counter {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.06em;
+    }
+    .swipe-cue {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: #dc2626;
+      letter-spacing: 0.08em;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Recurring Bottom Bar */
+    .meta-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      z-index: 10;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.04em;
+    }
+    .footer-pill {
+      background: rgba(15, 23, 42, 0.04);
+      padding: 6px 18px;
+      border-radius: 9999px;
+      border: 1px solid rgba(15, 23, 42, 0.07);
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    /* Eyebrow Pill Badges */
+    .eyebrow-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px 22px;
+      border-radius: 9999px;
+      border: 2px solid;
+      width: fit-content;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+    .eyebrow-red {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: #b91c1c;
+    }
+    .eyebrow-emerald {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(16, 185, 129, 0.35);
+      color: #047857;
+    }
+
+    /* Headings */
+    .title-huge {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 900;
+      font-size: 80px;
+      line-height: 1.03;
+      letter-spacing: -0.04em;
+      color: #0b0f19;
+    }
+    .title-large {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 900;
+      font-size: 64px;
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+      color: #0b0f19;
+    }
+    .subtitle-lead {
+      font-size: 26px;
+      color: #475569;
+      line-height: 1.5;
+      margin-top: 18px;
+      font-weight: 500;
+      max-width: 860px;
+    }
+
+    /* Custom Red Cursor Badge */
+    .cursor-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      position: absolute;
+      background: #dc2626;
+      color: #ffffff;
+      padding: 7px 16px 7px 12px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      box-shadow: 0 8px 24px rgba(220, 38, 38, 0.4);
+      z-index: 25;
+      letter-spacing: 0.04em;
+    }
+
+    /* Slide 4 Inverted Dark Theme */
+    .slide-inverted {
+      background: #090b10 !important;
+      color: #ffffff !important;
+    }
+    .floating-white-card {
+      background: #ffffff;
+      color: #0b0f19;
+      border-radius: 32px;
+      padding: 56px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+      margin: auto 0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Polaroid Card (Slide 5) */
+    .polaroid-container {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 20px 20px 28px 20px;
+      display: inline-block;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.08);
+      margin: 22px auto;
+      transform: rotate(-1.5deg);
+    }
+    .polaroid-media {
+      width: 440px;
+      height: 230px;
+      background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #b91c1c 100%);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================================================
+       SLIDE 1: HOOK (SCAMPER: ELIMINATE / MISTAKE AUDIT)
+       =================================================== -->
+  <div class="slide" id="slide-1">
+    <div class="glow-bottom"></div>
+    <div class="glow-right"></div>
+
+    <!-- Header -->
+    <div class="meta-header">
+      <div class="page-counter">THEME 05 // 05</div>
+      <div class="swipe-cue">SWIPE ➔</div>
+    </div>
+
+    <!-- Main Content -->
+    <div style="z-index: 10; margin-top: 10px;">
+      <div class="eyebrow-badge eyebrow-red">
+        <span>🚨 01 // WEBSITE AUTOPSY</span>
+      </div>
+
+      <h1 class="title-huge">
+        3 Things to DELETE From<br>
+        Your Advisory Website.<br>
+        <span style="color: #dc2626;">(If You Want ₹5 Cr+ HNI Clients)</span>
+      </h1>
+
+      <p class="subtitle-lead">
+        Most SEBI registered advisers don't need more complex pages. They need to eliminate the 3 outdated elements that secretly destroy HNI trust in the first 5 seconds.
+      </p>
+
+      <!-- 3 Mistake Preview Stack -->
+      <div style="position: relative; margin-top: 40px;">
+        <!-- Cursor pointer -->
+        <div class="cursor-badge" style="top: -18px; right: 40px;">
+          <span>🌐 HARINARAYAN.ME</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+          <!-- Item 1 -->
+          <div style="background: #fff5f5; border: 2px solid #fecaca; border-radius: 22px; padding: 26px 22px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <span style="font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 800; color: #dc2626;">DELETE #1</span>
+              <span style="font-size: 20px;">♟️</span>
+            </div>
+            <h4 style="font-size: 20px; font-weight: 800; color: #991b1b; margin-bottom: 8px;">Stock Chess Boards</h4>
+            <p style="font-size: 15px; color: #7f1d1d; line-height: 1.4;">Generic handshake & sprout photos scream "retail distributor."</p>
+          </div>
+
+          <!-- Item 2 -->
+          <div style="background: #fff5f5; border: 2px solid #fecaca; border-radius: 22px; padding: 26px 22px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <span style="font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 800; color: #dc2626;">DELETE #2</span>
+              <span style="font-size: 20px;">📩</span>
+            </div>
+            <h4 style="font-size: 20px; font-weight: 800; color: #991b1b; margin-bottom: 8px;">The "Contact Us" Box</h4>
+            <p style="font-size: 15px; color: #7f1d1d; line-height: 1.4;">Zero qualification. High-net-worth clients never write in blank forms.</p>
+          </div>
+
+          <!-- Item 3 -->
+          <div style="background: #fff5f5; border: 2px solid #fecaca; border-radius: 22px; padding: 26px 22px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <span style="font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 800; color: #dc2626;">DELETE #3</span>
+              <span style="font-size: 20px;">📑</span>
+            </div>
+            <h4 style="font-size: 20px; font-weight: 800; color: #991b1b; margin-bottom: 8px;">40-Page PDF Reports</h4>
+            <p style="font-size: 15px; color: #7f1d1d; line-height: 1.4;">Unreadable on mobile. Overwhelms prospect before discovery.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="meta-footer">
+      <div class="footer-pill">advisory-website-autopsy</div>
+      <div class="footer-pill">page 01 // 05</div>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       SLIDE 2: MISTAKE 1 & 2 TEARDOWN (STOCK & FORMS)
+       =================================================== -->
+  <div class="slide" id="slide-2">
+    <div class="glow-right"></div>
+
+    <!-- Header -->
+    <div class="meta-header">
+      <div class="page-counter">02 / 05</div>
+      <div class="swipe-cue">SWIPE ➔</div>
+    </div>
+
+    <!-- Content -->
+    <div style="z-index: 10; margin-top: 10px;">
+      <div class="eyebrow-badge eyebrow-red">
+        <span>❌ 02 // WHAT TO ELIMINATE FIRST</span>
+      </div>
+
+      <h2 class="title-large">
+        Kill the Stock Photos &<br>
+        <span style="color: #dc2626;">The Dead “Contact Us” Form</span>
+      </h2>
+
+      <p class="subtitle-lead">
+        When an HNI with ₹10 Cr visits your homepage, here is how they evaluate you:
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 18px; margin-top: 36px;">
+        <!-- Card 1 -->
+        <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 22px; padding: 28px 32px; display: flex; align-items: flex-start; gap: 24px;">
+          <div style="background: #fee2e2; border-radius: 14px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0;">
+            1
+          </div>
+          <div>
+            <div style="font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 800; color: #dc2626; letter-spacing: 0.06em; margin-bottom: 6px;">ELIMINATE: STOCK PHOTOS OF HANDSHAKES & COMPASSES</div>
+            <h4 style="font-size: 22px; font-weight: 800; color: #0b0f19; margin-bottom: 6px;">Replace with: Clean Editorial Fiduciary Typography</h4>
+            <p style="font-size: 16px; color: #64748b; line-height: 1.5;">Put your SEBI RIA Registration (`INA000...`) & BASL ID prominently in the header. Institutional clients want verified regulatory credibility, not Shutterstock models.</p>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 22px; padding: 28px 32px; display: flex; align-items: flex-start; gap: 24px;">
+          <div style="background: #fee2e2; border-radius: 14px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0;">
+            2
+          </div>
+          <div>
+            <div style="font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 800; color: #dc2626; letter-spacing: 0.06em; margin-bottom: 6px;">ELIMINATE: THE GENERIC “CONTACT US / SUBMIT” BOX</div>
+            <h4 style="font-size: 22px; font-weight: 800; color: #0b0f19; margin-bottom: 6px;">Replace with: 60-Second Consultation Intake Desk</h4>
+            <p style="font-size: 16px; color: #64748b; line-height: 1.5;">Give prospects 3 clear wealth tiers (₹1Cr - ₹5Cr / ₹5Cr - ₹25Cr / ₹25Cr+) and instant calendar sync. High-ticket investors respect structured intake.</p>
+          </div>
+        </div>
+
+        <!-- Stat Callout -->
+        <div style="background: linear-gradient(135deg, #fef2f2 0%, #fff1f2 100%); border: 2px solid #fecdd3; border-radius: 20px; padding: 20px 28px; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 13px; font-weight: 800; font-family: 'Space Grotesk', sans-serif; color: #b91c1c;">CONVERSION FRICTION METRIC</div>
+            <div style="font-size: 15px; color: #881337; font-weight: 600; margin-top: 2px;">
+              Websites with structured intake desks convert <strong>3.1x more HNI meetings</strong> than blank contact forms.
+            </div>
+          </div>
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; font-weight: 900; color: #dc2626;">
+            +310%
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="meta-footer">
+      <div class="footer-pill">conversion-teardown</div>
+      <div class="footer-pill">page 02 // 05</div>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       SLIDE 3: MISTAKE 3 & THE TOOL WE BUILD (FEE DRAG TOOL)
+       =================================================== -->
+  <div class="slide" id="slide-3">
+    <div class="glow-center"></div>
+
+    <!-- Header -->
+    <div class="meta-header">
+      <div class="page-counter">03 // 05</div>
+      <div class="swipe-cue">SWIPE ➔</div>
+    </div>
+
+    <!-- Content -->
+    <div style="z-index: 10; margin-top: 10px;">
+      <div class="eyebrow-badge eyebrow-emerald">
+        <span>⚡ 03 // THE VALUE ACCELERATOR</span>
+      </div>
+
+      <h2 class="title-large">
+        Replace 40-Page PDFs With<br>
+        <span style="color: #059669;">An Interactive Fee Drag Calculator</span>
+      </h2>
+
+      <p class="subtitle-lead">
+        What I build for advisers to pre-sell prospects on Direct Plan fee-only advisory before they ever get on a call:
+      </p>
+
+      <!-- Mock Fee Drag UI Component -->
+      <div style="background: #ffffff; border: 2px solid #0f172a; border-radius: 26px; padding: 32px 36px; margin-top: 36px; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08); position: relative;">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 18px; margin-bottom: 22px;">
+          <div>
+            <div style="font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 800; color: #64748b; letter-spacing: 0.08em; text-transform: uppercase;">
+              CLIENT-SIDE COMPOUNDING ENGINE
+            </div>
+            <div style="font-size: 24px; font-weight: 800; color: #0b0f19;">Hidden Commission Leak Calculator</div>
+          </div>
+          <div style="background: #ecfdf5; border: 1.5px solid #10b981; padding: 6px 16px; border-radius: 9999px; font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 800; color: #047857;">
+            PROVES YOUR 1% ROI
+          </div>
+        </div>
+
+        <!-- Metric Grid -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 22px;">
+          <div style="background: #f8fafc; border-radius: 16px; padding: 18px 20px; border: 1px solid #e2e8f0;">
+            <div style="font-size: 12px; font-weight: 700; color: #64748b; font-family: 'Space Grotesk', sans-serif;">INVESTABLE AUM</div>
+            <div style="font-size: 24px; font-weight: 900; color: #0b0f19; margin: 4px 0;">₹10.0 Cr</div>
+            <div style="font-size: 12px; color: #64748b;">Portfolio Baseline</div>
+          </div>
+          <div style="background: #f8fafc; border-radius: 16px; padding: 18px 20px; border: 1px solid #e2e8f0;">
+            <div style="font-size: 12px; font-weight: 700; color: #dc2626; font-family: 'Space Grotesk', sans-serif;">REGULAR COMMISSIONS</div>
+            <div style="font-size: 24px; font-weight: 900; color: #dc2626; margin: 4px 0;">₹1.48 Cr</div>
+            <div style="font-size: 12px; color: #991b1b;">15-Yr Wealth Leak</div>
+          </div>
+          <div style="background: #ecfdf5; border-radius: 16px; padding: 18px 20px; border: 1.5px solid #a7f3d0;">
+            <div style="font-size: 12px; font-weight: 700; color: #059669; font-family: 'Space Grotesk', sans-serif;">DIRECT PLAN SAVINGS</div>
+            <div style="font-size: 24px; font-weight: 900; color: #059669; margin: 4px 0;">+₹82.4 L</div>
+            <div style="font-size: 12px; color: #047857; font-weight: 700;">Net Wealth Preserved</div>
+          </div>
+        </div>
+
+        <!-- Bottom Action CTA Strip -->
+        <div style="background: #090e17; color: #ffffff; border-radius: 16px; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span style="font-size: 22px;">💡</span>
+            <div>
+              <div style="font-size: 15px; font-weight: 800; font-family: 'Space Grotesk', sans-serif;">THE RESULT: PROSPECTS ARRIVE PRE-SOLD ON YOUR MANDATE</div>
+              <div style="font-size: 13px; color: #94a3b8;">Calculator passes parameters directly into your consultation intake desk</div>
+            </div>
+          </div>
+          <div style="font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 800; color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4); padding: 6px 14px; border-radius: 9999px;">
+            BUILT BY HARI
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="meta-footer">
+      <div class="footer-pill">fee-transparency-architecture</div>
+      <div class="footer-pill">page 03 // 05</div>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       SLIDE 4: INVERTED DARK SLIDE (FIDUCIARY TRUST RULE)
+       =================================================== -->
+  <div class="slide slide-inverted" id="slide-4">
+    <!-- Header -->
+    <div class="meta-header">
+      <div class="page-counter" style="color: #f87171;">04 / 05</div>
+      <div class="swipe-cue" style="color: #ffffff;">SWIPE ➔</div>
+    </div>
+
+    <!-- Floating White Card -->
+    <div class="floating-white-card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <div class="eyebrow-badge eyebrow-red" style="margin-bottom: 0;">
+          <span>⚖️ 04 // THE FIDUCIARY REALITY</span>
+        </div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 6px 16px; border-radius: 9999px;">
+          Investor Perception
+        </div>
+      </div>
+
+      <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 46px; font-weight: 900; line-height: 1.15; letter-spacing: -0.025em; color: #0b0f19; margin-bottom: 20px;">
+        “Your website is the digital front door to your fiduciary practice.”
+      </h3>
+
+      <p style="font-size: 24px; color: #475569; line-height: 1.55; margin-bottom: 32px;">
+        You wouldn’t host an HNI client meeting in a messy, disorganized office. Don't let your website give them that exact same feeling before you even pick up the phone.
+      </p>
+
+      <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 20px; padding: 26px 30px; display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <div style="font-size: 15px; font-weight: 800; font-family: 'Space Grotesk', sans-serif; color: #0b0f19; margin-bottom: 4px;">
+            INBOUND MANDATE CONVERSION RATE
+          </div>
+          <div style="font-size: 14px; color: #64748b;">
+            Advisers with modern, fast web platforms close <strong>2.8x more discovery calls</strong>
+          </div>
+        </div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 900; color: #dc2626;">
+          2.8x
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="meta-footer">
+      <div class="footer-pill" style="background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); color: #ffffff;">fiduciary-credibility</div>
+      <div class="footer-pill" style="background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); color: #ffffff;">page 04 // 05</div>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       SLIDE 5: POLAROID CTA (HARI NARAYAN BRAND)
+       =================================================== -->
+  <div class="slide" id="slide-5">
+    <div class="glow-bottom"></div>
+
+    <!-- Header -->
+    <div class="meta-header">
+      <div class="page-counter">05 / 05</div>
+      <div class="page-counter" style="letter-spacing: 0.08em; color: #dc2626; font-weight: 800;">HARINARAYAN.ME</div>
+    </div>
+
+    <!-- Main Content -->
+    <div style="z-index: 10; margin: auto 0; text-align: center;">
+      <div class="eyebrow-badge eyebrow-red" style="margin: 0 auto 20px;">
+        <span>🎁 05 // FREE 3-MINUTE VIDEO AUTOPSY</span>
+      </div>
+
+      <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 58px; font-weight: 900; line-height: 1.08; letter-spacing: -0.035em; color: #0b0f19; margin-bottom: 14px;">
+        Want a free video teardown of<br>
+        <span style="color: #dc2626;">your advisory website?</span>
+      </h2>
+
+      <p style="font-size: 22px; color: #64748b; max-width: 720px; margin: 0 auto 24px; line-height: 1.5;">
+        Send me your website link (or firm name if you have no site). I'll record a personalized 3-minute video showing the 3 biggest conversion leaks on your site and how to fix them.
+      </p>
+
+      <!-- Polaroid Card -->
+      <div class="polaroid-container">
+        <div class="polaroid-media">
+          <div style="font-size: 34px; margin-bottom: 8px;">⚡</div>
+          <div style="font-size: 18px; font-weight: 900; font-family: 'Space Grotesk', sans-serif; letter-spacing: 0.04em;">HARI NARAYAN</div>
+          <div style="font-size: 13px; opacity: 0.8; font-weight: 500;">Fintech Product Designer & Conversion Architect</div>
+          <div style="font-size: 11px; opacity: 0.5; font-family: 'Space Grotesk', sans-serif; margin-top: 12px; letter-spacing: 0.06em;">WEBSITE_AUTOPSY_SESSION.MP4</div>
+        </div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700; color: #475569; margin-top: 10px;">
+          advisory_website_autopsy.mov
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; justify-content: center; gap: 18px; margin-top: 20px; flex-wrap: wrap;">
+        <div style="background: #dc2626; color: #ffffff; padding: 14px 30px; border-radius: 9999px; font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 17px; box-shadow: 0 10px 25px rgba(220, 38, 38, 0.35);">
+          💬 WhatsApp: +91 93456 19420
+        </div>
+        <div style="background: #ffffff; color: #0b0f19; border: 2px solid #0b0f19; padding: 14px 30px; border-radius: 9999px; font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 17px;">
+          🌐 harinarayan.me
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="meta-footer">
+      <div class="footer-pill">get-started-autopsy</div>
+      <div class="footer-pill">page 05 // 05</div>
+    </div>
+  </div>
+
+</body>
+</html>

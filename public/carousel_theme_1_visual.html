@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Theme 1: Client Retention Visual Carousel (Polina Editorial Style)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: 1080px 1350px;
+      margin: 0;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background: #090d16;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 50px;
+      padding: 50px 0;
+    }
+
+    /* Base 1080x1350 Slide */
+    .slide {
+      width: 1080px;
+      height: 1350px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 64px 72px;
+      background: #ffffff;
+      color: #0b0f19;
+      page-break-after: always;
+      box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Ambient Blue Gradient Glows (Matching Polina Reference) */
+    .glow-bottom {
+      position: absolute;
+      bottom: -180px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 480px;
+      background: radial-gradient(ellipse, rgba(37, 99, 235, 0.45) 0%, rgba(67, 56, 202, 0.25) 45%, rgba(255, 255, 255, 0) 75%);
+      filter: blur(50px);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .glow-right {
+      position: absolute;
+      top: 20%;
+      right: -250px;
+      width: 750px;
+      height: 850px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.6) 0%, rgba(29, 78, 216, 0.3) 50%, rgba(255, 255, 255, 0) 75%);
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .glow-center {
+      position: absolute;
+      top: 35%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 650px;
+      height: 450px;
+      background: radial-gradient(ellipse, rgba(37, 99, 235, 0.25) 0%, rgba(255, 255, 255, 0) 70%);
+      filter: blur(50px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Header Bar */
+    .meta-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      z-index: 10;
+    }
+    .page-chip {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.05em;
+    }
+    .topic-pill {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #64748b;
+      background: rgba(15, 23, 42, 0.04);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      letter-spacing: 0.04em;
+    }
+    .prominent-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px 24px;
+      border-radius: 9999px;
+      border: 2px solid;
+      width: fit-content;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Footer Bar */
+    .meta-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      z-index: 10;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+    .footer-pill {
+      background: rgba(15, 23, 42, 0.04);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+    }
+
+    /* Typography */
+    .title-huge {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 900;
+      font-size: 76px;
+      line-height: 1.04;
+      letter-spacing: -0.04em;
+      color: #0b0f19;
+    }
+    .title-sub {
+      font-size: 26px;
+      color: #64748b;
+      line-height: 1.45;
+      margin-top: 18px;
+      font-weight: 500;
+    }
+
+    /* Custom Blue Cursor Pointer (Matching Reference) */
+    .blue-cursor {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      position: absolute;
+      background: #2563eb;
+      color: #ffffff;
+      padding: 6px 14px 6px 10px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+      z-index: 20;
+    }
+    .cursor-arrow {
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 12px solid #2563eb;
+      transform: rotate(-45deg);
+      position: absolute;
+      top: -8px;
+      left: 2px;
+    }
+
+    /* Preview Card Triad (Slide 1) */
+    .card-triad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 36px;
+      z-index: 10;
+    }
+    .triad-box {
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 20px;
+      padding: 24px 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .num-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 9999px;
+      background: #2563eb;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 15px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .triad-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0b0f19;
+      letter-spacing: -0.01em;
+    }
+    .triad-desc {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    /* Slide 2: Glassmorphic 3D Folder */
+    .folder-wrapper {
+      position: relative;
+      width: 320px;
+      height: 240px;
+      margin: 30px auto;
+      z-index: 10;
+    }
+    .folder-back {
+      width: 300px;
+      height: 210px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border-radius: 24px;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      box-shadow: 0 20px 40px rgba(37, 99, 235, 0.35);
+    }
+    .folder-sheet {
+      width: 260px;
+      height: 160px;
+      background: #ffffff;
+      border-radius: 16px;
+      position: absolute;
+      top: -10px;
+      left: 30px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .folder-front {
+      width: 300px;
+      height: 160px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.95));
+      border-radius: 20px;
+      position: absolute;
+      bottom: 0;
+      left: 10px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Slide 3: Numbered Checklist */
+    .checklist-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 32px;
+      z-index: 10;
+    }
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 18px 24px;
+      border-radius: 20px;
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+    }
+    .row-num {
+      width: 44px;
+      height: 44px;
+      border-radius: 9999px;
+      background: #2563eb;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      font-family: 'Space Grotesk', sans-serif;
+      flex-shrink: 0;
+    }
+    .row-text {
+      font-size: 21px;
+      font-weight: 700;
+      color: #0b0f19;
+      letter-spacing: -0.01em;
+    }
+    .row-desc {
+      font-size: 15px;
+      color: #64748b;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    /* Slide 4: Inverted Cobalt Background + Floating White Card */
+    .slide-inverted {
+      background: linear-gradient(145deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
+      color: #ffffff;
+    }
+    .floating-card {
+      background: #ffffff;
+      color: #0b0f19;
+      border-radius: 32px;
+      padding: 56px 48px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+      position: relative;
+      z-index: 10;
+      margin: auto 0;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+    .avatar-stack {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .avatar-pill {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* Slide 5: Polaroid Photo Frame + CTA */
+    .polaroid-box {
+      width: 380px;
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.1);
+      border-radius: 20px;
+      padding: 18px 18px 24px;
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.12);
+      margin: 24px auto;
+      z-index: 10;
+      text-align: center;
+      transform: rotate(-1.5deg);
+    }
+    .polaroid-img {
+      width: 100%;
+      height: 240px;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .polaroid-tag {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      color: #94a3b8;
+      margin-top: 14px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================================================
+       SLIDE 1: COVER (3 Cards + Blue Glow + Cursor)
+       =================================================== -->
+  <div class="slide" id="slide-1">
+    <div class="glow-bottom"></div>
+
+    <!-- Header -->
+    <div class="meta-header">
+      <div class="page-chip">01 / 05</div>
+      <div class="page-chip" style="letter-spacing: 0.08em; color: #2563eb; font-weight: 800;">SWIPE ➔</div>
+    </div>
+
+    <!-- Center Content -->
+    <div style="z-index: 10; margin: auto 0; position: relative;">
+      <!-- Cursor Pointer Floating -->
+      <div class="blue-cursor" style="top: 10px; right: 40px;">
+        <div class="cursor-arrow"></div>
+        <span>harinarayan.me</span>
+      </div>
+
+      <!-- Prominent Topic Eyebrow Badge -->
+      <div class="prominent-badge" style="background: rgba(37, 99, 235, 0.08); border-color: #2563eb; color: #2563eb;">
+        <span>⚡ CLIENT RETENTION BLUEPRINT</span>
+      </div>
+
+      <h1 class="title-huge" style="max-width: 900px;">
+        The First 72 Hours<br>
+        <span style="color: #2563eb;">After Payment</span>
+      </h1>
+      <p class="title-sub" style="max-width: 780px;">
+        Why onboarded clients lose motivation on long timelines—and how top fee-only RIAs lock in 5-year retention.
+      </p>
+
+      <!-- 3 Preview Cards (Like Polina Reference Slide 1) -->
+      <div class="card-triad">
+        <div class="triad-box">
+          <div class="num-circle">1</div>
+          <div class="triad-title">The Peak Window</div>
+          <div class="triad-desc">Why Day 1 excitement decays after 48 hours without touchpoints.</div>
+        </div>
+        <div class="triad-box">
+          <div class="num-circle">2</div>
+          <div class="triad-title">The Silence Trap</div>
+          <div class="triad-desc">The 10-day analysis gap where buyer's remorse quietly creeps in.</div>
+        </div>
+        <div class="triad-box">
+          <div class="num-circle">3</div>
+          <div class="triad-title">The 3-Day Fix</div>
+          <div class="triad-desc">Visual milestones, frictionless uploads, and the quick-win report.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="meta-footer">
+      <div class="footer-pill">advisor-systems</div>
+      <div class="footer-pill">2026 | edition</div>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       SLIDE 2: THE 3D OBJECT (Folder Graphic + Asymmetry)
+       =================================================== -->
+  <div class="slide" id="slide-2">
+    <div class="glow-center"></div>
+
+    <!-- Header -->
+    <div class="meta-header">
+      <div class="page-chip">02 / 05</div>
+      <div class="page-chip" style="letter-spacing: 0.08em; color: #2563eb; font-weight: 800;">SWIPE ➔</div>
+    </div>
+
+    <!-- Content -->
+    <div style="z-index: 10; margin: auto 0; text-align: center;">
+      <!-- Prominent Topic Eyebrow Badge -->
+      <div class="prominent-badge" style="background: rgba(220, 38, 38, 0.08); border-color: #dc2626; color: #dc2626; margin: 0 auto 20px;">
+        <span>⚠️ 01 // THE SILENCE TRAP</span>
+      </div>
+
+      <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 58px; font-weight: 900; line-height: 1.08; letter-spacing: -0.03em; color: #0b0f19;">
+        The "Radio Silence"<br>
+        <span style="color: #2563eb;">Black Hole</span>
+      </h2>
+
+      <!-- 3D Folder Graphic -->
+      <div class="folder-wrapper">
+        <div class="folder-back"></div>
+        <div class="folder-sheet">
+          <div style="font-size: 13px; font-weight: 800; color: #dc2626; font-family: 'Space Grotesk', sans-serif;">⚠️ STATUS: PENDING (12 DAYS)</div>
+          <div style="font-size: 15px; font-weight: 700; color: #0b0f19;">Client Risk Profile &amp; Portfolio</div>
+          <div style="font-size: 12px; color: #94a3b8;">Waiting for spreadsheet analysis...</div>
+        </div>
+        <div class="folder-front">
+          CLIENT_ONBOARDING.ZIP
+        </div>
+      </div>
+
+      <div style="max-width: 700px; margin: 0 auto;">
+        <p style="font-size: 25px; font-weight: 800; color: #0b0f19; line-height: 1.35; margin-bottom: 12px;">
+          The client paid ₹60,000. Then they hear nothing for 10 days.
+        </p>
+        <p style="font-size: 19px; color: #64748b; line-height: 1.5;">
+          In that silence, initial motivation dies. They start wondering: <em>"Did I just waste my money?"</em> When you ask for data a week later, they drag their feet.
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="meta-footer">
+      <div class="footer-pill">retention-leak</div>
+      <div class="footer-pill">page 02 // 05</div>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       SLIDE 3: CHECKLIST + RIGHT GRADIENT BLOOM
+       =================================================== -->
+  <div class="slide" id="slide-3">
+    <div class="glow-right"></div>
+
+    <!-- Header -->
+    <div class="meta-header">
+      <div class="page-chip">03 / 05</div>
+      <div class="page-chip" style="letter-spacing: 0.08em; color: #2563eb; font-weight: 800;">SWIPE ➔</div>
+    </div>
+
+    <!-- Content -->
+    <div style="z-index: 10; margin: auto 0; max-width: 880px;">
+      <!-- Prominent Topic Eyebrow Badge -->
+      <div class="prominent-badge" style="background: rgba(37, 99, 235, 0.08); border-color: #2563eb; color: #2563eb; margin-bottom: 18px;">
+        <span>🎯 02 // ACTIONABLE ROADMAP</span>
+      </div>
+
+      <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 60px; font-weight: 900; line-height: 1.08; letter-spacing: -0.035em; color: #0b0f19; margin-bottom: 8px;">
+        How Top RIAs Fix This in <span style="color: #2563eb;">72 Hours</span>
+      </h2>
+      <p style="font-size: 22px; color: #64748b; margin-bottom: 28px;">
+        Replace weeks of manual confusion with a structured 3-step digital journey:
+      </p>
+
+      <!-- Numbered List (Like Polina Slide 3) -->
+      <div class="checklist-container">
+        <div class="check-row">
+          <div class="row-num">1</div>
+          <div>
+            <div class="row-text">Day 1: Instant Visual Milestone Roadmap</div>
+            <div class="row-desc">A clear screen right after payment showing exact deliverables for Day 3, 7, and 14.</div>
+          </div>
+        </div>
+
+        <div class="check-row">
+          <div class="row-num">2</div>
+          <div>
+            <div class="row-text">Day 2: Frictionless 5-Minute Portfolio Upload</div>
+            <div class="row-desc">Secure portal upload instead of emailing passwords, PDFs, or printing paper.</div>
+          </div>
+        </div>
+
+        <div class="check-row">
+          <div class="row-num">3</div>
+          <div>
+            <div class="row-text">Day 3: The "Quick-Win" Leak Report</div>
+            <div class="row-desc">A 1-page commission drag audit exposing ₹40k+ in regular fund leaks. Proves ROI immediately.</div>
+          </div>
+        </div>
+
+        <div class="check-row" style="background: rgba(37, 99, 235, 0.04); border-color: rgba(37, 99, 235, 0.2);">
+          <div class="row-num" style="background: #10b981;">✓</div>
+          <div>
+            <div class="row-text" style="color: #10b981;">The Result: 5-Year Loyalty &amp; Immediate Referrals</div>
+            <div class="row-desc">Clients who experience day-1 clarity never question year-2 renewal fees.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="meta-footer">
+      <div class="footer-pill">72-hour-framework</div>
+      <div class="footer-pill">page 03 // 05</div>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       SLIDE 4: INVERTED BLUE WITH FLOATING WHITE CARD
+       =================================================== -->
+  <div class="slide slide-inverted" id="slide-4">
+    <!-- Header -->
+    <div class="meta-header">
+      <div class="page-chip" style="color: #bfdbfe;">04 / 05</div>
+      <div class="page-chip" style="letter-spacing: 0.08em; color: #ffffff; font-weight: 800;">SWIPE ➔</div>
+    </div>
+
+    <!-- Floating White Card (Like Polina Slide 4) -->
+    <div class="floating-card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <!-- Prominent Topic Eyebrow Badge inside Card -->
+        <div class="prominent-badge" style="background: #eff6ff; border-color: #2563eb; color: #1d4ed8; margin-bottom: 0;">
+          <span>🧠 03 // CLIENT PSYCHOLOGY</span>
+        </div>
+        <div class="avatar-pill">
+          HNI Client Perspective
+        </div>
+      </div>
+
+      <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 44px; font-weight: 900; line-height: 1.15; letter-spacing: -0.02em; color: #0b0f19; margin-bottom: 20px;">
+        “What is my adviser actually doing right now?”
+      </h3>
+
+      <p style="font-size: 23px; color: #475569; line-height: 1.55; margin-bottom: 28px;">
+        When you spend 10 days working silently in Excel, the client doesn't see your hard work. They only see <strong>silence</strong>.
+      </p>
+
+      <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 18px; padding: 22px 24px; display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <div style="font-size: 15px; font-weight: 800; font-family: 'Space Grotesk', sans-serif; color: #0b0f19; margin-bottom: 4px;">MOTIVATION RETENTION SCORE</div>
+          <div style="font-size: 14px; color: #64748b;">With instant roadmap: <strong>94% High Trust</strong> vs 18% with silence</div>
+        </div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 34px; font-weight: 800; color: #2563eb;">+76%</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="meta-footer">
+      <div class="footer-pill" style="background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.2); color: #ffffff;">fiduciary-trust</div>
+      <div class="footer-pill" style="background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.2); color: #ffffff;">page 04 // 05</div>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       SLIDE 5: POLAROID / PHOTO CARD + CALL TO ACTION
+       =================================================== -->
+  <div class="slide" id="slide-5">
+    <div class="glow-bottom"></div>
+
+    <!-- Header -->
+    <div class="meta-header">
+      <div class="page-chip">05 / 05</div>
+      <div class="page-chip" style="letter-spacing: 0.08em; color: #64748b; font-weight: 700;">HARINARAYAN.ME</div>
+    </div>
+
+    <!-- Content -->
+    <div style="z-index: 10; margin: auto 0; text-align: center;">
+      <!-- Prominent Topic Eyebrow Badge -->
+      <div class="prominent-badge" style="background: rgba(37, 99, 235, 0.08); border-color: #2563eb; color: #2563eb; margin: 0 auto 18px;">
+        <span>🎁 04 // COMPLIMENTARY 1-ON-1 AUDIT</span>
+      </div>
+
+      <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 58px; font-weight: 900; line-height: 1.08; letter-spacing: -0.035em; color: #0b0f19; margin-bottom: 12px;">
+        Want me to audit your<br>
+        <span style="color: #2563eb;">onboarding flow?</span>
+      </h2>
+      <p style="font-size: 22px; color: #64748b; max-width: 680px; margin: 0 auto 20px;">
+        Send me your current website or client sign-up process. I'll record a personalized 3-minute video breakdown of where clients get stuck.
+      </p>
+
+      <!-- Polaroid Card (Like Polina Reference Slide 6) -->
+      <div class="polaroid-box">
+        <div class="polaroid-img">
+          <div style="width: 280px; height: 160px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px;">
+            <div style="font-size: 32px; margin-bottom: 6px;">⚡</div>
+            <div style="font-size: 16px; font-weight: 800; font-family: 'Space Grotesk', sans-serif;">HARI NARAYAN</div>
+            <div style="font-size: 12px; opacity: 0.7;">Fintech Product Designer</div>
+          </div>
+          <div style="font-size: 11px; opacity: 0.5; font-family: 'Space Grotesk', sans-serif;">AUDIT_SESSION_PREVIEW.MP4</div>
+        </div>
+        <div class="polaroid-tag">video_audit_for_advisers.mov</div>
+      </div>
+
+      <!-- Action Links -->
+      <div style="display: flex; justify-content: center; gap: 16px; margin-top: 18px; flex-wrap: wrap;">
+        <div style="background: #2563eb; color: #ffffff; padding: 14px 28px; border-radius: 9999px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px; box-shadow: 0 10px 25px rgba(37,99,235,0.3);">
+          💬 WhatsApp: +91 93456 19420
+        </div>
+        <div style="background: #ffffff; color: #0b0f19; border: 1.5px solid #0b0f19; padding: 14px 28px; border-radius: 9999px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px;">
+          🌐 harinarayan.me
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="meta-footer">
+      <div class="footer-pill">get-started</div>
+      <div class="footer-pill">page 05 // 05</div>
+    </div>
+  </div>
+
+</body>
+</html>
