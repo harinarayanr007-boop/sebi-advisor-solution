@@ -176,9 +176,17 @@ export default function LoginPage() {
           ) : (
             <div>
               <div className="mb-6 border-b border-[#F0F4F8] pb-4">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
-                  SEBI RIA Practice Desk
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
+                    SEBI RIA Practice Desk
+                  </span>
+                  <Link
+                    href="/admin"
+                    className="text-xs font-bold text-[#1814F3] hover:underline flex items-center space-x-1"
+                  >
+                    <span>Direct Admin URL (/admin) →</span>
+                  </Link>
+                </div>
                 <h2 className="text-xl font-bold font-space text-[#343C6A] mt-2">
                   RIA Practice Command & Compliance
                 </h2>

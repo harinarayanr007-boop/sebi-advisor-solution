@@ -80,10 +80,10 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
               <ArrowRight size={16} weight="bold" />
             </button>
             <Link
-              href="/login"
+              href="/admin"
               className="w-full py-3 bg-slate-50 border border-[#DFEAF2] text-[#343C6A] rounded-xl text-xs font-bold hover:bg-slate-100 transition block text-center"
             >
-              Go to Portal Gateway →
+              Go to RIA Admin Login (/admin) →
             </Link>
           </div>
         </div>
