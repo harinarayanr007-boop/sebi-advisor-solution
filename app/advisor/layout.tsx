@@ -73,22 +73,13 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
               SEBI Regulation 19 mandates authorized credential verification before granting access to RIA practice registries and client mandates.
             </p>
           </div>
-          <div className="space-y-3 pt-2">
-            <button
-              onClick={() => {
-                loginAsAdvisor();
-                router.push("/advisor/dashboard");
-              }}
-              className="w-full py-3 bg-[#343C6A] text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition flex items-center justify-center space-x-2"
-            >
-              <span>Authenticate As RIA Principal</span>
-              <ArrowRight size={16} weight="bold" />
-            </button>
+          <div className="pt-2">
             <Link
               href="/admin"
-              className="w-full py-3 bg-slate-50 border border-[#DFEAF2] text-[#343C6A] rounded-xl text-xs font-bold hover:bg-slate-100 transition block text-center"
+              className="w-full py-3 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center justify-center space-x-2 shadow-sm"
             >
-              Go to RIA Admin Login (/admin) →
+              <span>Go to RIA Admin Login (/admin)</span>
+              <ArrowRight size={16} weight="bold" />
             </Link>
           </div>
         </div>

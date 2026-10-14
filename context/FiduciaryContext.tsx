@@ -93,16 +93,7 @@ interface FiduciaryContextType {
 const FiduciaryContext = createContext<FiduciaryContextType | undefined>(undefined);
 
 export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<UserSession | null>(() => {
-    // Default to advisor role session for immediate development / evaluation
-    return {
-      role: "advisor",
-      userId: defaultAdvisor.id,
-      name: defaultAdvisor.name,
-      email: defaultAdvisor.email,
-      sebiReg: defaultAdvisor.sebiRegNumber,
-    };
-  });
+  const [session, setSession] = useState<UserSession | null>(null);
 
   const [advisor, setAdvisor] = useState<AdvisorProfile>(defaultAdvisor);
   const [clients, setClients] = useState<ClientProfile[]>(initialClients);

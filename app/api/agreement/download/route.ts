@@ -1,15 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
-  const agreementId = searchParams.get("agreementId") || "SEBI-RIA-AGR-001";
+  const rawAgreementId = searchParams.get("agreementId") || "SEBI-RIA-AGR-001";
+  
+  // Strict sanitization: Allow only alphanumeric, dash, and underscore characters
+  const safeAgreementId = /^[A-Za-z0-9\-_]{1,64}$/.test(rawAgreementId)
+    ? rawAgreementId
+    : "SEBI-RIA-AGR-001";
+
+  const escapedId = escapeHtml(safeAgreementId);
 
   const agreementHtml = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SEBI Investment Advisory Agreement - ${agreementId}</title>
+  <title>SEBI Investment Advisory Agreement - ${escapedId}</title>
   <style>
     body { font-family: 'Times New Roman', serif; margin: 40px; color: #111; line-height: 1.6; }
     h1 { text-align: center; font-size: 22px; text-transform: uppercase; margin-bottom: 5px; }
@@ -26,8 +42,8 @@ export async function GET(req: NextRequest) {
 <body>
   <div class="stamp-box">
     <strong>STATUTORY REGISTRATION RECORD:</strong><br>
-    Investment Adviser: Aurum Fiduciary Advisory LLP | SEBI Reg. No.: INA000019842 | BASL: BASL-1892<br>
-    Agreement Reference: ${agreementId} | Governed under: SEBI (Investment Advisers) Regulations, 2013 (Reg 19)
+    Investment Adviser: Aurum Fiduciary Advisory LLP | SEBI Reg. No.: INA000015845 | BASL: BASL-1892<br>
+    Agreement Reference: ${escapedId} | Governed under: SEBI (Investment Advisers) Regulations, 2013 (Reg 19)
   </div>
 
   <h1>Investment Advisory Agreement</h1>
@@ -62,19 +78,18 @@ export async function GET(req: NextRequest) {
     <div class="sign-block">
       <strong>For Investment Adviser:</strong><br>
       Aurum Fiduciary Advisory LLP<br>
-      Authorized Signatory: Rajesh V. Mehta (Principal Officer)<br>
+      Authorized Signatory: Devendra Vora, CFP (Principal Officer)<br>
       Digitally Timestamped via Certifying Authority
     </div>
     <div class="sign-block">
       <strong>For Client:</strong><br>
       Digitally Executed via Indian IT Act 2000 e-Sign<br>
-      Hash: SHA-256 Verified<br>
-      Execution Timestamp: ${new Date().toUTCString()}
+      Aadhaar e-Sign Reference: ${escapedId}
     </div>
   </div>
 
   <div class="footer">
-    Aurum Fiduciary Advisory LLP • Level 14, Maker Chambers VI, Nariman Point, Mumbai 400021.<br>
+    Aurum Fiduciary Advisory LLP • Level 14, Maker Chambers IV, Nariman Point, Mumbai 400021.<br>
     Investments in securities market are subject to market risks. Read all related documents carefully before investing.
   </div>
 </body>
@@ -84,7 +99,10 @@ export async function GET(req: NextRequest) {
   return new NextResponse(agreementHtml, {
     headers: {
       "Content-Type": "text/html; charset=utf-8",
-      "Content-Disposition": `inline; filename="${agreementId}.html"`,
+      "Content-Disposition": `inline; filename="${safeAgreementId}.html"`,
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "default-src 'self'; style-src 'unsafe-inline';",
     },
   });
 }

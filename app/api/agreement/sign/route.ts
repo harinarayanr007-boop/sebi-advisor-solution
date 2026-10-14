@@ -1,27 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHash, randomBytes } from "crypto";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { signatureDataUrl, clientId, clientName } = body;
 
-    if (!signatureDataUrl) {
+    if (!signatureDataUrl || typeof signatureDataUrl !== "string") {
       return NextResponse.json(
         { success: false, message: "Valid digital signature data is required." },
         { status: 400 }
       );
     }
 
-    // Artificial delay to simulate cryptographic timestamping and PDF rendering
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // Validate signature format (base64 data URL)
+    if (!signatureDataUrl.startsWith("data:image/")) {
+      return NextResponse.json(
+        { success: false, message: "Signature must be a valid image data URL." },
+        { status: 400 }
+      );
+    }
 
-    const agreementId = "SEBI-RIA-AGR-" + Math.floor(100000 + Math.random() * 900000);
     const executionTimestamp = new Date().toISOString();
-    const cryptographicHash =
-      "sha256_" +
-      Array.from({ length: 32 }, () =>
-        Math.floor(Math.random() * 16).toString(16)
-      ).join("");
+    const safeClientId = (typeof clientId === "string" && clientId.trim()) ? clientId.trim().substring(0, 64) : "AURUM-HNI-DEFAULT";
+    const safeClientName = (typeof clientName === "string" && clientName.trim()) ? clientName.trim().substring(0, 100) : "Valued Fiduciary Client";
+
+    // Generate cryptographic SHA-256 seal using crypto
+    const hashPayload = `${safeClientId}:${safeClientName}:${executionTimestamp}:${signatureDataUrl}`;
+    const cryptographicHash = "sha256_" + createHash("sha256").update(hashPayload).digest("hex");
+    const agreementId = `SEBI-RIA-AGR-${randomBytes(4).toString("hex").toUpperCase()}`;
 
     return NextResponse.json(
       {
@@ -29,8 +36,8 @@ export async function POST(req: NextRequest) {
         message:
           "SEBI Mandated Investment Advisory Agreement executed and digitally sealed under Indian IT Act 2000 & SEBI IA Regulations.",
         agreementId,
-        clientId: clientId || "AURUM-HNI-DEFAULT",
-        clientName: clientName || "Valued Fiduciary Client",
+        clientId: safeClientId,
+        clientName: safeClientName,
         signedAt: executionTimestamp,
         legalHash: cryptographicHash,
         pdfDownloadUrl: `/api/agreement/download?agreementId=${agreementId}`,

@@ -126,15 +126,11 @@ function isValidPhoneNumber(phone: string): boolean {
 // ─── GET ENDPOINT FOR CONFIG STATUS / RESEND TESTING ─────────────────────────
 export async function GET() {
   const hasResend = Boolean(process.env.RESEND_API_KEY);
-  const advisorEmail = process.env.ADVISOR_NOTIFICATION_EMAIL || "advice@sebiadvisor.in";
-  const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 
   return NextResponse.json({
     status: "online",
     service: "Aurum Fiduciary Consultation Intake Desk",
     resendConfigured: hasResend,
-    senderAddress: fromEmail,
-    advisorDestination: advisorEmail,
     spamProtection: {
       honeypotEnabled: true,
       mxDnsCheckEnabled: true,
@@ -143,8 +139,8 @@ export async function GET() {
       ipRateLimiterEnabled: true,
     },
     message: hasResend
-      ? "Resend is active and ready to deliver real emails."
-      : "RESEND_API_KEY not found in environment. Operating in simulation audit mode.",
+      ? "Ready to dispatch live transactional emails via Resend."
+      : "Operating in local simulation mode. Intake requests are safely recorded.",
   });
 }
 

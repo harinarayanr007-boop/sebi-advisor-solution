@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomBytes } from "crypto";
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,11 +13,27 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Artificial delay of 2 seconds as specified in docs/api_guidelines.md
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const cleanAadhaar = String(aadhaarNumber).replace(/\D/g, "");
+    const cleanOtp = String(otp).trim();
+
+    // Enforce 12-digit Aadhaar format
+    if (cleanAadhaar.length !== 12) {
+      return NextResponse.json(
+        { success: false, message: "Aadhaar number must be exactly 12 numeric digits." },
+        { status: 400 }
+      );
+    }
+
+    // Enforce 6-digit OTP format
+    if (!/^\d{6}$/.test(cleanOtp)) {
+      return NextResponse.json(
+        { success: false, message: "OTP must be a 6-digit numeric passcode." },
+        { status: 400 }
+      );
+    }
 
     // Simulation of failed verification if OTP is "000000"
-    if (otp === "000000") {
+    if (cleanOtp === "000000") {
       return NextResponse.json(
         {
           success: false,
@@ -28,12 +45,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Clean and format Aadhaar
-    const cleanAadhaar = aadhaarNumber.replace(/\D/g, "");
-    const maskedAadhaar =
-      cleanAadhaar.length >= 4
-        ? `XXXX-XXXX-${cleanAadhaar.slice(-4)}`
-        : "XXXX-XXXX-8821";
+    const maskedAadhaar = `XXXX-XXXX-${cleanAadhaar.slice(-4)}`;
+    const ckycSuffix = randomBytes(4).toString("hex").toUpperCase();
+    const panMiddle = randomBytes(2).toString("hex").toUpperCase();
 
     return NextResponse.json(
       {
@@ -41,9 +55,9 @@ export async function POST(req: NextRequest) {
         message: "Digital KYC verified successfully via UIDAI CKYC Gateway",
         data: {
           aadhaarMasked: maskedAadhaar,
-          cKycIdentifier: "IN-CKYC-2026-" + Math.floor(1000000 + Math.random() * 9000000),
-          maskedPan: "AAACB" + Math.floor(1000 + Math.random() * 9000) + "K",
-          verifiedName: fullName || "Vikramaditya Singhania",
+          cKycIdentifier: `IN-CKYC-2026-${ckycSuffix}`,
+          maskedPan: `AAACB${panMiddle}K`,
+          verifiedName: fullName || "Verified Investor",
           dob: "14/06/1979",
           gender: "Male",
           registeredAddress:

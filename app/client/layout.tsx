@@ -78,22 +78,13 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
               Access to client wealth dossiers and direct demat folios is restricted under SEBI (Investment Advisers) Regulations, 2013. Please sign in to authenticate.
             </p>
           </div>
-          <div className="space-y-3 pt-2">
-            <button
-              onClick={() => {
-                loginAsClient();
-                router.push("/client/dashboard");
-              }}
-              className="w-full py-3 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center justify-center space-x-2"
-            >
-              <span>Authenticate As Client (Demo)</span>
-              <ArrowRight size={16} weight="bold" />
-            </button>
+          <div className="pt-2">
             <Link
               href="/login"
-              className="w-full py-3 bg-slate-50 border border-[#DFEAF2] text-[#343C6A] rounded-xl text-xs font-bold hover:bg-slate-100 transition block text-center"
+              className="w-full py-3 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center justify-center space-x-2 shadow-sm"
             >
-              Go to Portal Gateway →
+              <span>Go to Client Login (/login)</span>
+              <ArrowRight size={16} weight="bold" />
             </Link>
           </div>
         </div>
