@@ -15,7 +15,13 @@ import {
   CheckCircle,
 } from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
-import { formatINR } from "@/lib/fiduciary-store";
+import {
+  formatINR,
+  sampleDemoClient,
+  sampleDemoAssets,
+  sampleDemoGoals,
+  sampleDemoInsurance,
+} from "@/lib/fiduciary-store";
 
 export default function ClientDashboardPage() {
   const {
@@ -30,6 +36,11 @@ export default function ClientDashboardPage() {
     setShowFactsheetModal,
   } = useFiduciary();
 
+  const currentClient = activeClient || sampleDemoClient;
+  const currentAssets = activeAssets.length > 0 ? activeAssets : sampleDemoAssets;
+  const currentGoals = activeGoals.length > 0 ? activeGoals : sampleDemoGoals;
+  const currentInsurance = activeInsurance.length > 0 ? activeInsurance : sampleDemoInsurance;
+
   const [showAddAssetModal, setShowAddAssetModal] = useState(false);
   const [assetName, setAssetName] = useState("");
   const [assetCategory, setAssetCategory] = useState("Flexi Cap Equity");
@@ -38,8 +49,8 @@ export default function ClientDashboardPage() {
   const [assetRegularTer, setAssetRegularTer] = useState("1.65%");
 
   // Computed values
-  const totalNetWorthNum = activeAssets.reduce((sum, a) => sum + a.currentValue, 0);
-  const totalDragSavedNum = Math.round(totalNetWorthNum * 0.0095); // ~0.95% annual fee savings
+  const totalNetWorthNum = currentAssets.reduce((sum, a) => sum + a.currentValue, 0);
+  const totalDragSavedNum = Math.round(totalNetWorthNum * 0.008); // ~0.80% annual fee savings (~₹3.84L/yr on ₹4.80 Cr)
 
   const handleCreateAsset = (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,7 +147,7 @@ export default function ClientDashboardPage() {
             </div>
             <div className="text-right">
               <span className="text-[10px] text-[#030a03]/50 block font-medium">Verified Folios</span>
-              <span className="font-semibold text-[#030a03]">{activeAssets.length} Direct Accounts</span>
+              <span className="font-semibold text-[#030a03]">{currentAssets.length} Direct Accounts</span>
             </div>
           </div>
         </div>
@@ -181,7 +192,7 @@ export default function ClientDashboardPage() {
           </div>
           <div className="min-w-0">
             <span className="text-xs text-[#030a03]/60 font-medium block">Direct Holdings</span>
-            <h4 className="text-lg font-bold text-[#030a03] truncate">{activeAssets.length} Assets</h4>
+            <h4 className="text-lg font-bold text-[#030a03] truncate">{currentAssets.length} Assets</h4>
           </div>
         </div>
 
@@ -191,7 +202,7 @@ export default function ClientDashboardPage() {
           </div>
           <div className="min-w-0">
             <span className="text-xs text-[#030a03]/60 font-medium block">Active Goals</span>
-            <h4 className="text-lg font-bold text-[#030a03] truncate">{activeGoals.length} Milestones</h4>
+            <h4 className="text-lg font-bold text-[#030a03] truncate">{currentGoals.length} Milestones</h4>
           </div>
         </div>
 
@@ -201,7 +212,7 @@ export default function ClientDashboardPage() {
           </div>
           <div className="min-w-0">
             <span className="text-xs text-[#030a03]/60 font-medium block">Target Return</span>
-            <h4 className="text-lg font-bold text-[#030a03] truncate">{activeClient?.targetCAGR || "11.5% CAGR"}</h4>
+            <h4 className="text-lg font-bold text-[#030a03] truncate">{currentClient?.targetCAGR || "11.5% CAGR"}</h4>
           </div>
         </div>
 
@@ -212,7 +223,7 @@ export default function ClientDashboardPage() {
           <div className="min-w-0">
             <span className="text-xs text-[#030a03]/60 font-medium block">Pure Term Cover</span>
             <h4 className="text-lg font-bold text-emerald-600 truncate">
-              {activeInsurance.length > 0 ? "100% Protected" : "Pending Audit"}
+              {currentInsurance.length > 0 ? "100% Protected" : "Pending Audit"}
             </h4>
           </div>
         </div>
@@ -238,7 +249,7 @@ export default function ClientDashboardPage() {
             </Link>
           </div>
 
-          {activeAssets.length === 0 ? (
+          {currentAssets.length === 0 ? (
             <div className="p-8 text-center border border-dashed border-[rgba(3,10,3,0.15)] rounded-xl space-y-3">
               <Briefcase size={36} weight="regular" className="text-[#030a03]/40 mx-auto" aria-hidden="true" />
               <p className="text-xs text-[#030a03]/60">No direct assets added yet.</p>
@@ -263,7 +274,7 @@ export default function ClientDashboardPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[rgba(3,10,3,0.06)]">
-                    {activeAssets.slice(0, 5).map((a) => (
+                    {currentAssets.slice(0, 5).map((a) => (
                       <tr key={a.id} className="hover:bg-[#f8fbff]/60 transition">
                         <td className="p-3.5 font-semibold text-[#030a03] max-w-[200px] truncate">{a.name}</td>
                         <td className="p-3.5 text-[#030a03]/70">{a.category}</td>
@@ -298,7 +309,7 @@ export default function ClientDashboardPage() {
             </Link>
           </div>
 
-          {activeGoals.length === 0 ? (
+          {currentGoals.length === 0 ? (
             <div className="p-6 text-center border border-dashed border-[rgba(3,10,3,0.15)] rounded-xl space-y-2">
               <Target size={32} weight="regular" className="text-[#030a03]/40 mx-auto" aria-hidden="true" />
               <p className="text-xs text-[#030a03]/60">No milestones set up yet.</p>
@@ -311,7 +322,7 @@ export default function ClientDashboardPage() {
             </div>
           ) : (
             <div className="space-y-3.5">
-              {activeGoals.slice(0, 3).map((g) => {
+              {currentGoals.slice(0, 3).map((g) => {
                 const percent = Math.min(100, Math.round((g.currentFunded / g.targetAmount) * 100));
                 return (
                   <div key={g.id} className="p-3.5 bg-[#f8fbff] rounded-xl border border-[rgba(3,10,3,0.08)] space-y-2">

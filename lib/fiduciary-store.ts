@@ -130,14 +130,7 @@ export const defaultAdvisor: AdvisorProfile = {
   activeClientCount: 0,
 };
 
-// CLEAN ZERO-DUMMY INITIAL STATE: Clean production baseline
-export const initialClients: ClientProfile[] = [];
-export const initialAssets: HoldingAsset[] = [];
-export const initialGoals: FiduciaryGoal[] = [];
-export const initialCashFlow: CashFlowItem[] = [];
-export const initialInsurance: InsurancePolicy[] = [];
-
-// OPTIONAL DEMO PRESET: ONLY activated when tester explicitly clicks "Load Sample Demo Case"
+// SAMPLE DEMO CASE (Default Direct Access Model)
 export const sampleDemoClient: ClientProfile = {
   id: "CLIENT-DEMO-001",
   name: "Rajesh V. Kulkarni",
@@ -313,6 +306,13 @@ export const sampleDemoInsurance: InsurancePolicy[] = [
     notes: "₹25L Base + ₹75L Super Top-Up with ₹0 room rent capping.",
   },
 ];
+
+// INITIAL STATE: Populated with demonstration case to ensure direct links (/client/dashboard) work immediately
+export const initialClients: ClientProfile[] = [sampleDemoClient];
+export const initialAssets: HoldingAsset[] = sampleDemoAssets;
+export const initialGoals: FiduciaryGoal[] = sampleDemoGoals;
+export const initialCashFlow: CashFlowItem[] = sampleDemoCashFlow;
+export const initialInsurance: InsurancePolicy[] = sampleDemoInsurance;
 
 export interface AuditLogEntry {
   id: string;

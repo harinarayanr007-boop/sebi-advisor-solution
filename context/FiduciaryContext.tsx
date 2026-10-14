@@ -99,7 +99,7 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
 
   const [advisor, setAdvisor] = useState<AdvisorProfile>(defaultAdvisor);
   const [clients, setClients] = useState<ClientProfile[]>(initialClients);
-  const [activeClientId, setActiveClientId] = useState<string | null>(null);
+  const [activeClientId, setActiveClientId] = useState<string | null>(sampleDemoClient.id);
 
   const [assets, setAssets] = useState<HoldingAsset[]>(initialAssets);
   const [goals, setGoals] = useState<FiduciaryGoal[]>(initialGoals);
@@ -117,6 +117,18 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
       const storedSession = localStorage.getItem("aurum_auth_session");
       if (storedSession) {
         setSession(JSON.parse(storedSession));
+      } else {
+        // Direct access fallback: default to sampleDemoClient so direct links work seamlessly without a password
+        const defaultClientSession: UserSession = {
+          role: "client",
+          userId: sampleDemoClient.id,
+          name: sampleDemoClient.name,
+          email: sampleDemoClient.email,
+          clientId: sampleDemoClient.id,
+          status: "active",
+        };
+        setSession(defaultClientSession);
+        persist("aurum_auth_session", defaultClientSession);
       }
 
       const storedAdvisor = localStorage.getItem("aurum_advisor_profile");
@@ -127,23 +139,73 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
       const storedClients = localStorage.getItem("aurum_clients");
       if (storedClients) {
         const parsed = JSON.parse(storedClients);
-        setClients(parsed);
-        if (parsed.length > 0 && !activeClientId) {
-          setActiveClientId(parsed[0].id);
+        if (parsed.length > 0) {
+          setClients(parsed);
+          if (!activeClientId) {
+            setActiveClientId(parsed[0].id);
+          }
+        } else {
+          setClients([sampleDemoClient]);
+          setActiveClientId(sampleDemoClient.id);
+          persist("aurum_clients", [sampleDemoClient]);
         }
+      } else {
+        setClients([sampleDemoClient]);
+        setActiveClientId(sampleDemoClient.id);
+        persist("aurum_clients", [sampleDemoClient]);
       }
 
       const storedAssets = localStorage.getItem("aurum_assets");
-      if (storedAssets) setAssets(JSON.parse(storedAssets));
+      if (storedAssets) {
+        const parsed = JSON.parse(storedAssets);
+        if (parsed.length > 0) setAssets(parsed);
+        else {
+          setAssets(sampleDemoAssets);
+          persist("aurum_assets", sampleDemoAssets);
+        }
+      } else {
+        setAssets(sampleDemoAssets);
+        persist("aurum_assets", sampleDemoAssets);
+      }
 
       const storedGoals = localStorage.getItem("aurum_goals");
-      if (storedGoals) setGoals(JSON.parse(storedGoals));
+      if (storedGoals) {
+        const parsed = JSON.parse(storedGoals);
+        if (parsed.length > 0) setGoals(parsed);
+        else {
+          setGoals(sampleDemoGoals);
+          persist("aurum_goals", sampleDemoGoals);
+        }
+      } else {
+        setGoals(sampleDemoGoals);
+        persist("aurum_goals", sampleDemoGoals);
+      }
 
       const storedCashFlow = localStorage.getItem("aurum_cashflow");
-      if (storedCashFlow) setCashFlow(JSON.parse(storedCashFlow));
+      if (storedCashFlow) {
+        const parsed = JSON.parse(storedCashFlow);
+        if (parsed.length > 0) setCashFlow(parsed);
+        else {
+          setCashFlow(sampleDemoCashFlow);
+          persist("aurum_cashflow", sampleDemoCashFlow);
+        }
+      } else {
+        setCashFlow(sampleDemoCashFlow);
+        persist("aurum_cashflow", sampleDemoCashFlow);
+      }
 
       const storedInsurance = localStorage.getItem("aurum_insurance");
-      if (storedInsurance) setInsurance(JSON.parse(storedInsurance));
+      if (storedInsurance) {
+        const parsed = JSON.parse(storedInsurance);
+        if (parsed.length > 0) setInsurance(parsed);
+        else {
+          setInsurance(sampleDemoInsurance);
+          persist("aurum_insurance", sampleDemoInsurance);
+        }
+      } else {
+        setInsurance(sampleDemoInsurance);
+        persist("aurum_insurance", sampleDemoInsurance);
+      }
 
       const storedLogs = localStorage.getItem("aurum_audit_logs");
       if (storedLogs) setAuditLogs(JSON.parse(storedLogs));

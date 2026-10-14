@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -23,7 +23,14 @@ import {
   Sparkle,
 } from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
-import { formatINR } from "@/lib/fiduciary-store";
+import {
+  formatINR,
+  sampleDemoClient,
+  sampleDemoAssets,
+  sampleDemoGoals,
+  sampleDemoCashFlow,
+  sampleDemoInsurance,
+} from "@/lib/fiduciary-store";
 import InstitutionalPrintDossier from "@/components/InstitutionalPrintDossier";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
@@ -45,7 +52,38 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     lockSession,
     unlockSession,
     loginAsClient,
+    loginWithDemoClient,
   } = useFiduciary();
+
+  // Passthrough for client login or registration sub-routes
+  if (pathname === "/client/login" || pathname === "/client/register") {
+    return <>{children}</>;
+  }
+
+  // Direct Access Auto-Hydration: If visitor opens /client/dashboard directly, auto-login as demo client or from ?magic= param
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const magicId = params.get("magic") || params.get("client") || params.get("auth");
+      if (magicId) {
+        loginAsClient(magicId);
+        return;
+      }
+    }
+    if (!session) {
+      loginWithDemoClient();
+    }
+  }, [session, loginAsClient, loginWithDemoClient]);
+
+  const displayClient = activeClient || sampleDemoClient;
+  const displaySession = session || {
+    role: "client" as const,
+    userId: displayClient.id,
+    name: displayClient.name,
+    email: displayClient.email,
+    clientId: displayClient.id,
+    status: "active" as const,
+  };
 
   const handleLogout = () => {
     logout();
@@ -63,37 +101,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     { label: "Client Profile", icon: User, href: "/client/profile" },
   ];
 
-  if (!session) {
-    return (
-      <div className="min-h-screen bg-[#f8fbff] flex items-center justify-center p-6 font-sans">
-        <div className="bg-white rounded-2xl border border-[rgba(3,10,3,0.12)] p-8 max-w-md w-full text-center shadow-xs space-y-6">
-          <div className="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto border border-rose-200">
-            <LockKey size={24} weight="bold" aria-hidden="true" />
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-xl font-semibold tracking-[-0.3px] text-[#030a03]">
-              Fiduciary Authentication Required
-            </h2>
-            <p className="text-sm text-[#030a03]/70 leading-relaxed">
-              Access to client wealth dossiers and direct demat folios is restricted under SEBI (Investment Advisers) Regulations, 2013. Please sign in to authenticate.
-            </p>
-          </div>
-          <div className="pt-2">
-            <Link
-              href="/login"
-              className="w-full py-3 bg-[#1e90ff] hover:bg-[#0077e6] text-white rounded-xl text-sm font-medium transition flex items-center justify-center space-x-2 shadow-xs focus-visible:ring-2 focus-visible:ring-[#1e90ff] focus-visible:ring-offset-2 outline-none"
-            >
-              <span>Go to Client Login</span>
-              <ArrowRight size={16} weight="bold" aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Pending Mandate Review Screen: Awaiting RIA Advisor Approval
-  const isPendingApproval = session?.status === "pending_approval" || activeClient?.status === "pending_approval";
+  // Pending Mandate Review Screen: Awaiting RIA Advisor Approval (Only when user explicitly registers and is pending)
+  const isPendingApproval =
+    session?.role === "client" &&
+    (session?.status === "pending_approval" || activeClient?.status === "pending_approval");
   if (isPendingApproval) {
     return (
       <div className="min-h-screen bg-[#f8fbff] flex items-center justify-center p-6 font-sans">
@@ -258,7 +269,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           <div className="text-[10px] text-[#030a03]/60 min-w-0 pr-2">
             <span className="block font-medium text-[#030a03]/50">Investor Session</span>
             <span className="truncate max-w-[100px] block font-semibold text-[#030a03]">
-              {activeClient?.name || session?.name}
+              {displayClient.name}
             </span>
           </div>
           <div className="flex items-center space-x-1 shrink-0">
@@ -288,11 +299,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         <header className="h-[76px] bg-white border-b border-[rgba(3,10,3,0.12)] flex items-center justify-between px-6 sm:px-8 sticky top-0 z-20">
           <div className="min-w-0">
             <h2 className="text-xl font-semibold tracking-[-0.3px] text-[#030a03] leading-tight truncate">
-              {activeClient?.name || "Family Wealth Overview"}
+              {displayClient.name}
             </h2>
             <div className="flex items-center space-x-2 mt-0.5">
               <span className="text-[11px] text-[#030a03]/60 font-mono">
-                PAN: {activeClient?.pan || "PENDING"} • CKYC: {activeClient?.ckycId || "IN-CKYC-VERIFIED"}
+                PAN: {displayClient.pan || "PENDING"} • CKYC: {displayClient.ckycId || "IN-CKYC-VERIFIED"}
               </span>
               <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-[#e8f3ff] text-[#1e90ff] border border-[rgba(30,144,255,0.16)]">
                 Direct Demat Portfolio
@@ -344,14 +355,14 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       </div>
 
       {/* Institutional Fiduciary Print Dossier */}
-      {showFactsheetModal && activeClient && (
+      {showFactsheetModal && (
         <InstitutionalPrintDossier
-          client={activeClient}
+          client={displayClient}
           advisor={advisor}
-          assets={activeAssets}
-          goals={activeGoals}
-          cashFlow={activeCashFlow}
-          insurance={activeInsurance}
+          assets={activeAssets.length > 0 ? activeAssets : sampleDemoAssets}
+          goals={activeGoals.length > 0 ? activeGoals : sampleDemoGoals}
+          cashFlow={activeCashFlow.length > 0 ? activeCashFlow : sampleDemoCashFlow}
+          insurance={activeInsurance.length > 0 ? activeInsurance : sampleDemoInsurance}
           onClose={() => setShowFactsheetModal(false)}
         />
       )}
