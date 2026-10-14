@@ -213,9 +213,13 @@ export default function LoginPage() {
                   />
                   <span className="text-xs text-[#718EBF]">Remember me</span>
                 </label>
-                <span className="text-xs text-[#1814F3] font-medium">
-                  Direct Demat Access
-                </span>
+                <button
+                  type="button"
+                  onClick={() => setError("Your default initial passkey is your 10-digit PAN in uppercase. If you forgot your custom password, contact your RIA to reset credentials.")}
+                  className="text-xs text-[#1814F3] hover:underline font-medium outline-none focus-visible:ring-2 focus-visible:ring-[#1814F3] rounded"
+                >
+                  Forgot password?
+                </button>
               </div>
 
               <button
