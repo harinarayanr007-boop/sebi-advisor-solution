@@ -1,104 +1,105 @@
+"use client";
+
 import React from "react";
-import Image from "next/image";
-import { ShieldCheck, CheckCircle, ChartLineUp } from "@phosphor-icons/react";
+import { motion } from "motion/react";
+
+const imgProcessStep1 = "/figma/process-step-1.png";
+const imgProcessStep2 = "/figma/process-step-2.png";
+const imgProcessStep3 = "/figma/process-step-3.png";
 
 export default function FiduciaryProcessHero() {
   const steps = [
     {
-      number: "01",
+      number: 1,
       title: "First, we talk",
-      tag: "Goal & Liability Mapping",
       description:
-        "We sit down and listen. Your goals, your fears, your numbers. We audit your existing portfolios to eliminate distributor commission drag.",
-      image: "/figma/process-step-1.png",
+        "We sit down and listen. Your goals, your fears, your numbers. Nothing is off the table.",
+      image: imgProcessStep1,
     },
     {
-      number: "02",
+      number: 2,
       title: "Then, we plan",
-      tag: "Direct Allocation Blueprint",
       description:
-        "You receive a clear, written advisory dossier detailing exact Direct Plan allocations, target percentages, and sovereign fixed income instruments.",
-      image: "/figma/process-step-2.png",
+        "You get a written plan. Clear, direct, and built only for you. No templates, no noise.",
+      image: imgProcessStep2,
     },
     {
-      number: "03",
+      number: 3,
       title: "Finally, we act",
-      tag: "Quarterly Fiduciary Oversight",
       description:
-        "We monitor portfolio health, track asset drift, execute tax harvesting, and maintain periodic review calls to keep your plan on course.",
-      image: "/figma/process-step-3.png",
+        "We build the portfolio and manage it. You live your life, we watch the road.",
+      image: imgProcessStep3,
     },
   ];
 
   return (
-    <div className="relative w-full h-full bg-[#0A1128] text-white flex flex-col justify-between p-6 sm:p-10 lg:p-12 overflow-hidden select-none">
-      {/* Ambient background glow */}
-      <div className="absolute -top-32 -right-32 w-96 h-96 bg-[#1814F3]/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-[#1e90ff]/15 rounded-full blur-3xl pointer-events-none" />
-
-      {/* Top Header */}
-      <div className="relative z-10">
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-semibold tracking-wider text-blue-200 uppercase mb-4">
-          <ShieldCheck size={14} weight="fill" className="text-emerald-400" />
-          <span>The Fiduciary Process • How It Works</span>
+    <div className="w-full h-full min-h-screen bg-[#f8fbff] border-l border-[#dfeaf2] flex flex-col justify-between p-6 sm:p-10 lg:p-12 overflow-y-auto">
+      {/* Section Title (Exact from website home page) */}
+      <div className="flex flex-col gap-2 sm:gap-3 items-start max-w-[560px] w-full">
+        <div className="flex items-center">
+          <span className="font-semibold text-[14px] sm:text-[16px] leading-[1.5] text-[#1e90ff]">
+            Process
+          </span>
         </div>
-
-        <h2 className="text-2xl sm:text-3xl font-extrabold font-space tracking-tight text-white leading-tight">
-          A Disciplined 3-Step Journey to Real Wealth Protection
-        </h2>
-        <p className="mt-2 text-xs sm:text-sm text-slate-300 max-w-lg leading-relaxed">
-          Zero distributor commissions, zero product sales quotas. Direct demat portfolios built strictly around your family&apos;s financial liabilities.
-        </p>
+        <div className="flex flex-col gap-2 items-start text-[#030a03] w-full">
+          <h2 className="font-semibold text-[26px] sm:text-[34px] lg:text-[38px] leading-[1.2] tracking-[-0.48px] text-[#030a03]">
+            How we will be working together
+          </h2>
+          <p className="font-normal text-[14px] sm:text-[16px] leading-[1.5] text-[#030a03]/80">
+            Three clear stages. Direct, disciplined execution focused solely on your wealth preservation.
+          </p>
+        </div>
       </div>
 
-      {/* 3 Process Cards */}
-      <div className="relative z-10 my-6 sm:my-8 space-y-4">
+      {/* Process Steps Cards (Exact content & visuals from website home page) */}
+      <div className="flex flex-col gap-4 my-6 sm:my-8 w-full max-w-[560px]">
         {steps.map((step) => (
-          <div
+          <motion.div
             key={step.number}
-            className="flex items-center space-x-4 p-3.5 sm:p-4 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md hover:bg-white/[0.07] transition group"
+            whileHover={{ y: -3 }}
+            transition={{ duration: 0.2 }}
+            className="flex items-center gap-4 sm:gap-6 p-4 sm:p-5 rounded-2xl bg-white border border-[rgba(30,144,255,0.16)] shadow-xs hover:border-[#1e90ff]/40 transition"
           >
-            {/* Step Visual / Thumbnail */}
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-white/5 border border-white/10 flex-shrink-0 flex items-center justify-center p-1.5 overflow-hidden">
+            {/* Illustration */}
+            <div className="w-[100px] h-[90px] sm:w-[130px] sm:h-[110px] relative flex-shrink-0 flex items-center justify-center overflow-hidden">
               <img
                 src={step.image}
                 alt={step.title}
-                className="w-full h-full object-contain pointer-events-none group-hover:scale-105 transition-transform duration-300"
+                className="size-full object-contain pointer-events-none select-none"
               />
             </div>
 
-            {/* Step Content */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-2 mb-1">
-                <span className="w-5 h-5 rounded-full bg-[#1814F3] text-white flex items-center justify-center text-[10px] font-bold font-mono">
-                  {step.number}
-                </span>
-                <span className="text-xs font-semibold uppercase tracking-wider text-blue-300">
-                  {step.tag}
-                </span>
+            {/* Content & Badge */}
+            <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+              <div className="inline-flex">
+                <div className="bg-[#a0befe] px-[14px] py-[2px] rounded-full inline-flex items-center justify-center">
+                  <span className="font-bold text-[15px] sm:text-[17px] text-[#030a03] leading-none">
+                    {step.number}
+                  </span>
+                </div>
               </div>
-              <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">
+              <h3 className="font-semibold text-[18px] sm:text-[22px] leading-[1.3] tracking-[-0.3px] text-[#030a03]">
                 {step.title}
               </h3>
-              <p className="mt-0.5 text-xs text-slate-300 line-clamp-2 leading-relaxed">
+              <p className="font-normal text-[13px] sm:text-[14px] leading-[1.5] text-[#030a03]/80">
                 {step.description}
               </p>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
-      {/* Bottom Trust & Compliance Bar */}
-      <div className="relative z-10 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-400 font-mono">
+      {/* Subtle Bottom Trust Bar */}
+      <div className="pt-4 border-t border-[rgba(30,144,255,0.12)] flex items-center justify-between text-xs text-[#030a03]/60 font-mono">
         <div className="flex items-center space-x-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-emerald-500" />
           <span>SEBI INA000015845</span>
           <span>•</span>
           <span>BASL 1892</span>
         </div>
-        <div className="text-slate-300 font-sans font-medium">
+        <span className="font-sans font-medium text-[#030a03]/70">
           Direct Demat • Pure Fiduciary Mandate
-        </div>
+        </span>
       </div>
     </div>
   );
