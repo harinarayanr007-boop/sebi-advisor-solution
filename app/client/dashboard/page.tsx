@@ -5,18 +5,15 @@ import Link from "next/link";
 import {
   Wallet,
   ShieldCheck,
-  TrendingUp,
+  TrendUp,
   Target,
   ArrowUpRight,
   Plus,
-  FileUp,
-  Sparkles,
-  PieChart,
-  CheckCircle2,
-  Clock,
+  UploadSimple,
+  Sparkle,
   Briefcase,
-  AlertCircle,
-} from "lucide-react";
+  CheckCircle,
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 import { formatINR } from "@/lib/fiduciary-store";
 
@@ -91,14 +88,14 @@ export default function ClientDashboardPage() {
                 onClick={() => setShowAddAssetModal(true)}
                 className="px-4 py-2.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center space-x-1.5 shadow-sm"
               >
-                <Plus className="w-4 h-4" />
+                <Plus size={16} weight="bold" />
                 <span>+ Add Direct Holding</span>
               </button>
               <button
                 onClick={() => parseCasStatement("CAS_Statement.pdf")}
                 className="px-4 py-2.5 bg-white border border-[#DFEAF2] hover:bg-slate-50 text-[#343C6A] rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-xs"
               >
-                <FileUp className="w-4 h-4 text-[#1814F3]" />
+                <UploadSimple size={16} weight="bold" className="text-[#1814F3]" />
                 <span>Simulate CAS Upload</span>
               </button>
               <button
@@ -106,7 +103,7 @@ export default function ClientDashboardPage() {
                 title="Populate test data for evaluation"
                 className="px-3 py-2.5 bg-amber-50 border border-amber-200 text-amber-800 hover:bg-amber-100 rounded-xl text-xs font-bold transition flex items-center space-x-1"
               >
-                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                <Sparkle size={16} weight="fill" className="text-amber-600" />
                 <span>Load Sample Case</span>
               </button>
             </div>
@@ -129,7 +126,7 @@ export default function ClientDashboardPage() {
               </h2>
             </div>
             <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
-              <Wallet className="w-6 h-6 text-white" />
+              <Wallet size={24} weight="fill" className="text-white" />
             </div>
           </div>
 
@@ -157,7 +154,7 @@ export default function ClientDashboardPage() {
               </h2>
             </div>
             <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center">
-              <ShieldCheck className="w-6 h-6 text-emerald-600" />
+              <ShieldCheck size={24} weight="fill" className="text-emerald-600" />
             </div>
           </div>
 
@@ -180,7 +177,7 @@ export default function ClientDashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white rounded-[25px] p-5 border border-[#DFEAF2] shadow-sm flex items-center space-x-4">
           <div className="w-12 h-12 rounded-2xl bg-[#E7EDFF] text-[#1814F3] flex items-center justify-center shrink-0">
-            <Briefcase className="w-6 h-6" />
+            <Briefcase size={24} weight="duotone" />
           </div>
           <div>
             <span className="text-xs text-[#718EBF] font-semibold">Direct Assets</span>
@@ -190,7 +187,7 @@ export default function ClientDashboardPage() {
 
         <div className="bg-white rounded-[25px] p-5 border border-[#DFEAF2] shadow-sm flex items-center space-x-4">
           <div className="w-12 h-12 rounded-2xl bg-[#DCFAF8] text-[#16DBCC] flex items-center justify-center shrink-0">
-            <Target className="w-6 h-6" />
+            <Target size={24} weight="duotone" />
           </div>
           <div>
             <span className="text-xs text-[#718EBF] font-semibold">Active Goals</span>
@@ -200,7 +197,7 @@ export default function ClientDashboardPage() {
 
         <div className="bg-white rounded-[25px] p-5 border border-[#DFEAF2] shadow-sm flex items-center space-x-4">
           <div className="w-12 h-12 rounded-2xl bg-[#FFF5D9] text-[#FFBB38] flex items-center justify-center shrink-0">
-            <TrendingUp className="w-6 h-6" />
+            <TrendUp size={24} weight="duotone" />
           </div>
           <div>
             <span className="text-xs text-[#718EBF] font-semibold">Risk Horizon</span>
@@ -210,7 +207,7 @@ export default function ClientDashboardPage() {
 
         <div className="bg-white rounded-[25px] p-5 border border-[#DFEAF2] shadow-sm flex items-center space-x-4">
           <div className="w-12 h-12 rounded-2xl bg-[#FFE0EB] text-[#FF82AC] flex items-center justify-center shrink-0">
-            <ShieldCheck className="w-6 h-6" />
+            <ShieldCheck size={24} weight="duotone" />
           </div>
           <div>
             <span className="text-xs text-[#718EBF] font-semibold">Pure Term Adequacy</span>
@@ -237,13 +234,13 @@ export default function ClientDashboardPage() {
               className="text-xs font-bold text-[#1814F3] hover:underline flex items-center space-x-1"
             >
               <span>View All Holdings</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
+              <ArrowUpRight size={14} weight="bold" />
             </Link>
           </div>
 
           {activeAssets.length === 0 ? (
             <div className="p-8 text-center border border-dashed border-[#DFEAF2] rounded-2xl space-y-3">
-              <Briefcase className="w-8 h-8 text-[#718EBF] mx-auto opacity-50" />
+              <Briefcase size={36} weight="duotone" className="text-[#718EBF] mx-auto opacity-50" />
               <p className="text-xs text-[#718EBF]">No direct assets added yet.</p>
               <button
                 onClick={() => setShowAddAssetModal(true)}
@@ -301,7 +298,7 @@ export default function ClientDashboardPage() {
 
           {activeGoals.length === 0 ? (
             <div className="p-6 text-center border border-dashed border-[#DFEAF2] rounded-2xl space-y-2">
-              <Target className="w-6 h-6 text-[#718EBF] mx-auto opacity-50" />
+              <Target size={32} weight="duotone" className="text-[#718EBF] mx-auto opacity-50" />
               <p className="text-xs text-[#718EBF]">No milestones setup yet.</p>
               <Link
                 href="/client/goals"

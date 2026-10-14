@@ -4,24 +4,17 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard,
+  ChartBar,
   Users,
   UserPlus,
   ShieldCheck,
   FileText,
-  Settings,
+  Gear,
   Printer,
-  Download,
-  Search,
-  Bell,
-  LogOut,
+  SignOut,
+  SealCheck,
   X,
-  Award,
-  DollarSign,
-  Activity,
-  Briefcase,
-  ChevronRight,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function AdvisorLayout({ children }: { children: React.ReactNode }) {
@@ -43,12 +36,12 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
   };
 
   const navItems = [
-    { label: "Practice Dashboard", icon: LayoutDashboard, href: "/advisor/dashboard" },
+    { label: "Practice Dashboard", icon: ChartBar, href: "/advisor/dashboard" },
     { label: "Client Roster", icon: Users, href: "/advisor/clients" },
     { label: "Onboard New Client", icon: UserPlus, href: "/advisor/onboard" },
     { label: "SEBI Compliance & Form B", icon: ShieldCheck, href: "/advisor/compliance" },
     { label: "Fiduciary Reports", icon: FileText, href: "/advisor/reports" },
-    { label: "Practice Settings", icon: Settings, href: "/advisor/settings" },
+    { label: "Practice Settings", icon: Gear, href: "/advisor/settings" },
   ];
 
   return (
@@ -88,7 +81,11 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
                 {isActive && (
                   <span className="absolute left-0 top-2 bottom-2 w-1.5 bg-[#1814F3] rounded-r-full" />
                 )}
-                <Icon className={`w-5 h-5 mr-3.5 ${isActive ? "text-[#1814F3]" : "text-[#718EBF]"}`} />
+                <Icon
+                  size={20}
+                  weight={isActive ? "fill" : "regular"}
+                  className={`mr-3.5 ${isActive ? "text-[#1814F3]" : "text-[#718EBF]"}`}
+                />
                 <span>{item.label}</span>
               </Link>
             );
@@ -98,7 +95,7 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
         {/* License Verification Card */}
         <div className="p-4 m-4 bg-[#F5F7FA] border border-[#DFEAF2] rounded-2xl text-left">
           <div className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-wider text-emerald-700 mb-1">
-            <Award className="w-3.5 h-3.5" />
+            <SealCheck size={16} weight="fill" />
             <span>Fiduciary License Active</span>
           </div>
           <p className="text-xs font-bold text-[#343C6A] truncate">{advisor.firmName}</p>
@@ -116,7 +113,7 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
             title="Sign Out"
             className="p-2 text-[#718EBF] hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
           >
-            <LogOut className="w-4 h-4" />
+            <SignOut size={18} weight="bold" />
           </button>
         </div>
       </aside>
@@ -144,7 +141,7 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
               href="/advisor/onboard"
               className="flex items-center space-x-2 px-4 py-2.5 bg-[#1814F3] text-white rounded-2xl text-xs font-bold hover:bg-blue-700 transition shadow-sm"
             >
-              <UserPlus className="w-4 h-4" />
+              <UserPlus size={16} weight="bold" />
               <span>+ Onboard Client</span>
             </Link>
 
@@ -152,7 +149,7 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
               onClick={handleLogout}
               className="flex items-center space-x-1.5 px-4 py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-2xl border border-rose-200 transition"
             >
-              <LogOut className="w-3.5 h-3.5" />
+              <SignOut size={16} weight="bold" />
               <span>Sign Out</span>
             </button>
           </div>
@@ -175,7 +172,7 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
               }}
               className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-[#718EBF]"
             >
-              <X className="w-5 h-5" />
+              <X size={20} weight="bold" />
             </button>
 
             <div className="border-b border-[#DFEAF2] pb-6 mb-6">
@@ -195,7 +192,7 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
                   onClick={() => window.print()}
                   className="px-4 py-2 bg-[#1814F3] text-white rounded-xl text-xs font-bold flex items-center space-x-1 shadow-sm"
                 >
-                  <Printer className="w-4 h-4" />
+                  <Printer size={16} weight="bold" />
                   <span>Print Document</span>
                 </button>
               </div>

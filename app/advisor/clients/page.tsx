@@ -4,18 +4,13 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
   Users,
-  Search,
-  Filter,
+  MagnifyingGlass,
   UserPlus,
-  Trash2,
-  Eye,
+  Trash,
   Printer,
-  Sparkles,
-  ShieldCheck,
-  CheckCircle2,
-} from "lucide-react";
+  Sparkle,
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
-import { formatINR } from "@/lib/fiduciary-store";
 
 export default function AdvisorClientsPage() {
   const {
@@ -54,7 +49,7 @@ export default function AdvisorClientsPage() {
             href="/advisor/onboard"
             className="px-4 py-2.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center space-x-2 shadow-sm"
           >
-            <UserPlus className="w-4 h-4" />
+            <UserPlus size={16} weight="bold" />
             <span>+ Onboard New Client</span>
           </Link>
         </div>
@@ -63,7 +58,7 @@ export default function AdvisorClientsPage() {
       {/* Search & Filters */}
       <div className="bg-white rounded-[25px] p-5 border border-[#DFEAF2] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:w-96">
-          <Search className="w-4 h-4 text-[#718EBF] absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <MagnifyingGlass size={16} weight="bold" className="text-[#718EBF] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search by legal name, email, or PAN..."
@@ -92,7 +87,7 @@ export default function AdvisorClientsPage() {
       <div className="bg-white rounded-[25px] p-6 border border-[#DFEAF2] shadow-sm space-y-4">
         {filteredClients.length === 0 ? (
           <div className="p-12 text-center border border-dashed border-[#DFEAF2] rounded-2xl space-y-3">
-            <Users className="w-10 h-10 text-[#718EBF] mx-auto opacity-40" />
+            <Users size={36} weight="duotone" className="text-[#718EBF] mx-auto opacity-40" />
             <h4 className="text-sm font-bold text-[#343C6A]">No clients match criteria</h4>
             <p className="text-xs text-[#718EBF] max-w-sm mx-auto">
               {clients.length === 0
@@ -184,7 +179,7 @@ export default function AdvisorClientsPage() {
                         title="Remove client"
                         className="p-1.5 text-[#718EBF] hover:text-rose-600 transition"
                       >
-                        <Trash2 className="w-4 h-4 inline" />
+                        <Trash size={16} weight="bold" className="inline" />
                       </button>
                     </td>
                   </tr>

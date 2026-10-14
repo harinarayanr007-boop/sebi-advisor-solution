@@ -3,14 +3,8 @@
 import React from "react";
 import {
   ShieldCheck,
-  FileCheck,
-  Scale,
-  Award,
-  CheckCircle2,
-  Clock,
-  AlertCircle,
-  Building,
-} from "lucide-react";
+  CheckCircle,
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function AdvisorCompliancePage() {
@@ -104,7 +98,7 @@ export default function AdvisorCompliancePage() {
 
             <div className="pt-3 border-t border-[#F0F4F8] flex items-center justify-between text-xs">
               <span className="text-emerald-700 font-bold flex items-center space-x-1 text-[11px]">
-                <CheckCircle2 className="w-3.5 h-3.5" />
+                <CheckCircle size={16} weight="fill" />
                 <span>Audited & Stamped</span>
               </span>
               <span className="text-[11px] text-[#718EBF]">

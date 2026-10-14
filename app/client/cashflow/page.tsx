@@ -4,13 +4,13 @@ import React, { useState } from "react";
 import {
   CreditCard,
   Plus,
-  Trash2,
-  TrendingDown,
-  TrendingUp,
+  Trash,
+  TrendDown,
+  TrendUp,
   ArrowDownRight,
   ArrowUpRight,
   Wallet,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 import { formatINR } from "@/lib/fiduciary-store";
 
@@ -60,7 +60,7 @@ export default function ClientCashFlowPage() {
           onClick={() => setShowAddModal(true)}
           className="px-4 py-2.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center space-x-2 shadow-sm"
         >
-          <Plus className="w-4 h-4" />
+          <Plus size={16} weight="bold" />
           <span>+ Add Income / Liability</span>
         </button>
       </div>
@@ -108,7 +108,7 @@ export default function ClientCashFlowPage() {
 
         {activeCashFlow.length === 0 ? (
           <div className="p-12 text-center border border-dashed border-[#DFEAF2] rounded-2xl space-y-3">
-            <CreditCard className="w-10 h-10 text-[#718EBF] mx-auto opacity-40" />
+            <CreditCard size={36} weight="duotone" className="text-[#718EBF] mx-auto opacity-40" />
             <h4 className="text-sm font-bold text-[#343C6A]">No cash flow items recorded yet</h4>
             <p className="text-xs text-[#718EBF] max-w-sm mx-auto">
               Record your monthly income and recurring loan EMIs to calculate your net investable capacity.
@@ -160,7 +160,7 @@ export default function ClientCashFlowPage() {
                         onClick={() => deleteCashFlow(c.id)}
                         className="p-1.5 text-[#718EBF] hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash size={16} weight="bold" />
                       </button>
                     </td>
                   </tr>

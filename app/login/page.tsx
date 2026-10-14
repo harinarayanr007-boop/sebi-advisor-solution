@@ -6,20 +6,19 @@ import { useRouter } from "next/navigation";
 import {
   ShieldCheck,
   User,
-  Briefcase,
-  Lock,
+  LockKey,
   ArrowRight,
-  CheckCircle2,
-  Building,
-  Key,
-  Scale,
-  Sparkles,
-} from "lucide-react";
+  Scales,
+  Sparkle,
+  Buildings,
+  IdentificationBadge,
+  CheckCircle,
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { loginAsAdvisor, loginAsClient, clients } = useFiduciary();
+  const { loginAsAdvisor, loginAsClient } = useFiduciary();
   const [activeTab, setActiveTab] = useState<"client" | "advisor">("client");
 
   // Client form
@@ -87,7 +86,7 @@ export default function LoginPage() {
                   : "text-[#718EBF] hover:text-[#343C6A]"
               }`}
             >
-              <User className="w-4 h-4" />
+              <User size={18} weight="bold" />
               <span>Client / Investor Portal</span>
             </button>
             <button
@@ -98,7 +97,7 @@ export default function LoginPage() {
                   : "text-[#718EBF] hover:text-[#343C6A]"
               }`}
             >
-              <ShieldCheck className="w-4 h-4" />
+              <ShieldCheck size={18} weight="bold" />
               <span>RIA Advisor Practice Desk</span>
             </button>
           </div>
@@ -153,7 +152,7 @@ export default function LoginPage() {
                   className="w-full py-3.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-blue-700 transition shadow-sm flex items-center justify-center space-x-2"
                 >
                   <span>Sign In To Client Portal</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight size={16} weight="bold" />
                 </button>
               </form>
 
@@ -163,7 +162,7 @@ export default function LoginPage() {
                   onClick={handleInstantClient}
                   className="text-xs font-bold text-[#1814F3] hover:underline flex items-center space-x-1"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Sparkle size={16} weight="fill" className="text-amber-500" />
                   <span>⚡ 1-Click Instant Client Access</span>
                 </button>
                 <Link
@@ -231,8 +230,8 @@ export default function LoginPage() {
                   type="submit"
                   className="w-full py-3.5 bg-[#343C6A] text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-slate-800 transition shadow-sm flex items-center justify-center space-x-2"
                 >
-                  <span>Sign In To Advisor Practice Desk</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>Sign In As RIA Practice Lead</span>
+                  <ArrowRight size={16} weight="bold" />
                 </button>
               </form>
 
@@ -242,7 +241,7 @@ export default function LoginPage() {
                   onClick={handleInstantAdvisor}
                   className="text-xs font-bold text-[#1814F3] hover:underline flex items-center space-x-1"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Sparkle size={16} weight="fill" className="text-amber-500" />
                   <span>⚡ 1-Click Instant RIA Access</span>
                 </button>
                 <span className="text-[11px] text-[#718EBF]">

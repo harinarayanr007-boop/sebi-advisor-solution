@@ -4,20 +4,17 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
   Users,
-  Activity,
-  DollarSign,
+  Pulse,
+  CurrencyInr,
   ShieldCheck,
   UserPlus,
   ArrowUpRight,
   Printer,
-  Sparkles,
-  Search,
-  CheckCircle2,
-  Clock,
-  Briefcase,
+  Sparkle,
   Copy,
   Check,
-} from "lucide-react";
+  Briefcase,
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 import { formatINR } from "@/lib/fiduciary-store";
 
@@ -70,14 +67,14 @@ export default function AdvisorDashboardPage() {
                 href="/advisor/onboard"
                 className="px-4 py-2.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center space-x-1.5 shadow-sm"
               >
-                <UserPlus className="w-4 h-4" />
+                <UserPlus size={16} weight="bold" />
                 <span>+ Onboard First Client</span>
               </Link>
               <button
                 onClick={handleCopyLink}
                 className="px-4 py-2.5 bg-white border border-[#DFEAF2] hover:bg-slate-50 text-[#343C6A] rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-xs"
               >
-                {copiedLink ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-[#1814F3]" />}
+                {copiedLink ? <Check size={16} weight="bold" className="text-emerald-600" /> : <Copy size={16} weight="bold" className="text-[#1814F3]" />}
                 <span>{copiedLink ? "Link Copied!" : "Share Onboard Link"}</span>
               </button>
               <button
@@ -85,7 +82,7 @@ export default function AdvisorDashboardPage() {
                 title="Populate test client for evaluation"
                 className="px-3 py-2.5 bg-amber-50 border border-amber-200 text-amber-800 hover:bg-amber-100 rounded-xl text-xs font-bold transition flex items-center space-x-1"
               >
-                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                <Sparkle size={16} weight="fill" className="text-amber-600" />
                 <span>Load Sample Case</span>
               </button>
             </div>
@@ -97,7 +94,7 @@ export default function AdvisorDashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white rounded-[25px] p-5 border border-[#DFEAF2] shadow-sm flex items-center space-x-4">
           <div className="w-14 h-14 rounded-full bg-[#E7EDFF] text-[#1814F3] flex items-center justify-center shrink-0">
-            <Activity className="w-7 h-7" />
+            <Pulse size={28} weight="bold" />
           </div>
           <div>
             <p className="text-xs text-[#718EBF] font-semibold">Total Practice AUA</p>
@@ -105,14 +102,14 @@ export default function AdvisorDashboardPage() {
               {totalAUA > 0 ? formatINR(totalAUA) : "₹0"}
             </h3>
             <span className="text-[10px] font-bold text-emerald-600 flex items-center mt-0.5">
-              <ArrowUpRight className="w-3 h-3 mr-0.5" /> 100% Direct Demat
+              <ArrowUpRight size={12} weight="bold" className="mr-0.5" /> 100% Direct Demat
             </span>
           </div>
         </div>
 
         <div className="bg-white rounded-[25px] p-5 border border-[#DFEAF2] shadow-sm flex items-center space-x-4">
           <div className="w-14 h-14 rounded-full bg-[#DCFAF8] text-[#16DBCC] flex items-center justify-center shrink-0">
-            <Users className="w-7 h-7" />
+            <Users size={28} weight="duotone" />
           </div>
           <div>
             <p className="text-xs text-[#718EBF] font-semibold">Active Client Families</p>
@@ -127,7 +124,7 @@ export default function AdvisorDashboardPage() {
 
         <div className="bg-white rounded-[25px] p-5 border border-[#DFEAF2] shadow-sm flex items-center space-x-4">
           <div className="w-14 h-14 rounded-full bg-[#FFF5D9] text-[#FFBB38] flex items-center justify-center shrink-0">
-            <DollarSign className="w-7 h-7" />
+            <CurrencyInr size={28} weight="bold" />
           </div>
           <div>
             <p className="text-xs text-[#718EBF] font-semibold">Annual Fee Run-Rate</p>
@@ -142,7 +139,7 @@ export default function AdvisorDashboardPage() {
 
         <div className="bg-white rounded-[25px] p-5 border border-[#DFEAF2] shadow-sm flex items-center space-x-4">
           <div className="w-14 h-14 rounded-full bg-[#FFE0EB] text-[#FF82AC] flex items-center justify-center shrink-0">
-            <ShieldCheck className="w-7 h-7" />
+            <ShieldCheck size={28} weight="duotone" />
           </div>
           <div>
             <p className="text-xs text-[#718EBF] font-semibold">CeFCoM Compliance</p>
@@ -172,13 +169,13 @@ export default function AdvisorDashboardPage() {
             className="text-xs font-bold text-[#1814F3] hover:underline flex items-center space-x-1"
           >
             <span>View Full Directory</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <ArrowUpRight size={14} weight="bold" />
           </Link>
         </div>
 
         {clients.length === 0 ? (
           <div className="p-12 text-center border border-dashed border-[#DFEAF2] rounded-2xl space-y-3">
-            <Users className="w-10 h-10 text-[#718EBF] mx-auto opacity-40" />
+            <Users size={36} weight="duotone" className="text-[#718EBF] mx-auto opacity-40" />
             <h4 className="text-sm font-bold text-[#343C6A]">No clients onboarded yet</h4>
             <p className="text-xs text-[#718EBF] max-w-sm mx-auto">
               Click &quot;+ Onboard Client&quot; to register a family office or individual HNI client into your practice.

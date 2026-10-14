@@ -2,15 +2,10 @@
 
 import React, { useState } from "react";
 import {
-  Settings,
-  ShieldCheck,
-  Building,
-  CheckCircle2,
-  Lock,
+  Gear,
+  CheckCircle,
   ArrowRight,
-  Scale,
-  Award,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function AdvisorSettingsPage() {
@@ -37,7 +32,7 @@ export default function AdvisorSettingsPage() {
 
       {saved && (
         <div className="p-4 bg-emerald-100 border border-emerald-300 rounded-2xl text-xs font-bold text-emerald-800 flex items-center space-x-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          <CheckCircle size={20} weight="fill" className="text-emerald-600" />
           <span>Practice settings updated successfully!</span>
         </div>
       )}
@@ -158,7 +153,7 @@ export default function AdvisorSettingsPage() {
             className="px-6 py-3 bg-[#1814F3] text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-blue-700 transition flex items-center space-x-2 shadow-sm"
           >
             <span>Save Configuration</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight size={16} weight="bold" />
           </button>
         </div>
       </form>

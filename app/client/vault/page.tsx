@@ -3,15 +3,12 @@
 import React, { useState } from "react";
 import {
   FileText,
-  Download,
   Printer,
   ShieldCheck,
-  CheckCircle2,
-  Clock,
+  CheckCircle,
   Eye,
-  Lock,
-  Upload,
-} from "lucide-react";
+  UploadSimple,
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function ClientVaultPage() {
@@ -70,14 +67,14 @@ export default function ClientVaultPage() {
             onClick={handleSimulateUpload}
             className="px-4 py-2.5 bg-white border border-[#DFEAF2] hover:bg-slate-50 text-[#343C6A] rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-xs"
           >
-            <Upload className="w-4 h-4 text-[#1814F3]" />
+            <UploadSimple size={16} weight="bold" className="text-[#1814F3]" />
             <span>Upload Document</span>
           </button>
           <button
             onClick={() => setShowFactsheetModal(true)}
             className="px-4 py-2.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center space-x-2 shadow-sm"
           >
-            <Printer className="w-4 h-4" />
+            <Printer size={16} weight="bold" />
             <span>Print Fiduciary Dossier</span>
           </button>
         </div>
@@ -85,7 +82,7 @@ export default function ClientVaultPage() {
 
       {uploadedMsg && (
         <div className="p-4 bg-emerald-100 border border-emerald-300 rounded-2xl text-xs font-bold text-emerald-800 flex items-center space-x-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          <CheckCircle size={20} weight="fill" className="text-emerald-600" />
           <span>Document received and queued for RIA compliance hash verification!</span>
         </div>
       )}
@@ -117,14 +114,14 @@ export default function ClientVaultPage() {
 
             <div className="pt-3 border-t border-[#F0F4F8] flex items-center justify-between">
               <span className="text-[10px] text-emerald-600 font-bold flex items-center space-x-1">
-                <ShieldCheck className="w-3.5 h-3.5" />
+                <ShieldCheck size={16} weight="fill" />
                 <span>SHA-256 Verified</span>
               </span>
               <button
                 onClick={() => setShowFactsheetModal(true)}
                 className="text-xs font-bold text-[#1814F3] hover:underline flex items-center space-x-1"
               >
-                <Eye className="w-3.5 h-3.5" />
+                <Eye size={16} weight="bold" />
                 <span>Inspect Record</span>
               </button>
             </div>

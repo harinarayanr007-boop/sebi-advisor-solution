@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { UserPlus, ArrowRight, ShieldCheck, ArrowLeft } from "lucide-react";
+import { UserPlus, ArrowRight, ShieldCheck, ArrowLeft } from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function ClientRegisterPage() {

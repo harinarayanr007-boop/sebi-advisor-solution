@@ -5,13 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   UserPlus,
-  ShieldCheck,
   ArrowRight,
   ArrowLeft,
-  Building,
-  CheckCircle2,
-  DollarSign,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function AdvisorOnboardPage() {
@@ -83,7 +79,7 @@ export default function AdvisorOnboardPage() {
           href="/advisor/clients"
           className="inline-flex items-center space-x-1 text-xs text-[#718EBF] hover:text-[#343C6A] mb-2"
         >
-          <ArrowLeft className="w-3.5 h-3.5" />
+          <ArrowLeft size={14} weight="bold" />
           <span>Back to Client Roster</span>
         </Link>
         <h2 className="text-2xl font-bold font-space text-[#343C6A]">
@@ -264,7 +260,7 @@ export default function AdvisorOnboardPage() {
             className="px-6 py-2.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-blue-700 transition flex items-center space-x-2 shadow-sm"
           >
             <span>Register Client & Dispatch Form B</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight size={16} weight="bold" />
           </button>
         </div>
       </form>

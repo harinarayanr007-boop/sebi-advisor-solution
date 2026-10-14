@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, ArrowRight, Sparkles, ArrowLeft } from "lucide-react";
+import { ShieldCheck, ArrowRight, Sparkle, ArrowLeft } from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function AdvisorLoginPage() {
@@ -88,7 +88,7 @@ export default function AdvisorLoginPage() {
               onClick={handleInstant}
               className="text-xs font-bold text-[#1814F3] hover:underline flex items-center space-x-1"
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkle className="w-3.5 h-3.5" />
               <span>⚡ Instant Advisor Demo Access</span>
             </button>
             <span className="text-[11px] text-[#718EBF]">Authorized RIA Only</span>

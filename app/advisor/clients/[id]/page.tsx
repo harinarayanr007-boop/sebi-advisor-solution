@@ -8,15 +8,8 @@ import {
   ShieldCheck,
   Briefcase,
   Target,
-  CreditCard,
-  User,
-  CheckCircle2,
-  AlertCircle,
-  FileText,
-  Clock,
-  Sparkles,
-  Plus,
-} from "lucide-react";
+  CheckCircle,
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 import { formatINR } from "@/lib/fiduciary-store";
 
@@ -82,7 +75,7 @@ export default function AdvisorClientDetailPage({
             href="/advisor/clients"
             className="inline-flex items-center space-x-1 text-xs text-[#718EBF] hover:text-[#343C6A] mb-2"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <ArrowLeft size={14} weight="bold" />
             <span>Back to All Clients</span>
           </Link>
           <div className="flex items-center space-x-3">
@@ -106,7 +99,7 @@ export default function AdvisorClientDetailPage({
           onClick={handlePrint}
           className="px-4 py-2.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center space-x-2 shadow-sm"
         >
-          <Printer className="w-4 h-4" />
+          <Printer size={16} weight="bold" />
           <span>Print Fiduciary Dossier</span>
         </button>
       </div>
@@ -256,7 +249,7 @@ export default function AdvisorClientDetailPage({
           </div>
           {savedNotes && (
             <span className="text-xs font-bold text-emerald-600 flex items-center space-x-1">
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle size={16} weight="fill" />
               <span>Notes Saved!</span>
             </span>
           )}

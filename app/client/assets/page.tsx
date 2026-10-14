@@ -4,15 +4,13 @@ import React, { useState } from "react";
 import {
   Briefcase,
   Plus,
-  FileUp,
-  Trash2,
-  TrendingUp,
+  UploadSimple,
+  Trash,
+  TrendUp,
   ShieldCheck,
-  CheckCircle2,
-  AlertCircle,
   Percent,
   Wallet,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 import { formatINR } from "@/lib/fiduciary-store";
 
@@ -75,14 +73,14 @@ export default function ClientAssetsPage() {
             onClick={() => parseCasStatement("NSDL_CAS_Statement.pdf")}
             className="px-4 py-2.5 bg-white border border-[#DFEAF2] hover:bg-slate-50 text-[#343C6A] rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-xs"
           >
-            <FileUp className="w-4 h-4 text-[#1814F3]" />
+            <UploadSimple size={16} weight="bold" className="text-[#1814F3]" />
             <span>Upload CAS Statement</span>
           </button>
           <button
             onClick={() => setShowAddModal(true)}
             className="px-4 py-2.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center space-x-2 shadow-sm"
           >
-            <Plus className="w-4 h-4" />
+            <Plus size={16} weight="bold" />
             <span>+ Add Direct Holding</span>
           </button>
         </div>
@@ -135,7 +133,7 @@ export default function ClientAssetsPage() {
 
         {activeAssets.length === 0 ? (
           <div className="p-12 text-center border border-dashed border-[#DFEAF2] rounded-2xl space-y-3">
-            <Briefcase className="w-10 h-10 text-[#718EBF] mx-auto opacity-40" />
+            <Briefcase size={36} weight="duotone" className="text-[#718EBF] mx-auto opacity-40" />
             <h4 className="text-sm font-bold text-[#343C6A]">No direct assets registered yet</h4>
             <p className="text-xs text-[#718EBF] max-w-sm mx-auto">
               Add your mutual funds and stocks manually or simulate uploading a CAS statement to see your expense audit.
@@ -180,7 +178,7 @@ export default function ClientAssetsPage() {
                         title="Remove holding"
                         className="p-1.5 text-[#718EBF] hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash size={16} weight="bold" />
                       </button>
                     </td>
                   </tr>

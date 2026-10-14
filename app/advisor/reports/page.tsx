@@ -4,18 +4,11 @@ import React, { useState } from "react";
 import {
   FileText,
   Printer,
-  Download,
-  Users,
-  Search,
-  CheckCircle2,
-  Eye,
-  ShieldCheck,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function AdvisorReportsPage() {
   const { clients, advisor, setShowFactsheetModal, setSelectedReportClient } = useFiduciary();
-  const [selectedId, setSelectedId] = useState(clients.length > 0 ? clients[0].id : "");
 
   const handlePrint = (c: any) => {
     setSelectedReportClient(c);
@@ -35,7 +28,7 @@ export default function AdvisorReportsPage() {
 
       {clients.length === 0 ? (
         <div className="bg-white rounded-[25px] p-12 border border-[#DFEAF2] text-center space-y-3 shadow-sm">
-          <FileText className="w-12 h-12 text-[#718EBF] mx-auto opacity-40" />
+          <FileText size={36} weight="duotone" className="text-[#718EBF] mx-auto opacity-40" />
           <h3 className="text-base font-bold font-space text-[#343C6A]">No Client Records Available</h3>
           <p className="text-xs text-[#718EBF] max-w-sm mx-auto">
             Onboard client families into your practice to generate fiduciary dossiers and suitability reports.
@@ -75,7 +68,7 @@ export default function AdvisorReportsPage() {
                   onClick={() => handlePrint(c)}
                   className="w-full py-2.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center justify-center space-x-1.5 shadow-sm"
                 >
-                  <Printer className="w-3.5 h-3.5" />
+                  <Printer size={16} weight="bold" />
                   <span>Generate & Print Dossier</span>
                 </button>
               </div>

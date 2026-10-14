@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, ArrowRight, Sparkles, Lock, ArrowLeft } from "lucide-react";
+import { User, ArrowRight, Sparkle, LockKey, ArrowLeft } from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function ClientLoginPage() {
@@ -88,7 +88,7 @@ export default function ClientLoginPage() {
               onClick={handleInstant}
               className="text-xs font-bold text-[#1814F3] hover:underline flex items-center space-x-1"
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkle className="w-3.5 h-3.5" />
               <span>⚡ Instant Client Demo Sign In</span>
             </button>
             <Link

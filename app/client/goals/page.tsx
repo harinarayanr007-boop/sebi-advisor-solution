@@ -4,13 +4,12 @@ import React, { useState } from "react";
 import {
   Target,
   Plus,
-  Trash2,
-  TrendingUp,
-  Sparkles,
+  Trash,
+  TrendUp,
+  Sparkle,
   Calendar,
-  CheckCircle2,
-  AlertCircle,
-} from "lucide-react";
+  CheckCircle,
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 import { formatINR } from "@/lib/fiduciary-store";
 
@@ -70,14 +69,14 @@ export default function ClientGoalsPage() {
           onClick={() => setShowAddModal(true)}
           className="px-4 py-2.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center space-x-2 shadow-sm"
         >
-          <Plus className="w-4 h-4" />
+          <Plus size={16} weight="bold" />
           <span>+ Add Financial Goal</span>
         </button>
       </div>
 
       {activeGoals.length === 0 ? (
         <div className="bg-white rounded-[25px] p-12 border border-[#DFEAF2] text-center space-y-3 shadow-sm">
-          <Target className="w-12 h-12 text-[#718EBF] mx-auto opacity-40" />
+          <Target size={36} weight="duotone" className="text-[#718EBF] mx-auto opacity-40" />
           <h3 className="text-base font-bold font-space text-[#343C6A]">No Goals Configured Yet</h3>
           <p className="text-xs text-[#718EBF] max-w-sm mx-auto">
             Set up your retirement, child education, or property acquisition goals to calculate required SIP allocations.
@@ -107,7 +106,7 @@ export default function ClientGoalsPage() {
                       onClick={() => deleteGoal(g.id)}
                       className="text-[#718EBF] hover:text-rose-600 transition p-1"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash size={16} weight="bold" />
                     </button>
                   </div>
 

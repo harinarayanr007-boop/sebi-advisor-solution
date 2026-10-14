@@ -4,12 +4,10 @@ import React, { useState } from "react";
 import {
   ShieldCheck,
   Plus,
-  Trash2,
-  AlertTriangle,
-  CheckCircle2,
-  FileCheck,
-  HeartPulse,
-} from "lucide-react";
+  Trash,
+  CheckCircle,
+  Heartbeat,
+} from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function ClientInsurancePage() {
@@ -56,7 +54,7 @@ export default function ClientInsurancePage() {
           onClick={() => setShowAddModal(true)}
           className="px-4 py-2.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center space-x-2 shadow-sm"
         >
-          <Plus className="w-4 h-4" />
+          <Plus size={16} weight="bold" />
           <span>+ Add Insurance Policy</span>
         </button>
       </div>
@@ -65,7 +63,7 @@ export default function ClientInsurancePage() {
       <div className="bg-emerald-50 border border-emerald-200 rounded-[25px] p-6 text-emerald-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center space-x-2">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            <CheckCircle size={20} weight="fill" className="text-emerald-600" />
             <h3 className="text-sm font-bold font-space">
               Fiduciary Principle: Never Mix Insurance with Investments
             </h3>
@@ -83,7 +81,7 @@ export default function ClientInsurancePage() {
       {/* Policy Cards */}
       {activeInsurance.length === 0 ? (
         <div className="bg-white rounded-[25px] p-12 border border-[#DFEAF2] text-center space-y-3 shadow-sm">
-          <ShieldCheck className="w-12 h-12 text-[#718EBF] mx-auto opacity-40" />
+          <ShieldCheck size={36} weight="duotone" className="text-[#718EBF] mx-auto opacity-40" />
           <h3 className="text-base font-bold font-space text-[#343C6A]">No Insurance Policies Registered</h3>
           <p className="text-xs text-[#718EBF] max-w-sm mx-auto">
             Add your pure term cover or health floater policies to audit your family protection adequacy.
@@ -111,7 +109,7 @@ export default function ClientInsurancePage() {
                     onClick={() => deleteInsurance(ins.id)}
                     className="text-[#718EBF] hover:text-rose-600 transition p-1"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash size={16} weight="bold" />
                   </button>
                 </div>
 
@@ -137,7 +135,7 @@ export default function ClientInsurancePage() {
               </div>
 
               <div className="pt-3 border-t border-[#F0F4F8] text-[10px] text-emerald-600 font-bold flex items-center space-x-1">
-                <CheckCircle2 className="w-3.5 h-3.5" />
+                <CheckCircle size={16} weight="fill" />
                 <span>Zero Commission Certified</span>
               </div>
             </div>
