@@ -7,7 +7,7 @@ import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { loginAsAdvisor } = useFiduciary();
+  const { loginAsAdvisor, loadDemoData } = useFiduciary();
   const [username, setUsername] = useState("advice@aurumfiduciary.in");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -24,6 +24,7 @@ export default function AdminLoginPage() {
   };
 
   const handleInstantDemo = () => {
+    loadDemoData();
     loginAsAdvisor();
     router.push("/advisor/dashboard");
   };

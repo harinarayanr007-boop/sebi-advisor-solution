@@ -31,6 +31,7 @@ interface FiduciaryContextType {
   loginAsAdvisor: (email?: string, password?: string) => void;
   loginAsClient: (clientId?: string, email?: string, passwordInput?: string) => { success: boolean; error?: string; status?: string };
   loginWithGoogle: (email: string, name?: string) => { success: boolean; status: string };
+  loginWithDemoClient: () => void;
   approveClient: (clientId: string) => void;
   rejectClient: (clientId: string) => void;
   logout: () => void;
@@ -284,7 +285,11 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
     }
 
     if (!target && !targetClientId && !email && clients.length > 0) {
-      target = clients[0];
+      target = clients.find((c) => c.id === sampleDemoClient.id) || clients.find((c) => c.status === "active") || clients[0];
+    }
+
+    if (!target && !email) {
+      target = sampleDemoClient;
     }
 
     if (!target && email) {
@@ -876,36 +881,95 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Load Demo Data (Only when explicitly triggered for testing)
-  const loadDemoData = () => {
+  const loadDemoData = (targetClientId?: string) => {
     const newClients = [sampleDemoClient, ...clients.filter((c) => c.id !== sampleDemoClient.id)];
     setClients(newClients);
     persist("aurum_clients", newClients);
-    setActiveClientId(sampleDemoClient.id);
 
-    const filteredAssets = assets.filter((a) => a.clientId !== sampleDemoClient.id);
-    const newAssets = [...sampleDemoAssets, ...filteredAssets];
+    const clientToFill = targetClientId || (session?.role === "client" ? activeClient?.id : sampleDemoClient.id) || sampleDemoClient.id;
+
+    // Load assets for sampleDemoClient
+    let newAssets = [...assets.filter((a) => a.clientId !== sampleDemoClient.id), ...sampleDemoAssets];
+    if (clientToFill && clientToFill !== sampleDemoClient.id) {
+      const clonedAssets: HoldingAsset[] = sampleDemoAssets.map((a, i) => ({
+        ...a,
+        id: `ASSET-DEMO-${clientToFill}-${i + 1}`,
+        clientId: clientToFill,
+      }));
+      newAssets = [...newAssets.filter((a) => a.clientId !== clientToFill), ...clonedAssets];
+    }
     setAssets(newAssets);
     persist("aurum_assets", newAssets);
 
-    const filteredGoals = goals.filter((g) => g.clientId !== sampleDemoClient.id);
-    const newGoals = [...sampleDemoGoals, ...filteredGoals];
+    // Load goals
+    let newGoals = [...goals.filter((g) => g.clientId !== sampleDemoClient.id), ...sampleDemoGoals];
+    if (clientToFill && clientToFill !== sampleDemoClient.id) {
+      const clonedGoals: FiduciaryGoal[] = sampleDemoGoals.map((g, i) => ({
+        ...g,
+        id: `GOAL-DEMO-${clientToFill}-${i + 1}`,
+        clientId: clientToFill,
+      }));
+      newGoals = [...newGoals.filter((g) => g.clientId !== clientToFill), ...clonedGoals];
+    }
     setGoals(newGoals);
     persist("aurum_goals", newGoals);
 
-    const filteredCashFlow = cashFlow.filter((cf) => cf.clientId !== sampleDemoClient.id);
-    const newCashFlow = [...sampleDemoCashFlow, ...filteredCashFlow];
+    // Load cash flow
+    let newCashFlow = [...cashFlow.filter((cf) => cf.clientId !== sampleDemoClient.id), ...sampleDemoCashFlow];
+    if (clientToFill && clientToFill !== sampleDemoClient.id) {
+      const clonedCashFlow: CashFlowItem[] = sampleDemoCashFlow.map((cf, i) => ({
+        ...cf,
+        id: `CF-DEMO-${clientToFill}-${i + 1}`,
+        clientId: clientToFill,
+      }));
+      newCashFlow = [...newCashFlow.filter((cf) => cf.clientId !== clientToFill), ...clonedCashFlow];
+    }
     setCashFlow(newCashFlow);
     persist("aurum_cashflow", newCashFlow);
 
-    const filteredInsurance = insurance.filter((ins) => ins.clientId !== sampleDemoClient.id);
-    const newInsurance = [...sampleDemoInsurance, ...filteredInsurance];
+    // Load insurance
+    let newInsurance = [...insurance.filter((ins) => ins.clientId !== sampleDemoClient.id), ...sampleDemoInsurance];
+    if (clientToFill && clientToFill !== sampleDemoClient.id) {
+      const clonedInsurance: InsurancePolicy[] = sampleDemoInsurance.map((ins, i) => ({
+        ...ins,
+        id: `INS-DEMO-${clientToFill}-${i + 1}`,
+        clientId: clientToFill,
+      }));
+      newInsurance = [...newInsurance.filter((ins) => ins.clientId !== clientToFill), ...clonedInsurance];
+    }
     setInsurance(newInsurance);
     persist("aurum_insurance", newInsurance);
+
+    syncClientTotals(sampleDemoClient.id, newAssets);
+    if (clientToFill && clientToFill !== sampleDemoClient.id) {
+      syncClientTotals(clientToFill, newAssets);
+    }
 
     logAuditEvent(
       "Sample Demo Case Loaded",
       "SECURITY",
       "Loaded Rajesh V. Kulkarni (₹4.8 Cr Core HNI) demonstration case."
+    );
+  };
+
+  const loginWithDemoClient = () => {
+    loadDemoData(sampleDemoClient.id);
+    setActiveClientId(sampleDemoClient.id);
+    const demoSession: UserSession = {
+      role: "client",
+      userId: sampleDemoClient.id,
+      name: sampleDemoClient.name,
+      email: sampleDemoClient.email,
+      clientId: sampleDemoClient.id,
+      status: "active",
+    };
+    setSession(demoSession);
+    setIsSessionLocked(false);
+    persist("aurum_auth_session", demoSession);
+    logAuditEvent(
+      "Instant Client Demo Session Activated",
+      "SECURITY",
+      `1-Click Instant Demo: Authenticated as ${sampleDemoClient.name} (${sampleDemoClient.email}).`
     );
   };
 
@@ -940,6 +1004,7 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
         loginAsAdvisor,
         loginAsClient,
         loginWithGoogle,
+        loginWithDemoClient,
         approveClient,
         rejectClient,
         logout,

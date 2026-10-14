@@ -20,7 +20,7 @@ import FiduciaryProcessHero from "@/components/FiduciaryProcessHero";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { loginAsClient, loginWithGoogle } = useFiduciary();
+  const { loginAsClient, loginWithGoogle, loginWithDemoClient } = useFiduciary();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -55,7 +55,7 @@ export default function LoginPage() {
   };
 
   const handleInstantDemo = () => {
-    loginAsClient();
+    loginWithDemoClient();
     router.push("/client/dashboard");
   };
 
