@@ -7,6 +7,7 @@ export interface UserSession {
   email: string;
   clientId?: string;
   sebiReg?: string;
+  status?: "active" | "pending_approval" | "rejected";
 }
 
 export interface AdvisorProfile {
@@ -56,6 +57,12 @@ export interface ClientProfile {
   foliosCount: number;
   advisorNotes: string;
   createdAt: string;
+
+  // Authentication & Approval State
+  status?: "active" | "pending_approval" | "rejected";
+  password?: string;
+  authProvider?: "email" | "google" | "advisor_manual" | "self_register";
+  appliedAt?: string;
 }
 
 export interface HoldingAsset {
@@ -105,7 +112,7 @@ export interface InsurancePolicy {
   provider: string;
   sumAssured: string;
   annualPremium: string;
-  status: "100% Adequate" | "Super Top-Up Active" | "Passed - No Drag" | "Needs Review";
+  status: "Adequate Coverage" | "100% Adequate" | "Super Top-Up Active" | "Passed - No Drag" | "Needs Review";
   notes: string;
 }
 
@@ -164,6 +171,9 @@ export const sampleDemoClient: ClientProfile = {
   foliosCount: 8,
   advisorNotes: "Completed regular-to-direct mutual fund transition. ₹3.84L annual commission drag eliminated.",
   createdAt: "2026-02-14",
+  status: "active",
+  password: "AAFPK8821L",
+  authProvider: "advisor_manual",
 };
 
 export const sampleDemoAssets: HoldingAsset[] = [

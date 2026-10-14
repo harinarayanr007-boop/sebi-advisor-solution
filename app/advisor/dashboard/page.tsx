@@ -90,6 +90,35 @@ export default function AdvisorDashboardPage() {
         </div>
       )}
 
+      {/* Pending Client Registrations Alert Banner */}
+      {(() => {
+        const pendingClients = clients.filter((c) => c.status === "pending_approval");
+        if (pendingClients.length === 0) return null;
+        return (
+          <div className="bg-amber-50 border border-amber-300 rounded-[25px] p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0">
+                <ShieldCheck size={22} weight="bold" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-[#343C6A]">
+                  {pendingClients.length} Investor Registration{pendingClients.length === 1 ? "" : "s"} Awaiting Mandate Review
+                </h4>
+                <p className="text-xs text-[#718EBF]">
+                  New client families have registered and are waiting for RIA mandate approval on your onboarding desk.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/advisor/onboard"
+              className="px-4 py-2 bg-[#343C6A] hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shrink-0 shadow-xs"
+            >
+              <span>Review Applications →</span>
+            </Link>
+          </div>
+        );
+      })()}
+
       {/* Top 4 Practice KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white rounded-[25px] p-5 border border-[#DFEAF2] shadow-sm flex items-center space-x-4">
@@ -101,8 +130,8 @@ export default function AdvisorDashboardPage() {
             <h3 className="text-xl font-bold font-space text-[#343C6A]">
               {totalAUA > 0 ? formatINR(totalAUA) : "₹0"}
             </h3>
-            <span className="text-[10px] font-bold text-emerald-600 flex items-center mt-0.5">
-              <ArrowUpRight size={12} weight="bold" className="mr-0.5" /> 100% Direct Demat
+            <span className="text-[10px] font-semibold text-[#718EBF] flex items-center mt-0.5">
+              <ArrowUpRight size={12} weight="bold" className="mr-0.5 text-[#1814F3]" /> Direct Demat Portfolios
             </span>
           </div>
         </div>
@@ -114,9 +143,9 @@ export default function AdvisorDashboardPage() {
           <div>
             <p className="text-xs text-[#718EBF] font-semibold">Active Client Families</p>
             <h3 className="text-xl font-bold font-space text-[#343C6A]">
-              {clients.length} Families
+              {clients.filter(c => c.status !== "pending_approval").length} Families
             </h3>
-            <span className="text-[10px] font-bold text-blue-600 mt-0.5 block">
+            <span className="text-[10px] font-semibold text-[#718EBF] mt-0.5 block">
               SEBI Compliant Mandates
             </span>
           </div>
@@ -131,8 +160,8 @@ export default function AdvisorDashboardPage() {
             <h3 className="text-xl font-bold font-space text-[#343C6A]">
               {annualFeeRunRate > 0 ? formatINR(annualFeeRunRate) : "₹0 / yr"}
             </h3>
-            <span className="text-[10px] font-bold text-emerald-600 mt-0.5 block">
-              Pure Fee-Only (0% Kickbacks)
+            <span className="text-[10px] font-semibold text-[#718EBF] mt-0.5 block">
+              Statutory Retainer Model
             </span>
           </div>
         </div>
@@ -143,8 +172,8 @@ export default function AdvisorDashboardPage() {
           </div>
           <div>
             <p className="text-xs text-[#718EBF] font-semibold">CeFCoM Compliance</p>
-            <h3 className="text-xl font-bold font-space text-emerald-600">
-              100% Reconciled
+            <h3 className="text-xl font-bold font-space text-[#343C6A]">
+              Escrow Reconciled
             </h3>
             <span className="text-[10px] text-[#718EBF] mt-0.5 block">
               Zero Audit Deficiency

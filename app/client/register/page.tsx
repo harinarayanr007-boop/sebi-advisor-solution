@@ -25,6 +25,7 @@ export default function ClientRegisterPage() {
       return;
     }
 
+    const clientPan = (pan.trim() || "ABCDE1234F").toUpperCase();
     const newClient = addClient({
       name,
       email,
@@ -37,13 +38,13 @@ export default function ClientRegisterPage() {
       dragSaved: "₹0 / yr",
       riskTolerance: "Moderate Balanced",
       targetCAGR: "11.0% CAGR",
-      onboardingStage: "Direct Onboarding Initiated // Awaiting Holdings",
+      onboardingStage: "Pending RIA Advisor Review & Acceptance",
       statusBadge: {
-        label: "Direct Investor",
-        bg: "bg-blue-100",
-        text: "text-blue-700",
+        label: "Pending Approval",
+        bg: "bg-amber-100",
+        text: "text-amber-800",
       },
-      pan: pan.toUpperCase() || "ABCDE1234F",
+      pan: clientPan,
       aadhaarMasked: "XXXX-XXXX-1234",
       ckycId: `IN-CKYC-2026-${Math.floor(1000000 + Math.random() * 9000000)}`,
       cefcomUrn: `URN-BASL-15845-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -53,7 +54,11 @@ export default function ClientRegisterPage() {
       equityAlloc: 60,
       debtAlloc: 30,
       goldAlloc: 10,
-      advisorNotes: "Self-registered investor via Aurum direct portal.",
+      advisorNotes: "Self-registered investor via Aurum direct portal. Awaiting RIA practice acceptance.",
+      status: "pending_approval",
+      password: clientPan,
+      authProvider: "self_register",
+      appliedAt: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
     });
 
     loginAsClient(newClient.id, newClient.email);

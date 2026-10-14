@@ -29,7 +29,7 @@ export default function ClientInsurancePage() {
       type,
       sumAssured,
       annualPremium,
-      status: type === "ulip_audit" ? "Passed - No Drag" : "100% Adequate",
+      status: type === "ulip_audit" ? "Passed - No Drag" : "Adequate Coverage",
       notes: notes || "Pure risk protection verified without investment mixing.",
     });
 
@@ -74,7 +74,7 @@ export default function ClientInsurancePage() {
         </div>
         <div className="text-right shrink-0">
           <span className="text-[10px] text-emerald-700 block uppercase font-bold">Advisory Standard</span>
-          <span className="text-sm font-bold font-space text-emerald-900">0% Commission Leakage</span>
+          <span className="text-sm font-bold font-space text-emerald-900">Direct Advisory Only</span>
         </div>
       </div>
 

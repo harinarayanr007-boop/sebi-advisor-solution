@@ -29,7 +29,10 @@ interface FiduciaryContextType {
   // Session & Authentication
   session: UserSession | null;
   loginAsAdvisor: (email?: string, password?: string) => void;
-  loginAsClient: (clientId?: string, email?: string) => void;
+  loginAsClient: (clientId?: string, email?: string, passwordInput?: string) => { success: boolean; error?: string; status?: string };
+  loginWithGoogle: (email: string, name?: string) => { success: boolean; status: string };
+  approveClient: (clientId: string) => void;
+  rejectClient: (clientId: string) => void;
   logout: () => void;
   isSessionLocked: boolean;
   lockSession: () => void;
@@ -231,18 +234,49 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
-  const loginAsClient = (targetClientId?: string, email?: string) => {
-    const target = targetClientId
+  const loginAsClient = (targetClientId?: string, email?: string, passwordInput?: string) => {
+    let target = targetClientId
       ? clients.find((c) => c.id === targetClientId)
-      : clients[0];
+      : null;
 
+    if (!target && email) {
+      target = clients.find((c) => c.email.toLowerCase() === email.toLowerCase().trim());
+    }
+
+    if (!target && !targetClientId && !email && clients.length > 0) {
+      target = clients[0];
+    }
+
+    if (!target && email) {
+      return {
+        success: false,
+        error: "No account registered with this email. Please submit a registration request or ask your RIA to onboard you.",
+      };
+    }
+
+    if (target && passwordInput) {
+      const trimmedPass = passwordInput.trim().toLowerCase();
+      const validPass = (target.password || "").toLowerCase();
+      const validPan = (target.pan || "").toLowerCase();
+
+      if (trimmedPass !== validPass && trimmedPass !== validPan) {
+        return {
+          success: false,
+          error: "Incorrect passkey. Note: For accounts onboarded by your advisor, your default passkey is your 10-digit PAN (e.g. ABCDE1234F).",
+        };
+      }
+    }
+
+    const clientStatus = target?.status || "active";
     const s: UserSession = {
       role: "client",
       userId: target ? target.id : "CLIENT-SELF",
       name: target ? target.name : "Verified Investor",
       email: email || (target ? target.email : "investor@aurumfiduciary.in"),
       clientId: target ? target.id : "CLIENT-SELF",
+      status: clientStatus,
     };
+
     setSession(s);
     setIsSessionLocked(false);
     if (target) {
@@ -250,9 +284,165 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
     }
     persist("aurum_auth_session", s);
     logAuditEvent(
-      "Client Wealth Portal Access Granted",
+      clientStatus === "pending_approval"
+        ? "Client Portal Login (Pending Mandate Review)"
+        : "Client Wealth Portal Access Granted",
       "SECURITY",
-      `Client ${s.name} (${s.email}) authenticated to fiduciary portal.`
+      `Client ${s.name} (${s.email}) authenticated (Status: ${clientStatus}).`
+    );
+
+    return { success: true, status: clientStatus };
+  };
+
+  const loginWithGoogle = (email: string, name?: string): { success: boolean; status: string } => {
+    const cleanEmail = email.toLowerCase().trim();
+    let target = clients.find((c) => c.email.toLowerCase() === cleanEmail);
+
+    if (target) {
+      const clientStatus = target.status || "active";
+      const s: UserSession = {
+        role: "client",
+        userId: target.id,
+        name: target.name,
+        email: target.email,
+        clientId: target.id,
+        status: clientStatus,
+      };
+      setSession(s);
+      setIsSessionLocked(false);
+      setActiveClientId(target.id);
+      persist("aurum_auth_session", s);
+      logAuditEvent(
+        "Google Sign-In: Existing Client Authenticated",
+        "SECURITY",
+        `Client ${target.name} (${target.email}) signed in via Google OAuth.`
+      );
+      return { success: true, status: clientStatus };
+    } else {
+      // New Google registration -> creates account in pending_approval
+      const derivedName =
+        name ||
+        cleanEmail
+          .split("@")[0]
+          .replace(/[._]/g, " ")
+          .replace(/\b\w/g, (l) => l.toUpperCase());
+
+      const newClient: ClientProfile = {
+        id: `CLIENT-GOOG-${Math.floor(100000 + Math.random() * 900000)}`,
+        name: derivedName,
+        email: cleanEmail,
+        phone: "+91 98000 00000",
+        city: "Mumbai (Google Account)",
+        tier: "Core HNI",
+        netWorth: "₹0",
+        netWorthNum: 0,
+        liquidSurplus: "₹0",
+        monthlySurplus: "₹0",
+        dragSaved: "₹0 / yr",
+        riskTolerance: "To be assessed by RIA",
+        targetCAGR: "11.5% CAGR",
+        onboardingStage: "Pending RIA Advisor Review & Acceptance",
+        statusBadge: {
+          label: "Pending Approval",
+          bg: "bg-amber-100",
+          text: "text-amber-800",
+        },
+        pan: "PENDING",
+        aadhaarMasked: "XXXX-XXXX-XXXX",
+        ckycId: `IN-CKYC-GOOG-${Date.now().toString().slice(-4)}`,
+        cefcomUrn: `URN-PENDING`,
+        employer: "Google Verified Account",
+        designation: "Investor",
+        grossCtc: "Not specified",
+        equityAlloc: 60,
+        debtAlloc: 30,
+        goldAlloc: 10,
+        foliosCount: 0,
+        advisorNotes: "Applicant registered via Google Sign-In. Awaiting RIA practice acceptance.",
+        createdAt: new Date().toISOString().split("T")[0],
+        status: "pending_approval",
+        authProvider: "google",
+        appliedAt: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+      };
+
+      const updated = [newClient, ...clients];
+      setClients(updated);
+      persist("aurum_clients", updated);
+      setActiveClientId(newClient.id);
+
+      const s: UserSession = {
+        role: "client",
+        userId: newClient.id,
+        name: newClient.name,
+        email: newClient.email,
+        clientId: newClient.id,
+        status: "pending_approval",
+      };
+      setSession(s);
+      setIsSessionLocked(false);
+      persist("aurum_auth_session", s);
+
+      logAuditEvent(
+        "Google Sign-In: New Investor Mandate Requested",
+        "KYC",
+        `New applicant ${newClient.name} (${newClient.email}) requested fiduciary onboarding via Google OAuth. Status: Pending RIA Approval.`
+      );
+
+      return { success: true, status: "pending_approval" };
+    }
+  };
+
+  const approveClient = (clientId: string) => {
+    const target = clients.find((c) => c.id === clientId);
+    if (!target) return;
+
+    const updated = clients.map((c) => {
+      if (c.id === clientId) {
+        return {
+          ...c,
+          status: "active" as const,
+          onboardingStage: "Mandate Accepted // Stage 1 Active",
+          statusBadge: {
+            label: "Active Fiduciary Mandate",
+            bg: "bg-emerald-100",
+            text: "text-emerald-700",
+          },
+          advisorNotes:
+            (c.advisorNotes ? c.advisorNotes + " • " : "") +
+            `Mandate accepted by ${advisor.name} on ${new Date().toLocaleDateString("en-IN")}.`,
+        };
+      }
+      return c;
+    });
+
+    setClients(updated);
+    persist("aurum_clients", updated);
+
+    if (session?.clientId === clientId) {
+      const updatedSession = { ...session, status: "active" as const };
+      setSession(updatedSession);
+      persist("aurum_auth_session", updatedSession);
+    }
+
+    logAuditEvent(
+      "Client Mandate Accepted & Approved",
+      "AGREEMENT",
+      `RIA Principal ${advisor.name} approved advisory registration for ${target.name} (${target.email}). Full portal access granted.`
+    );
+  };
+
+  const rejectClient = (clientId: string) => {
+    const target = clients.find((c) => c.id === clientId);
+    if (!target) return;
+
+    const updated = clients.filter((c) => c.id !== clientId);
+    setClients(updated);
+    persist("aurum_clients", updated);
+
+    logAuditEvent(
+      "Client Registration Declined",
+      "KYC",
+      `RIA Principal declined applicant mandate for ${target.name} (${target.email}).`
     );
   };
 
@@ -350,13 +540,19 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
   // Add Client
   const addClient = (clientData: Omit<ClientProfile, "id" | "foliosCount" | "netWorthNum" | "createdAt">): ClientProfile => {
     const rawNum = parseInt(clientData.netWorth.replace(/[^0-9]/g, ""), 10) || 0;
+    const clientPan = (clientData.pan || "ABCDE1234F").toUpperCase();
     const newClient: ClientProfile = {
       ...clientData,
+      pan: clientPan,
       id: `CLIENT-${clientData.tier.substring(0, 4).toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`,
       netWorthNum: rawNum,
       netWorth: formatINR(rawNum),
       foliosCount: 0,
       createdAt: new Date().toISOString().split("T")[0],
+      status: clientData.status || "active",
+      password: clientData.password || clientPan,
+      authProvider: clientData.authProvider || "advisor_manual",
+      appliedAt: clientData.appliedAt || new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
     };
 
     const updated = [newClient, ...clients];
@@ -645,6 +841,9 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
         session,
         loginAsAdvisor,
         loginAsClient,
+        loginWithGoogle,
+        approveClient,
+        rejectClient,
         logout,
         isSessionLocked,
         lockSession,

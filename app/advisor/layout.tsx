@@ -19,6 +19,7 @@ import {
   ArrowRight,
 } from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
+import InstitutionalPrintDossier from "@/components/InstitutionalPrintDossier";
 
 export default function AdvisorLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -27,6 +28,10 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
     session,
     advisor,
     clients,
+    assets,
+    goals,
+    cashFlow,
+    insurance,
     logout,
     showFactsheetModal,
     setShowFactsheetModal,
@@ -255,8 +260,8 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
               <span className="text-[11px] text-[#718EBF] font-mono">
                 {advisor.firmName} • BASL Member {advisor.baslMembership}
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800">
-                100% Fee-Only (0% Commissions)
+              <span className="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-[#E7EDFF] text-[#1814F3] border border-[#DFEAF2]">
+                SEBI License: {advisor.sebiRegNumber}
               </span>
             </div>
           </div>
@@ -296,72 +301,20 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
         </main>
       </div>
 
-      {/* Fiduciary Factsheet Modal */}
+      {/* Institutional Fiduciary Print Dossier */}
       {showFactsheetModal && selectedReportClient && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-[25px] max-w-3xl w-full p-8 max-h-[90vh] overflow-y-auto border border-[#DFEAF2] shadow-2xl relative">
-            <button
-              onClick={() => {
-                setShowFactsheetModal(false);
-                setSelectedReportClient(null);
-              }}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-[#718EBF]"
-            >
-              <X size={20} weight="bold" />
-            </button>
-
-            <div className="border-b border-[#DFEAF2] pb-6 mb-6">
-              <div className="flex justify-between items-start">
-                <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#1814F3] bg-[#E7EDFF] px-3 py-1 rounded-full">
-                    Official SEBI Fiduciary Practice Review
-                  </span>
-                  <h3 className="text-2xl font-bold font-space text-[#343C6A] mt-2">
-                    Client Suitability & Portfolio Dossier
-                  </h3>
-                  <p className="text-xs text-[#718EBF]">
-                    Client: {selectedReportClient.name} • PAN: {selectedReportClient.pan} • Prepared by: {advisor.name}
-                  </p>
-                </div>
-                <button
-                  onClick={() => window.print()}
-                  className="px-4 py-2 bg-[#1814F3] text-white rounded-xl text-xs font-bold flex items-center space-x-1 shadow-sm"
-                >
-                  <Printer size={16} weight="bold" />
-                  <span>Print Document</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-6 text-xs text-[#343C6A]">
-              <div className="grid grid-cols-3 gap-4 bg-[#F5F7FA] p-4 rounded-2xl">
-                <div>
-                  <span className="text-[10px] text-[#718EBF] uppercase block font-semibold">Net Worth</span>
-                  <span className="text-base font-bold font-space text-[#343C6A]">{selectedReportClient.netWorth}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-[#718EBF] uppercase block font-semibold">Annual Drag Saved</span>
-                  <span className="text-base font-bold font-space text-emerald-600">{selectedReportClient.dragSaved}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-[#718EBF] uppercase block font-semibold">Risk Classification</span>
-                  <span className="text-base font-bold font-space text-[#1814F3]">{selectedReportClient.riskTolerance}</span>
-                </div>
-              </div>
-
-              <div className="p-4 border border-[#DFEAF2] rounded-2xl space-y-2">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#718EBF]">Advisor Fiduciary Observations</h4>
-                <p className="text-xs text-[#343C6A] leading-relaxed">
-                  {selectedReportClient.advisorNotes || "Client evaluated under SEBI Regulation 17 suitability criteria. 100% direct portfolio transition recommended."}
-                </p>
-              </div>
-
-              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-[11px] text-emerald-900 leading-relaxed">
-                <strong>SEBI RIA Certification:</strong> Certified under Regulation 15 of SEBI (Investment Advisers) Regulations, 2013. The advisory firm accepts zero third-party commissions and acts strictly in a fiduciary capacity.
-              </div>
-            </div>
-          </div>
-        </div>
+        <InstitutionalPrintDossier
+          client={selectedReportClient}
+          advisor={advisor}
+          assets={assets.filter((a) => a.clientId === selectedReportClient.id)}
+          goals={goals.filter((g) => g.clientId === selectedReportClient.id)}
+          cashFlow={cashFlow.filter((cf) => cf.clientId === selectedReportClient.id)}
+          insurance={insurance.filter((ins) => ins.clientId === selectedReportClient.id)}
+          onClose={() => {
+            setShowFactsheetModal(false);
+            setSelectedReportClient(null);
+          }}
+        />
       )}
     </div>
   );

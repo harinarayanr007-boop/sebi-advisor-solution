@@ -24,6 +24,7 @@ import {
 } from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 import { formatINR } from "@/lib/fiduciary-store";
+import InstitutionalPrintDossier from "@/components/InstitutionalPrintDossier";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -33,7 +34,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     logout,
     activeClient,
     advisor,
+    clients,
     activeAssets,
+    activeGoals,
+    activeCashFlow,
+    activeInsurance,
     showFactsheetModal,
     setShowFactsheetModal,
     isSessionLocked,
@@ -90,6 +95,79 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             >
               Go to Portal Gateway →
             </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Pending Mandate Review Screen: Awaiting RIA Advisor Approval
+  const isPendingApproval = session?.status === "pending_approval" || activeClient?.status === "pending_approval";
+  if (isPendingApproval) {
+    return (
+      <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center p-6 font-sans">
+        <div className="bg-white rounded-[25px] border border-amber-200 p-8 max-w-lg w-full text-center shadow-xl space-y-6">
+          <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto shadow-sm border border-amber-200">
+            <ShieldCheck size={36} weight="duotone" className="text-amber-500" />
+          </div>
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold mb-2">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              <span>Awaiting RIA Advisor Mandate Acceptance</span>
+            </div>
+            <h2 className="text-2xl font-bold font-space text-[#343C6A]">
+              Registration Under Fiduciary Review
+            </h2>
+            <p className="text-xs text-[#718EBF] mt-2 leading-relaxed">
+              Under SEBI (Investment Advisers) Regulations, 2013, our practice principal must review your investor classification and execute a statutory fiduciary mandate before enabling your portfolio dashboard.
+            </p>
+          </div>
+
+          <div className="bg-[#F8FAFC] rounded-2xl p-4 border border-[#DFEAF2] text-left text-xs space-y-2">
+            <div className="flex justify-between border-b border-[#F0F4F8] pb-1.5">
+              <span className="text-[#718EBF]">Registered Investor:</span>
+              <span className="font-bold text-[#343C6A]">{session.name}</span>
+            </div>
+            <div className="flex justify-between border-b border-[#F0F4F8] pb-1.5">
+              <span className="text-[#718EBF]">Registered Email:</span>
+              <span className="font-mono text-[#343C6A]">{session.email}</span>
+            </div>
+            <div className="flex justify-between border-b border-[#F0F4F8] pb-1.5">
+              <span className="text-[#718EBF]">Advisory Practice:</span>
+              <span className="font-bold text-[#343C6A]">{advisor.firmName}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[#718EBF]">SEBI License:</span>
+              <span className="font-mono text-[#1814F3]">{advisor.sebiRegNumber}</span>
+            </div>
+          </div>
+
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-[11px] text-[#343C6A] text-left leading-relaxed">
+            💡 <strong>Advisor Action Required:</strong> Devendra Vora, CFP has received your application. Once approved on the RIA Practice Onboarding desk, your dashboard will unlock automatically.
+          </div>
+
+          <div className="space-y-2 pt-2">
+            <button
+              onClick={() => {
+                const fresh = clients.find(
+                  (c) => c.email.toLowerCase() === session.email.toLowerCase() || c.id === session.clientId
+                );
+                if (fresh && fresh.status === "active") {
+                  loginAsClient(fresh.id, fresh.email);
+                } else {
+                  alert("Application is still pending review by the RIA Practice Lead. Please check back shortly.");
+                }
+              }}
+              className="w-full py-3 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center justify-center space-x-2 shadow-sm"
+            >
+              <span>Check / Refresh Mandate Status</span>
+            </button>
+            <button
+              onClick={handleLogout}
+              className="w-full py-2.5 text-xs text-[#718EBF] hover:text-[#343C6A] transition font-semibold"
+            >
+              Sign Out / Return to Login
+            </button>
           </div>
         </div>
       </div>
@@ -223,8 +301,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
               <span className="text-[11px] text-[#718EBF] font-mono">
                 PAN: {activeClient?.pan || "PENDING"} • CKYC: {activeClient?.ckycId || "IN-CKYC-VERIFIED"}
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-700">
-                100% Direct Demat
+              <span className="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-[#E7EDFF] text-[#1814F3] border border-[#DFEAF2]">
+                Direct Demat Portfolio
               </span>
               {session?.role === "advisor" && (
                 <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800 border border-amber-300">
@@ -271,99 +349,17 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         </main>
       </div>
 
-      {/* Fiduciary Factsheet Modal */}
-      {showFactsheetModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-[25px] max-w-3xl w-full p-8 max-h-[90vh] overflow-y-auto border border-[#DFEAF2] shadow-2xl relative">
-            <button
-              onClick={() => setShowFactsheetModal(false)}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-[#718EBF]"
-            >
-              <X size={20} weight="bold" />
-            </button>
-
-            <div className="border-b border-[#DFEAF2] pb-6 mb-6">
-              <div className="flex justify-between items-start">
-                <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#1814F3] bg-[#E7EDFF] px-3 py-1 rounded-full">
-                    Statutory Compliance • SEBI (Investment Advisers) Regulations, 2013
-                  </span>
-                  <h3 className="text-2xl font-bold font-space text-[#343C6A] mt-2">
-                    SEBI Fiduciary Portfolio Dossier
-                  </h3>
-                  <p className="text-xs text-[#718EBF]">
-                    Prepared for: {activeClient?.name} • Reg RIA: {advisor.sebiRegNumber}
-                  </p>
-                </div>
-                <button
-                  onClick={() => window.print()}
-                  className="px-4 py-2 bg-[#1814F3] text-white rounded-xl text-xs font-bold flex items-center space-x-1 shadow-sm"
-                >
-                  <Printer size={16} weight="bold" />
-                  <span>Print Document</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-6 text-xs text-[#343C6A]">
-              {(() => {
-                const totalAssetsVal = activeAssets.reduce((sum, a) => sum + a.currentValue, 0);
-                const displayNetWorth = totalAssetsVal > 0 ? formatINR(totalAssetsVal) : (activeClient?.netWorth || "₹0");
-                const displayDrag = totalAssetsVal > 0 ? `₹${Math.round(totalAssetsVal * 0.009).toLocaleString("en-IN")} / yr` : (activeClient?.dragSaved || "₹0 / yr");
-                return (
-                  <div className="grid grid-cols-3 gap-4 bg-[#F5F7FA] p-4 rounded-2xl">
-                    <div>
-                      <span className="text-[10px] text-[#718EBF] uppercase block font-semibold">Total Direct Net Worth</span>
-                      <span className="text-base font-bold font-space text-[#343C6A]">{displayNetWorth}</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-[#718EBF] uppercase block font-semibold">Annual Drag Eliminated</span>
-                      <span className="text-base font-bold font-space text-emerald-600">{displayDrag}</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-[#718EBF] uppercase block font-semibold">Risk Classification</span>
-                      <span className="text-base font-bold font-space text-[#1814F3]">{activeClient?.riskTolerance || "Balanced Growth"}</span>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-[#718EBF] mb-2">Direct Demat Folios ({activeAssets.length})</h4>
-                {activeAssets.length === 0 ? (
-                  <p className="text-slate-400 italic">No direct assets recorded yet.</p>
-                ) : (
-                  <div className="border border-[#DFEAF2] rounded-xl overflow-hidden">
-                    <table className="w-full text-left">
-                      <thead className="bg-[#F5F7FA] text-[10px] text-[#718EBF] uppercase">
-                        <tr>
-                          <th className="p-3">Scheme / Asset</th>
-                          <th className="p-3">Folio</th>
-                          <th className="p-3">Current Value</th>
-                          <th className="p-3">Direct TER</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-[#F0F4F8]">
-                        {activeAssets.map((a) => (
-                          <tr key={a.id}>
-                            <td className="p-3 font-semibold">{a.name}</td>
-                            <td className="p-3 font-mono text-[11px] text-[#718EBF]">{a.folio}</td>
-                            <td className="p-3 font-bold">₹{a.currentValue.toLocaleString("en-IN")}</td>
-                            <td className="p-3 text-emerald-600 font-bold">{a.directExpenseRatio}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-
-              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-[11px] text-emerald-900 leading-relaxed">
-                <strong>Fiduciary Certification:</strong> Aurum Fiduciary Wealth Advisors (SEBI RIA {advisor.sebiRegNumber}) certifies that 100% of holdings are in zero-commission Direct Plans. Zero distribution kickbacks are accepted.
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Institutional Fiduciary Print Dossier */}
+      {showFactsheetModal && activeClient && (
+        <InstitutionalPrintDossier
+          client={activeClient}
+          advisor={advisor}
+          assets={activeAssets}
+          goals={activeGoals}
+          cashFlow={activeCashFlow}
+          insurance={activeInsurance}
+          onClose={() => setShowFactsheetModal(false)}
+        />
       )}
     </div>
   );

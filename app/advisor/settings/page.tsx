@@ -74,11 +74,11 @@ export default function AdvisorSettingsPage() {
           <span className="text-[10px] font-bold uppercase tracking-wider text-[#718EBF] block">
             Advisory Model
           </span>
-          <h3 className="text-xl font-bold font-space text-emerald-600 mt-2">
-            100% Fee-Only
+          <h3 className="text-xl font-bold font-space text-[#343C6A] mt-2">
+            Fee-Only Fiduciary
           </h3>
           <span className="text-[11px] text-[#718EBF] block mt-1">
-            Zero Distribution Kickbacks
+            SEBI Regulation 15 Compliant
           </span>
         </div>
       </div>
