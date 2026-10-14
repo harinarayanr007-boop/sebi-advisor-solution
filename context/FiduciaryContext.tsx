@@ -70,6 +70,7 @@ interface FiduciaryContextType {
   updateClient: (id: string, updates: Partial<ClientProfile>) => void;
   deleteClient: (id: string) => void;
   addAsset: (asset: Omit<HoldingAsset, "id" | "clientId">) => void;
+  importClientAssets: (clientId: string, incomingAssets: Omit<HoldingAsset, "id" | "clientId">[]) => void;
   deleteAsset: (id: string) => void;
   addGoal: (goal: Omit<FiduciaryGoal, "id" | "clientId">) => void;
   deleteGoal: (id: string) => void;
@@ -690,6 +691,33 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
+  const importClientAssets = (clientId: string, incomingAssets: Omit<HoldingAsset, "id" | "clientId">[]) => {
+    const created: HoldingAsset[] = incomingAssets.map((item, i) => ({
+      ...item,
+      id: `ASSET-IMP-${Date.now()}-${i + 1}`,
+      clientId,
+    }));
+    const updated = [...created, ...assets];
+    setAssets(updated);
+    persist("aurum_assets", updated);
+    syncClientTotals(clientId, updated);
+
+    // Sync to backend / Supabase
+    created.forEach((a) => {
+      fetch("/api/assets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(a),
+      }).catch((err) => console.warn("Backend addAsset sync failed:", err));
+    });
+
+    logAuditEvent(
+      "CSV Portfolio Holdings Imported",
+      "PORTFOLIO",
+      `Imported ${created.length} direct holding folios for client ID ${clientId}.`
+    );
+  };
+
   const deleteAsset = (id: string) => {
     const target = assets.find((a) => a.id === id);
     const updated = assets.filter((a) => a.id !== id);
@@ -1031,6 +1059,7 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
         updateClient,
         deleteClient,
         addAsset,
+        importClientAssets,
         deleteAsset,
         addGoal,
         deleteGoal,

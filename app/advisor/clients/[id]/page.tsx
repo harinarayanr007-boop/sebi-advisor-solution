@@ -1,7 +1,8 @@
 "use client";
 
-import React, { use, useState } from "react";
+import React, { use, useState, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Printer,
@@ -11,9 +12,15 @@ import {
   CheckCircle,
   Eye,
   EyeSlash,
+  UploadSimple,
+  DownloadSimple,
+  LinkSimple,
+  ArrowSquareOut,
+  Check,
+  FileCsv,
 } from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
-import { formatINR, maskPAN } from "@/lib/fiduciary-store";
+import { formatINR, maskPAN, HoldingAsset } from "@/lib/fiduciary-store";
 
 export default function AdvisorClientDetailPage({
   params,
@@ -21,6 +28,9 @@ export default function AdvisorClientDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const {
     clients,
     assets,
@@ -28,6 +38,9 @@ export default function AdvisorClientDetailPage({
     cashFlow,
     insurance,
     updateClient,
+    addAsset,
+    importClientAssets,
+    loginAsClient,
     setShowFactsheetModal,
     setSelectedReportClient,
   } = useFiduciary();
@@ -37,6 +50,8 @@ export default function AdvisorClientDetailPage({
   const [notes, setNotes] = useState(client?.advisorNotes || "");
   const [revealPan, setRevealPan] = useState(false);
   const [savedNotes, setSavedNotes] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [importStatus, setImportStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   if (!client) {
     return (
@@ -69,10 +84,194 @@ export default function AdvisorClientDetailPage({
     setShowFactsheetModal(true);
   };
 
+  // 1-Click Direct Login as this Client
+  const handleDirectLogin = () => {
+    loginAsClient(client.id);
+    router.push("/client/dashboard");
+  };
+
+  // Copy Sharable Magic Link
+  const handleCopyMagicLink = () => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://sebi-advisor-solution.vercel.app";
+    const magicUrl = `${origin}/login?magic=${client.id}`;
+    navigator.clipboard.writeText(magicUrl);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 3000);
+  };
+
+  // Export to CSV / Excel
+  const handleExportCsv = () => {
+    const headers = [
+      "Section",
+      "Scheme / Instrument Description",
+      "Category",
+      "ISIN",
+      "Folio Number",
+      "Current Valuation (INR)",
+      "Direct TER (%)",
+      "Regular TER (%)",
+      "1-Yr Return",
+      "Annual Commission Saved (INR)",
+    ];
+
+    const holdingRows = clientAssets.map((a) => [
+      "Holding",
+      `"${(a.name || '').replace(/"/g, '""')}"`,
+      `"${a.category || ''}"`,
+      a.isin || "N/A",
+      a.folio || "Direct Demat",
+      a.currentValue || 0,
+      a.directExpenseRatio || "0.00%",
+      a.regularExpenseRatio || "0.00%",
+      a.oneYearReturn || "N/A",
+      `"${a.annualDragSaved || ''}"`,
+    ]);
+
+    const goalHeaders = [
+      "Section",
+      "Milestone / Goal Title",
+      "Category",
+      "Target Year",
+      "Target Amount (INR)",
+      "Current Funded (INR)",
+      "Monthly SIP (INR)",
+      "Monte Carlo Probability (%)",
+      "Recommended Asset Class",
+    ];
+
+    const goalRows = clientGoals.map((g) => [
+      "Goal",
+      `"${(g.title || '').replace(/"/g, '""')}"`,
+      `"${g.category || ''}"`,
+      g.targetYear || 2030,
+      g.targetAmount || 0,
+      g.currentFunded || 0,
+      g.monthlySip || 0,
+      `${g.probabilityPercent || 90}%`,
+      `"${g.recommendedInstrument || ''}"`,
+    ]);
+
+    const csvBody = [
+      `"SEBI REGISTERED INVESTMENT ADVISER - CLIENT PORTFOLIO EXPORT"`,
+      `"Investor Legal Name:","${client.name}"`,
+      `"Client ID:","${client.id}"`,
+      `"Permanent Account Number (PAN):","${client.pan}"`,
+      `"Central KYC (CKYC):","${client.ckycId}"`,
+      `"Direct Demat Net Worth:","${client.netWorth}"`,
+      `"Annual Commission Drag Eliminated:","${client.dragSaved}"`,
+      `"Export Date:","${new Date().toLocaleDateString("en-IN")}"`,
+      "",
+      `"--- ITEMIZED DIRECT DEMAT HOLDINGS ---"`,
+      headers.join(","),
+      ...holdingRows.map((r) => r.join(",")),
+      "",
+      `"--- FINANCIAL GOALS & MILESTONES ---"`,
+      goalHeaders.join(","),
+      ...goalRows.map((r) => r.join(",")),
+    ].join("\n");
+
+    const blob = new Blob([csvBody], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `${client.name.replace(/\s+/g, "_")}_Portfolio_Data.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Import from CSV / Excel file
+  const handleCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target?.result as string;
+        if (!text) return;
+
+        const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+        if (lines.length < 2) {
+          setImportStatus({ type: "error", message: "CSV file is empty or missing data rows." });
+          return;
+        }
+
+        const parsedHoldings: Omit<HoldingAsset, "id" | "clientId">[] = [];
+        const startIndex = lines[0].toLowerCase().includes("scheme") || lines[0].toLowerCase().includes("name") ? 1 : 0;
+
+        for (let i = startIndex; i < lines.length; i++) {
+          const row = lines[i];
+          if (row.startsWith('"---') || row.startsWith("Section") || row.startsWith('"Section"')) continue;
+
+          const cols = row.split(",").map((c) => c.replace(/^"|"$/g, "").trim());
+          if (cols.length >= 2) {
+            const isOurExport = cols[0] === "Holding" || cols[0] === '"Holding"';
+            const name = isOurExport ? cols[1] : (cols[0] || `Imported Instrument ${i}`);
+            const category = isOurExport ? cols[2] : (cols[1] || "Direct Equity / MF");
+            const isin = isOurExport
+              ? cols[3]
+              : (cols[2] && cols[2].startsWith("IN") ? cols[2] : `INF${Math.random().toString(36).substring(2, 8).toUpperCase()}`);
+            const folio = isOurExport
+              ? cols[4]
+              : (cols[3] || `${Math.floor(10000000 + Math.random() * 90000000)}/01`);
+            const valCol = isOurExport ? cols[5] : (cols[4] || cols[2]);
+            const rawVal = parseFloat(valCol?.replace(/[^0-9.]/g, "") || "500000");
+            const val = isNaN(rawVal) || rawVal === 0 ? 500000 : rawVal;
+            const directTerCol = isOurExport ? (cols[6] || "0.55%") : (cols[5] || "0.55%");
+            const regTerCol = isOurExport ? (cols[7] || "1.55%") : (cols[6] || "1.55%");
+            const directTer = directTerCol.includes("%") ? directTerCol : `${directTerCol}%`;
+            const regTer = regTerCol.includes("%") ? regTerCol : `${regTerCol}%`;
+            const directNum = parseFloat(directTer) || 0.55;
+            const regNum = parseFloat(regTer) || 1.55;
+            const savedPerYear = Math.round(val * ((regNum - directNum) / 100));
+
+            parsedHoldings.push({
+              name,
+              category,
+              isin,
+              folio,
+              currentValue: val,
+              allocationPercent: 25,
+              directExpenseRatio: directTer,
+              regularExpenseRatio: regTer,
+              oneYearReturn: "+16.8%",
+              annualDragSaved: `₹${savedPerYear.toLocaleString("en-IN")}/yr`,
+            });
+          }
+        }
+
+        if (parsedHoldings.length > 0) {
+          importClientAssets(client.id, parsedHoldings);
+          setImportStatus({
+            type: "success",
+            message: `Successfully imported ${parsedHoldings.length} direct holding folios into ${client.name}'s portfolio!`,
+          });
+        } else {
+          setImportStatus({ type: "error", message: "No valid holdings recognized. Ensure CSV has scheme and value columns." });
+        }
+      } catch (err) {
+        setImportStatus({ type: "error", message: "Failed to parse CSV file." });
+      }
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   return (
     <div className="space-y-7">
-      {/* Top Breadcrumb & Actions */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      {/* Hidden CSV File Input */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept=".csv,.txt"
+        onChange={handleCsvUpload}
+        className="hidden"
+      />
+
+      {/* Top Breadcrumb & Action Command Bar */}
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
         <div>
           <Link
             href="/advisor/clients"
@@ -107,14 +306,102 @@ export default function AdvisorClientDetailPage({
           </div>
         </div>
 
-        <button
-          onClick={handlePrint}
-          className="px-4 py-2.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center space-x-2 shadow-sm"
-        >
-          <Printer size={16} weight="bold" />
-          <span>Print Fiduciary Dossier</span>
-        </button>
+        {/* Action Button Suite */}
+        <div className="flex items-center flex-wrap gap-2.5">
+          {/* Import CSV / Excel */}
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            title="Import portfolio folios from CSV or Excel file"
+            className="px-3.5 py-2.5 bg-white border border-[#DFEAF2] hover:bg-[#F5F7FA] text-[#343C6A] rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-2xs"
+          >
+            <UploadSimple size={15} weight="bold" className="text-[#1814F3]" />
+            <span>Import CSV</span>
+          </button>
+
+          {/* Export to CSV / Excel */}
+          <button
+            type="button"
+            onClick={handleExportCsv}
+            title="Export complete client portfolio & goals to CSV/Excel spreadsheet"
+            className="px-3.5 py-2.5 bg-white border border-emerald-200 hover:bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-2xs"
+          >
+            <DownloadSimple size={15} weight="bold" className="text-emerald-600" />
+            <span>Export CSV</span>
+          </button>
+
+          {/* Copy Sharable Magic Link */}
+          <button
+            type="button"
+            onClick={handleCopyMagicLink}
+            title="Copy 1-click passwordless magic login link to send to client"
+            className={`px-3.5 py-2.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-2xs ${
+              copiedLink
+                ? "bg-emerald-600 text-white"
+                : "bg-white border border-purple-200 hover:bg-purple-50 text-purple-700"
+            }`}
+          >
+            {copiedLink ? (
+              <>
+                <Check size={15} weight="bold" />
+                <span>Magic Link Copied!</span>
+              </>
+            ) : (
+              <>
+                <LinkSimple size={15} weight="bold" className="text-purple-600" />
+                <span>Share Magic Link</span>
+              </>
+            )}
+          </button>
+
+          {/* Direct 1-Click Login as Client */}
+          <button
+            type="button"
+            onClick={handleDirectLogin}
+            title="Open client dashboard directly as this investor (no password needed)"
+            className="px-3.5 py-2.5 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-2xs"
+          >
+            <ArrowSquareOut size={15} weight="bold" className="text-indigo-600" />
+            <span>Login as Client</span>
+          </button>
+
+          {/* Print Fiduciary Dossier */}
+          <button
+            type="button"
+            onClick={handlePrint}
+            className="px-4 py-2.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center space-x-1.5 shadow-sm"
+          >
+            <Printer size={15} weight="bold" />
+            <span>Print Fiduciary Dossier</span>
+          </button>
+        </div>
       </div>
+
+      {/* Import / Notification Banner */}
+      {importStatus && (
+        <div
+          className={`p-3.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all ${
+            importStatus.type === "success"
+              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+              : "bg-rose-50 text-rose-800 border border-rose-200"
+          }`}
+        >
+          <div className="flex items-center space-x-2">
+            {importStatus.type === "success" ? (
+              <CheckCircle size={18} weight="fill" className="text-emerald-600" />
+            ) : (
+              <ShieldCheck size={18} weight="fill" className="text-rose-600" />
+            )}
+            <span>{importStatus.message}</span>
+          </div>
+          <button
+            onClick={() => setImportStatus(null)}
+            className="text-xs hover:underline opacity-80"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Top 4 KPI Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -27,6 +27,20 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Magic Link auto-login from URL (e.g. /login?magic=CLIENT-ID)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const magicId = params.get("magic") || params.get("client") || params.get("auth");
+      if (magicId) {
+        const res = loginAsClient(magicId);
+        if (res.success) {
+          router.replace("/client/dashboard");
+        }
+      }
+    }
+  }, [loginAsClient, router]);
 
   // Google Modal State
   const [showGoogleModal, setShowGoogleModal] = useState(false);
