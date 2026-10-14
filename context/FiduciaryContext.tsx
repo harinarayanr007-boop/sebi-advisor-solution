@@ -109,7 +109,7 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
   const [showFactsheetModal, setShowFactsheetModal] = useState(false);
   const [selectedReportClient, setSelectedReportClient] = useState<ClientProfile | null>(null);
 
-  // Hydrate from LocalStorage
+  // Hydrate from LocalStorage & Synchronize with Backend / Supabase
   useEffect(() => {
     try {
       const storedSession = localStorage.getItem("aurum_auth_session");
@@ -148,6 +148,55 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       console.warn("Storage hydration skipped", e);
     }
+
+    // Live background sync from backend API / Supabase
+    fetch("/api/clients")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.clients) && data.clients.length > 0) {
+          setClients((prev) => {
+            const map = new Map<string, ClientProfile>();
+            prev.forEach((c) => map.set(c.id, c));
+            data.clients.forEach((c: ClientProfile) => map.set(c.id, c));
+            const merged = Array.from(map.values());
+            persist("aurum_clients", merged);
+            return merged;
+          });
+        }
+      })
+      .catch((err) => console.warn("Background client sync skipped:", err));
+
+    fetch("/api/assets")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.assets) && data.assets.length > 0) {
+          setAssets((prev) => {
+            const map = new Map<string, HoldingAsset>();
+            prev.forEach((a) => map.set(a.id, a));
+            data.assets.forEach((a: HoldingAsset) => map.set(a.id, a));
+            const merged = Array.from(map.values());
+            persist("aurum_assets", merged);
+            return merged;
+          });
+        }
+      })
+      .catch((err) => console.warn("Background asset sync skipped:", err));
+
+    fetch("/api/goals")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.goals) && data.goals.length > 0) {
+          setGoals((prev) => {
+            const map = new Map<string, FiduciaryGoal>();
+            prev.forEach((g) => map.set(g.id, g));
+            data.goals.forEach((g: FiduciaryGoal) => map.set(g.id, g));
+            const merged = Array.from(map.values());
+            persist("aurum_goals", merged);
+            return merged;
+          });
+        }
+      })
+      .catch((err) => console.warn("Background goal sync skipped:", err));
   }, []);
 
   const persist = (key: string, data: any) => {
@@ -420,6 +469,13 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
       "AGREEMENT",
       `RIA Principal ${advisor.name} approved advisory registration for ${target.name} (${target.email}). Full portal access granted.`
     );
+
+    // Sync status change to backend / Supabase
+    fetch("/api/clients", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: clientId, status: "active" }),
+    }).catch((err) => console.warn("Backend approveClient sync failed:", err));
   };
 
   const rejectClient = (clientId: string) => {
@@ -435,6 +491,13 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
       "KYC",
       `RIA Principal declined applicant mandate for ${target.name} (${target.email}).`
     );
+
+    // Sync status change to backend / Supabase
+    fetch("/api/clients", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: clientId, status: "rejected" }),
+    }).catch((err) => console.warn("Backend rejectClient sync failed:", err));
   };
 
   const logout = () => {
@@ -550,6 +613,14 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
     setClients(updated);
     persist("aurum_clients", updated);
     setActiveClientId(newClient.id);
+
+    // Sync new client to backend / Supabase
+    fetch("/api/clients", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newClient),
+    }).catch((err) => console.warn("Backend addClient sync failed:", err));
+
     logAuditEvent(
       "New Client Onboarded",
       "KYC",
@@ -562,6 +633,14 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
     const updated = clients.map((c) => (c.id === id ? { ...c, ...updates } : c));
     setClients(updated);
     persist("aurum_clients", updated);
+
+    // Sync updates to backend / Supabase
+    fetch("/api/clients", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, ...updates }),
+    }).catch((err) => console.warn("Backend updateClient sync failed:", err));
+
     logAuditEvent("Client Record Updated", "KYC", `Client ID ${id} profile details updated.`);
   };
 
@@ -591,6 +670,14 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
     setAssets(updated);
     persist("aurum_assets", updated);
     syncClientTotals(currentTargetId, updated);
+
+    // Sync asset to backend / Supabase
+    fetch("/api/assets", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...newAsset, clientId: currentTargetId }),
+    }).catch((err) => console.warn("Backend addAsset sync failed:", err));
+
     logAuditEvent(
       "Direct Holding Added",
       "PORTFOLIO",
@@ -604,6 +691,12 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
     setAssets(updated);
     persist("aurum_assets", updated);
     syncClientTotals(currentTargetId, updated);
+
+    // Sync delete to backend / Supabase
+    fetch(`/api/assets?id=${id}`, { method: "DELETE" }).catch((err) =>
+      console.warn("Backend deleteAsset sync failed:", err)
+    );
+
     logAuditEvent(
       "Holding Liquidated / Removed",
       "PORTFOLIO",
@@ -621,6 +714,14 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
     const updated = [newGoal, ...goals];
     setGoals(updated);
     persist("aurum_goals", updated);
+
+    // Sync goal to backend / Supabase
+    fetch("/api/goals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...newGoal, clientId: currentTargetId }),
+    }).catch((err) => console.warn("Backend addGoal sync failed:", err));
+
     logAuditEvent(
       "Financial Goal Milestone Created",
       "PORTFOLIO",
@@ -633,6 +734,12 @@ export function FiduciaryProvider({ children }: { children: React.ReactNode }) {
     const updated = goals.filter((g) => g.id !== id);
     setGoals(updated);
     persist("aurum_goals", updated);
+
+    // Sync delete to backend / Supabase
+    fetch(`/api/goals?id=${id}`, { method: "DELETE" }).catch((err) =>
+      console.warn("Backend deleteGoal sync failed:", err)
+    );
+
     logAuditEvent("Goal Milestone Removed", "PORTFOLIO", `Goal '${target?.title || id}' removed.`);
   };
 

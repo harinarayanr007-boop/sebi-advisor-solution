@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import dns from "dns";
 import { Resend } from "resend";
+import { getServerSupabase } from "@/lib/supabase";
 
 // ─── LAYER 4: IN-MEMORY IP RATE LIMITER (3 submissions per 10 mins per IP) ───
 const ipRequestMap = new Map<string, number[]>();
@@ -304,6 +305,26 @@ STATUTORY PROTOCOL:
       fs.writeFileSync(leadsFile, JSON.stringify(leads, null, 2), "utf-8");
     } catch (fsErr) {
       console.warn("Could not write to local leads.json backup:", fsErr);
+    }
+
+    // Persist consultation to Supabase database if connected
+    const supabase = getServerSupabase();
+    if (supabase) {
+      try {
+        await supabase.from("consultations").insert({
+          id: leadRecord.id,
+          client_name: leadRecord.clientName,
+          email: leadRecord.email,
+          phone: leadRecord.phone,
+          slot_time: leadRecord.timestamp,
+          portfolio_size: leadRecord.portfolioSize,
+          focus_area: leadRecord.primaryFocus,
+          status: "confirmed",
+          notes: leadRecord.notes,
+        });
+      } catch (dbErr) {
+        console.warn("Could not write consultation to Supabase:", dbErr);
+      }
     }
 
     // 8. RESEND EMAIL DISPATCH (DUAL NOTIFICATION)
