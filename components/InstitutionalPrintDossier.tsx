@@ -94,6 +94,7 @@ export default function InstitutionalPrintDossier({
             <button
               type="button"
               onClick={onClose}
+              aria-label="Close dossier modal"
               className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition"
             >
               <X size={20} weight="bold" />
