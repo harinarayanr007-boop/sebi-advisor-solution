@@ -14,6 +14,9 @@ import {
   SignOut,
   SealCheck,
   X,
+  LockKey,
+  Warning,
+  ArrowRight,
 } from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 
@@ -21,6 +24,7 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
   const pathname = usePathname();
   const router = useRouter();
   const {
+    session,
     advisor,
     clients,
     logout,
@@ -28,6 +32,10 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
     setShowFactsheetModal,
     selectedReportClient,
     setSelectedReportClient,
+    isSessionLocked,
+    lockSession,
+    unlockSession,
+    loginAsAdvisor,
   } = useFiduciary();
 
   const handleLogout = () => {
@@ -44,8 +52,110 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
     { label: "Practice Settings", icon: Gear, href: "/advisor/settings" },
   ];
 
+  // Role Security Guard: Must be logged in
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center p-6 font-sans">
+        <div className="bg-white rounded-[25px] border border-[#DFEAF2] p-8 max-w-md w-full text-center shadow-lg space-y-5">
+          <div className="w-14 h-14 rounded-full bg-slate-100 text-[#343C6A] flex items-center justify-center mx-auto shadow-sm">
+            <LockKey size={28} weight="bold" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold font-space text-[#343C6A]">
+              RIA Principal Access Restricted
+            </h2>
+            <p className="text-xs text-[#718EBF] mt-1.5 leading-relaxed">
+              SEBI Regulation 19 mandates authorized credential verification before granting access to RIA practice registries and client mandates.
+            </p>
+          </div>
+          <div className="space-y-3 pt-2">
+            <button
+              onClick={() => {
+                loginAsAdvisor();
+                router.push("/advisor/dashboard");
+              }}
+              className="w-full py-3 bg-[#343C6A] text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition flex items-center justify-center space-x-2"
+            >
+              <span>Authenticate As RIA Principal</span>
+              <ArrowRight size={16} weight="bold" />
+            </button>
+            <Link
+              href="/login"
+              className="w-full py-3 bg-slate-50 border border-[#DFEAF2] text-[#343C6A] rounded-xl text-xs font-bold hover:bg-slate-100 transition block text-center"
+            >
+              Go to Portal Gateway →
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Cross-Role Isolation: Client cannot snoop into Advisor Practice
+  if (session.role !== "advisor") {
+    return (
+      <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center p-6 font-sans">
+        <div className="bg-white rounded-[25px] border border-amber-300 p-8 max-w-md w-full text-center shadow-lg space-y-5">
+          <div className="w-14 h-14 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto shadow-sm">
+            <Warning size={32} weight="bold" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold font-space text-[#343C6A]">
+              Access Denied: 403 Forbidden
+            </h2>
+            <p className="text-xs text-[#718EBF] mt-1.5 leading-relaxed">
+              You are currently authenticated as Client: <strong className="text-[#343C6A]">{session.name}</strong>. Access to RIA Practice Management, client master registries, and compliance audit desks is restricted to licensed SEBI RIA personnel (INA000015845).
+            </p>
+          </div>
+          <div className="space-y-3 pt-2">
+            <Link
+              href="/client/dashboard"
+              className="w-full py-3 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition block text-center"
+            >
+              Return to Your Client Wealth Portal →
+            </Link>
+            <button
+              onClick={() => {
+                loginAsAdvisor();
+                router.push("/advisor/dashboard");
+              }}
+              className="w-full py-3 bg-slate-100 text-[#343C6A] rounded-xl text-xs font-bold hover:bg-slate-200 transition"
+            >
+              Switch to RIA Principal Login
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#F5F7FA] flex flex-col antialiased font-sans text-[#343C6A]">
+    <div className="min-h-screen bg-[#F5F7FA] flex flex-col antialiased font-sans text-[#343C6A] relative">
+      {/* Session Lock Privacy Overlay */}
+      {isSessionLocked && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-6 font-sans">
+          <div className="bg-white rounded-[25px] p-8 max-w-sm w-full text-center shadow-2xl space-y-5 border border-slate-200">
+            <div className="w-14 h-14 rounded-full bg-[#343C6A]/10 text-[#343C6A] flex items-center justify-center mx-auto">
+              <LockKey size={30} weight="fill" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold font-space text-[#343C6A]">
+                RIA Practice Desk Locked
+              </h3>
+              <p className="text-xs text-[#718EBF] mt-1">
+                Client PII and compliance ledgers are locked to prevent unauthorized viewing.
+              </p>
+            </div>
+            <button
+              onClick={() => unlockSession()}
+              className="w-full py-3 bg-[#343C6A] text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-slate-800 transition shadow-sm"
+            >
+              Unlock RIA Desk
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 250px Fixed Left Sidebar */}
       <aside className="fixed top-0 left-0 bottom-0 w-[250px] bg-white border-r border-[#E6EFF5] flex flex-col z-30 shadow-[0_0_20px_rgba(0,0,0,0.02)]">
         {/* Brand Header */}
@@ -92,8 +202,14 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
           })}
         </nav>
 
+        {/* Security Sentinel Status */}
+        <div className="px-4 py-2 mx-4 mb-2 bg-emerald-50/80 border border-emerald-200 rounded-xl text-[10px] text-emerald-800 flex items-center space-x-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="font-semibold">SEBI Reg 19 Audit Active</span>
+        </div>
+
         {/* License Verification Card */}
-        <div className="p-4 m-4 bg-[#F5F7FA] border border-[#DFEAF2] rounded-2xl text-left">
+        <div className="p-4 mx-4 mb-3 bg-[#F5F7FA] border border-[#DFEAF2] rounded-2xl text-left">
           <div className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-wider text-emerald-700 mb-1">
             <SealCheck size={16} weight="fill" />
             <span>Fiduciary License Active</span>
@@ -102,19 +218,28 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
           <p className="text-[10px] text-[#718EBF] font-mono">{advisor.baslMembership}</p>
         </div>
 
-        {/* Advisor Sign Out */}
+        {/* Advisor Sign Out & Screen Lock */}
         <div className="p-4 border-t border-[#E6EFF5] flex items-center justify-between">
           <div className="text-[10px] text-[#718EBF]">
             <span className="block font-semibold">RIA Principal</span>
-            <span className="truncate max-w-[130px] block font-bold text-[#343C6A]">{advisor.name}</span>
+            <span className="truncate max-w-[110px] block font-bold text-[#343C6A]">{advisor.name}</span>
           </div>
-          <button
-            onClick={handleLogout}
-            title="Sign Out"
-            className="p-2 text-[#718EBF] hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
-          >
-            <SignOut size={18} weight="bold" />
-          </button>
+          <div className="flex items-center space-x-1">
+            <button
+              onClick={lockSession}
+              title="Lock Screen Privacy"
+              className="p-2 text-[#718EBF] hover:text-[#343C6A] hover:bg-slate-100 rounded-xl transition"
+            >
+              <LockKey size={17} weight="bold" />
+            </button>
+            <button
+              onClick={handleLogout}
+              title="Sign Out"
+              className="p-2 text-[#718EBF] hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
+            >
+              <SignOut size={17} weight="bold" />
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -136,7 +261,17 @@ export default function AdvisorLayout({ children }: { children: React.ReactNode 
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
+            {/* Lock Session Screen */}
+            <button
+              onClick={lockSession}
+              title="Lock Privacy Screen"
+              className="flex items-center space-x-1.5 px-3 py-2 bg-white border border-[#DFEAF2] hover:bg-[#F5F7FA] text-[#718EBF] hover:text-[#343C6A] rounded-xl text-xs font-semibold transition"
+            >
+              <LockKey size={15} weight="bold" />
+              <span>Lock</span>
+            </button>
+
             <Link
               href="/advisor/onboard"
               className="flex items-center space-x-2 px-4 py-2.5 bg-[#1814F3] text-white rounded-2xl text-xs font-bold hover:bg-blue-700 transition shadow-sm"

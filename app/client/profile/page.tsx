@@ -6,8 +6,11 @@ import {
   ShieldCheck,
   CheckCircle,
   ArrowRight,
+  Eye,
+  EyeSlash,
 } from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
+import { maskPAN } from "@/lib/fiduciary-store";
 
 export default function ClientProfilePage() {
   const { activeClient, updateClient, advisor } = useFiduciary();
@@ -19,6 +22,7 @@ export default function ClientProfilePage() {
   const [employer, setEmployer] = useState(activeClient?.employer || "");
   const [designation, setDesignation] = useState(activeClient?.designation || "");
   const [grossCtc, setGrossCtc] = useState(activeClient?.grossCtc || "");
+  const [revealPan, setRevealPan] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const handleSave = (e: React.FormEvent) => {
@@ -59,11 +63,21 @@ export default function ClientProfilePage() {
       {/* Identity Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className="bg-white rounded-[25px] p-6 border border-[#DFEAF2] shadow-sm">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#718EBF] block">
-            Permanent Account Number (PAN)
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#718EBF] block">
+              Permanent Account Number (PAN)
+            </span>
+            <button
+              type="button"
+              onClick={() => setRevealPan(!revealPan)}
+              className="text-[#718EBF] hover:text-[#1814F3] text-xs transition"
+              title={revealPan ? "Mask PAN" : "Reveal PAN"}
+            >
+              {revealPan ? <EyeSlash size={15} weight="bold" /> : <Eye size={15} weight="bold" />}
+            </button>
+          </div>
           <h3 className="text-xl font-bold font-mono text-[#343C6A] mt-2">
-            {activeClient?.pan || "ABCDE1234F"}
+            {maskPAN(activeClient?.pan || "ABCDE1234F", revealPan)}
           </h3>
           <span className="text-[11px] text-emerald-600 font-bold block mt-1">
             ✓ NSDL Verified

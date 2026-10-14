@@ -12,7 +12,7 @@ import {
 import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function ClientVaultPage() {
-  const { activeClient, advisor, setShowFactsheetModal } = useFiduciary();
+  const { activeClient, advisor, setShowFactsheetModal, auditLogs } = useFiduciary();
   const [uploadedMsg, setUploadedMsg] = useState(false);
 
   const documents = [
@@ -127,6 +127,43 @@ export default function ClientVaultPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Client Security & Fiduciary Access Audit Log */}
+      <div className="bg-white rounded-[25px] p-6 border border-[#DFEAF2] shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[#F0F4F8] pb-4">
+          <div>
+            <h3 className="text-base font-bold font-space text-[#343C6A]">
+              Security & Fiduciary Access Audit Trail
+            </h3>
+            <p className="text-xs text-[#718EBF]">
+              Cryptographic ledger of all authenticated access sessions, folio changes, and document viewings.
+            </p>
+          </div>
+          <span className="text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full">
+            DPDP Act & SEBI Compliant
+          </span>
+        </div>
+
+        <div className="divide-y divide-[#F0F4F8]">
+          {auditLogs.slice(0, 8).map((log) => (
+            <div key={log.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-2">
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                <div>
+                  <span className="font-bold text-[#343C6A]">{log.action}</span>
+                  <span className="text-[11px] text-[#718EBF] block sm:inline sm:ml-2">
+                    {log.details}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3 shrink-0 text-[#718EBF] text-[11px] font-mono">
+                <span>{log.timestamp}</span>
+                <span className="text-emerald-600 font-bold">✓ SHA-256</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

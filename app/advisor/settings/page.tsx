@@ -9,12 +9,19 @@ import {
 import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function AdvisorSettingsPage() {
-  const { advisor } = useFiduciary();
+  const { advisor, updateAdvisorSettings } = useFiduciary();
   const [feeSchedule, setFeeSchedule] = useState(advisor.feeSchedule);
+  const [phone, setPhone] = useState(advisor.phone);
+  const [officeAddress, setOfficeAddress] = useState(advisor.officeAddress);
   const [saved, setSaved] = useState(false);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+    updateAdvisorSettings({
+      feeSchedule,
+      phone,
+      officeAddress,
+    });
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };
@@ -117,9 +124,9 @@ export default function AdvisorSettingsPage() {
             <label className="block font-bold text-[#343C6A] mb-1">Official Desk Phone</label>
             <input
               type="tel"
-              disabled
-              value={advisor.phone}
-              className="w-full px-3.5 py-2.5 bg-[#EEF2F6] border border-[#DFEAF2] rounded-xl text-sm text-[#343C6A]"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full px-3.5 py-2.5 bg-[#F5F7FA] border border-[#DFEAF2] rounded-xl text-sm text-[#343C6A] focus:outline-none focus:border-[#1814F3]"
             />
           </div>
         </div>
@@ -128,9 +135,9 @@ export default function AdvisorSettingsPage() {
           <label className="block font-bold text-[#343C6A] mb-1">Registered Office Address</label>
           <input
             type="text"
-            disabled
-            value={advisor.officeAddress}
-            className="w-full px-3.5 py-2.5 bg-[#EEF2F6] border border-[#DFEAF2] rounded-xl text-sm text-[#343C6A]"
+            value={officeAddress}
+            onChange={(e) => setOfficeAddress(e.target.value)}
+            className="w-full px-3.5 py-2.5 bg-[#F5F7FA] border border-[#DFEAF2] rounded-xl text-sm text-[#343C6A] focus:outline-none focus:border-[#1814F3]"
           />
         </div>
 

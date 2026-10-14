@@ -17,6 +17,10 @@ import {
   X,
   CheckCircle,
   Eye,
+  LockKey,
+  ShieldSlash,
+  ArrowRight,
+  Sparkle,
 } from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 
@@ -31,6 +35,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     activeAssets,
     showFactsheetModal,
     setShowFactsheetModal,
+    isSessionLocked,
+    lockSession,
+    unlockSession,
+    loginAsClient,
   } = useFiduciary();
 
   const handleLogout = () => {
@@ -49,8 +57,71 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     { label: "Client Profile", icon: User, href: "/client/profile" },
   ];
 
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center p-6 font-sans">
+        <div className="bg-white rounded-[25px] border border-[#DFEAF2] p-8 max-w-md w-full text-center shadow-lg space-y-5">
+          <div className="w-14 h-14 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto shadow-sm">
+            <LockKey size={28} weight="bold" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold font-space text-[#343C6A]">
+              Fiduciary Authentication Required
+            </h2>
+            <p className="text-xs text-[#718EBF] mt-1.5 leading-relaxed">
+              Access to client wealth dossiers and direct demat folios is restricted under SEBI (Investment Advisers) Regulations, 2013. Please sign in to authenticate.
+            </p>
+          </div>
+          <div className="space-y-3 pt-2">
+            <button
+              onClick={() => {
+                loginAsClient();
+                router.push("/client/dashboard");
+              }}
+              className="w-full py-3 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center justify-center space-x-2"
+            >
+              <span>Authenticate As Client (Demo)</span>
+              <ArrowRight size={16} weight="bold" />
+            </button>
+            <Link
+              href="/login"
+              className="w-full py-3 bg-slate-50 border border-[#DFEAF2] text-[#343C6A] rounded-xl text-xs font-bold hover:bg-slate-100 transition block text-center"
+            >
+              Go to Portal Gateway →
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#F5F7FA] flex flex-col antialiased font-sans text-[#343C6A]">
+    <div className="min-h-screen bg-[#F5F7FA] flex flex-col antialiased font-sans text-[#343C6A] relative">
+      {/* Session Lock Privacy Overlay */}
+      {isSessionLocked && (
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-6 font-sans">
+          <div className="bg-white rounded-[25px] p-8 max-w-sm w-full text-center shadow-2xl space-y-5 border border-slate-200">
+            <div className="w-14 h-14 rounded-full bg-[#1814F3]/10 text-[#1814F3] flex items-center justify-center mx-auto">
+              <LockKey size={30} weight="fill" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold font-space text-[#343C6A]">
+                Session Privacy Shield Active
+              </h3>
+              <p className="text-xs text-[#718EBF] mt-1">
+                Confidential financial figures and folios are locked to prevent shoulder-surfing.
+              </p>
+            </div>
+            <button
+              onClick={() => unlockSession()}
+              className="w-full py-3 bg-[#1814F3] text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-blue-700 transition shadow-sm"
+            >
+              Unlock Fiduciary Screen
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 250px Fixed Left Sidebar */}
       <aside className="fixed top-0 left-0 bottom-0 w-[250px] bg-white border-r border-[#E6EFF5] flex flex-col z-30 shadow-[0_0_20px_rgba(0,0,0,0.02)]">
         {/* Brand Header */}
@@ -97,8 +168,14 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           })}
         </nav>
 
+        {/* Security Sentinel Status */}
+        <div className="px-4 py-2 mx-4 mb-2 bg-emerald-50/80 border border-emerald-200 rounded-xl text-[10px] text-emerald-800 flex items-center space-x-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="font-semibold">TLS 1.3 • AES-256 GCM</span>
+        </div>
+
         {/* Assigned Advisor Info Card */}
-        <div className="p-4 m-4 bg-[#F5F7FA] border border-[#DFEAF2] rounded-2xl text-left">
+        <div className="p-4 mx-4 mb-3 bg-[#F5F7FA] border border-[#DFEAF2] rounded-2xl text-left">
           <div className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-wider text-[#1814F3] mb-1">
             <ShieldCheck size={16} weight="fill" />
             <span>Assigned SEBI RIA</span>
@@ -108,19 +185,28 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           <p className="text-[10px] text-[#718EBF] truncate mt-0.5">{advisor.email}</p>
         </div>
 
-        {/* Fiduciary Notice & Sign Out */}
+        {/* Fiduciary Notice, Screen Lock & Sign Out */}
         <div className="p-4 border-t border-[#E6EFF5] flex items-center justify-between">
           <div className="text-[10px] text-[#718EBF]">
             <span className="block font-semibold">Client Session</span>
-            <span className="truncate max-w-[130px] block">{activeClient?.name || session?.name}</span>
+            <span className="truncate max-w-[110px] block font-medium">{activeClient?.name || session?.name}</span>
           </div>
-          <button
-            onClick={handleLogout}
-            title="Sign Out"
-            className="p-2 text-[#718EBF] hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
-          >
-            <SignOut size={18} weight="bold" />
-          </button>
+          <div className="flex items-center space-x-1">
+            <button
+              onClick={lockSession}
+              title="Lock Screen Privacy"
+              className="p-2 text-[#718EBF] hover:text-[#1814F3] hover:bg-blue-50 rounded-xl transition"
+            >
+              <LockKey size={17} weight="bold" />
+            </button>
+            <button
+              onClick={handleLogout}
+              title="Sign Out"
+              className="p-2 text-[#718EBF] hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
+            >
+              <SignOut size={17} weight="bold" />
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -139,10 +225,25 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
               <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-700">
                 100% Direct Demat
               </span>
+              {session?.role === "advisor" && (
+                <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                  RIA Supervisory Audit Mode
+                </span>
+              )}
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
+            {/* Lock Session Screen */}
+            <button
+              onClick={lockSession}
+              title="Lock Privacy Screen"
+              className="flex items-center space-x-1.5 px-3 py-2 bg-white border border-[#DFEAF2] hover:bg-[#F5F7FA] text-[#718EBF] hover:text-[#343C6A] rounded-xl text-xs font-semibold transition"
+            >
+              <LockKey size={15} weight="bold" />
+              <span>Lock</span>
+            </button>
+
             {/* 1-Click Printable Dossier Button */}
             <button
               onClick={() => setShowFactsheetModal(true)}

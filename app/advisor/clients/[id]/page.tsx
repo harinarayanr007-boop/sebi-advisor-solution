@@ -9,9 +9,11 @@ import {
   Briefcase,
   Target,
   CheckCircle,
+  Eye,
+  EyeSlash,
 } from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
-import { formatINR } from "@/lib/fiduciary-store";
+import { formatINR, maskPAN } from "@/lib/fiduciary-store";
 
 export default function AdvisorClientDetailPage({
   params,
@@ -33,6 +35,7 @@ export default function AdvisorClientDetailPage({
   const client = clients.find((c) => c.id === id);
 
   const [notes, setNotes] = useState(client?.advisorNotes || "");
+  const [revealPan, setRevealPan] = useState(false);
   const [savedNotes, setSavedNotes] = useState(false);
 
   if (!client) {
@@ -90,9 +93,18 @@ export default function AdvisorClientDetailPage({
               {client.tier}
             </span>
           </div>
-          <p className="text-xs text-[#718EBF] mt-1 font-mono">
-            Client ID: {client.id} • PAN: {client.pan} • CKYC: {client.ckycId}
-          </p>
+          <div className="text-xs text-[#718EBF] mt-1 font-mono flex items-center space-x-2">
+            <span>Client ID: {client.id} • PAN: {maskPAN(client.pan, revealPan)}</span>
+            <button
+              type="button"
+              onClick={() => setRevealPan(!revealPan)}
+              className="text-[#718EBF] hover:text-[#1814F3] transition"
+              title={revealPan ? "Mask PAN" : "Reveal PAN"}
+            >
+              {revealPan ? <EyeSlash size={14} weight="bold" /> : <Eye size={14} weight="bold" />}
+            </button>
+            <span>• CKYC: {client.ckycId}</span>
+          </div>
         </div>
 
         <button

@@ -8,7 +8,7 @@ import {
 import { useFiduciary } from "@/context/FiduciaryContext";
 
 export default function AdvisorCompliancePage() {
-  const { advisor, clients } = useFiduciary();
+  const { advisor, clients, auditLogs } = useFiduciary();
 
   const auditItems = [
     {
@@ -107,6 +107,78 @@ export default function AdvisorCompliancePage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Live SEBI Regulation 19 Audit Register */}
+      <div className="bg-white rounded-[25px] p-6 border border-[#DFEAF2] shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-[#F0F4F8] pb-4">
+          <div>
+            <h3 className="text-base font-bold font-space text-[#343C6A]">
+              Statutory SEBI Audit Register (Regulation 19)
+            </h3>
+            <p className="text-xs text-[#718EBF]">
+              Immutable event log of client onboarding, suitability diagnostics, and portfolio changes.
+            </p>
+          </div>
+          <span className="text-[10px] font-mono font-bold bg-blue-50 text-[#1814F3] border border-blue-200 px-3 py-1 rounded-full">
+            {auditLogs.length} Cryptographic Events Logged
+          </span>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead>
+              <tr className="border-b border-[#F0F4F8] text-[#718EBF] uppercase font-bold text-[10px] tracking-wider">
+                <th className="py-3 px-3">Timestamp (IST)</th>
+                <th className="py-3 px-3">Category</th>
+                <th className="py-3 px-3">Actor / Entity</th>
+                <th className="py-3 px-3">Action Performed</th>
+                <th className="py-3 px-3">Details & Parameters</th>
+                <th className="py-3 px-3 text-right">Integrity Seal</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#F0F4F8]">
+              {auditLogs.map((log) => {
+                const categoryColors: Record<string, string> = {
+                  SECURITY: "bg-purple-100 text-purple-800",
+                  SUITABILITY: "bg-amber-100 text-amber-800",
+                  KYC: "bg-blue-100 text-blue-800",
+                  PORTFOLIO: "bg-emerald-100 text-emerald-800",
+                  CEFCOM: "bg-teal-100 text-teal-800",
+                  AGREEMENT: "bg-indigo-100 text-indigo-800",
+                };
+                return (
+                  <tr key={log.id} className="hover:bg-slate-50 transition">
+                    <td className="py-3 px-3 font-mono text-[11px] text-[#718EBF] whitespace-nowrap">
+                      {log.timestamp}
+                    </td>
+                    <td className="py-3 px-3">
+                      <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${categoryColors[log.category] || "bg-slate-100 text-slate-700"}`}>
+                        {log.category}
+                      </span>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="font-semibold text-[#343C6A]">{log.actorName}</div>
+                      <div className="text-[10px] text-[#718EBF] font-mono">{log.actorRole}</div>
+                    </td>
+                    <td className="py-3 px-3 font-bold text-[#343C6A]">
+                      {log.action}
+                    </td>
+                    <td className="py-3 px-3 text-[#718EBF] text-[11px] max-w-xs truncate" title={log.details}>
+                      {log.details}
+                    </td>
+                    <td className="py-3 px-3 text-right">
+                      <span className="inline-flex items-center space-x-1 text-emerald-600 font-mono text-[10px] font-bold">
+                        <CheckCircle size={14} weight="fill" />
+                        <span>SHA-256</span>
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

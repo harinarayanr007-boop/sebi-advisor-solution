@@ -9,6 +9,7 @@ import {
   Trash,
   Printer,
   Sparkle,
+  DownloadSimple,
 } from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
 
@@ -23,6 +24,24 @@ export default function AdvisorClientsPage() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [tierFilter, setTierFilter] = useState("all");
+
+  const handleExportCSV = () => {
+    if (clients.length === 0) {
+      alert("No client records to export.");
+      return;
+    }
+    const headers = "Name,Email,Phone,City,Tier,Net Worth,Annual Drag Saved,PAN,CKYC,Risk Tolerance,Target CAGR\n";
+    const rows = clients.map((c) =>
+      `"${c.name}","${c.email}","${c.phone}","${c.city}","${c.tier}","${c.netWorth}","${c.dragSaved}","${c.pan}","${c.ckycId}","${c.riskTolerance}","${c.targetCAGR}"`
+    ).join("\n");
+    const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `SEBI_RIA_Client_Roster_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   const filteredClients = clients.filter((c) => {
     const matchSearch =
@@ -45,6 +64,13 @@ export default function AdvisorClientsPage() {
           </p>
         </div>
         <div className="flex items-center space-x-3">
+          <button
+            onClick={handleExportCSV}
+            className="px-4 py-2.5 bg-white border border-[#DFEAF2] hover:bg-slate-50 text-[#343C6A] rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-xs"
+          >
+            <DownloadSimple size={16} weight="bold" className="text-[#1814F3]" />
+            <span>Export Roster (CSV)</span>
+          </button>
           <Link
             href="/advisor/onboard"
             className="px-4 py-2.5 bg-[#1814F3] text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition flex items-center space-x-2 shadow-sm"

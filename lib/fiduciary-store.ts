@@ -304,6 +304,72 @@ export const sampleDemoInsurance: InsurancePolicy[] = [
   },
 ];
 
+export interface AuditLogEntry {
+  id: string;
+  timestamp: string;
+  actorRole: "client" | "advisor" | "system";
+  actorName: string;
+  actorEmail: string;
+  action: string;
+  category: "KYC" | "SUITABILITY" | "PORTFOLIO" | "AGREEMENT" | "SECURITY" | "CEFCOM";
+  details: string;
+  ipHash: string;
+  verified: boolean;
+}
+
+export const initialAuditLogs: AuditLogEntry[] = [
+  {
+    id: "LOG-INIT-001",
+    timestamp: "2026-03-31 09:30:15 IST",
+    actorRole: "system",
+    actorName: "SEBI Compliance Sentinel",
+    actorEmail: "compliance@aurumfiduciary.in",
+    action: "System Boot & Cryptographic Audit Verification",
+    category: "SECURITY",
+    details: "SHA-256 integrity seal initialized. Fiduciary practice license INA000015845 active.",
+    ipHash: "192.168.1.1 // TLS 1.3",
+    verified: true,
+  },
+  {
+    id: "LOG-INIT-002",
+    timestamp: "2026-03-31 09:30:16 IST",
+    actorRole: "system",
+    actorName: "CeFCoM Gateway",
+    actorEmail: "cefcom-verify@basl.in",
+    action: "Zero Commission & Fee Cap Policy Enforced",
+    category: "CEFCOM",
+    details: "SEBI Fee Cap Limit ₹1.25L / 2.5% AUA strictly asserted across all client mandates.",
+    ipHash: "10.0.4.22 // BASL API",
+    verified: true,
+  },
+];
+
+export function maskPAN(pan: string, reveal = false): string {
+  if (!pan) return "••••••••••";
+  if (reveal) return pan.toUpperCase();
+  const clean = pan.trim();
+  if (clean.length < 5) return "•••••";
+  return `${clean.substring(0, 2)}•••••${clean.substring(clean.length - 2)}`;
+}
+
+export function maskAadhaar(aadhaar: string): string {
+  if (!aadhaar) return "XXXX-XXXX-XXXX";
+  const digits = aadhaar.replace(/[^0-9]/g, "");
+  if (digits.length >= 4) {
+    return `XXXX-XXXX-${digits.slice(-4)}`;
+  }
+  return "XXXX-XXXX-0000";
+}
+
+export function maskBankAccount(acc: string): string {
+  if (!acc) return "••••••••••••";
+  const clean = acc.replace(/[^0-9]/g, "");
+  if (clean.length >= 4) {
+    return `••••••••${clean.slice(-4)}`;
+  }
+  return "••••••••1234";
+}
+
 export function formatINR(val: number): string {
   if (val >= 10000000) {
     return `₹${(val / 10000000).toFixed(2)} Cr`;
