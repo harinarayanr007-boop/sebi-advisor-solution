@@ -23,6 +23,7 @@ import {
   Sparkle,
 } from "@phosphor-icons/react";
 import { useFiduciary } from "@/context/FiduciaryContext";
+import { formatINR } from "@/lib/fiduciary-store";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -305,20 +306,27 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             </div>
 
             <div className="space-y-6 text-xs text-[#343C6A]">
-              <div className="grid grid-cols-3 gap-4 bg-[#F5F7FA] p-4 rounded-2xl">
-                <div>
-                  <span className="text-[10px] text-[#718EBF] uppercase block font-semibold">Total Direct Net Worth</span>
-                  <span className="text-base font-bold font-space text-[#343C6A]">{activeClient?.netWorth || "₹0"}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-[#718EBF] uppercase block font-semibold">Annual Drag Eliminated</span>
-                  <span className="text-base font-bold font-space text-emerald-600">{activeClient?.dragSaved || "₹0 / yr"}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-[#718EBF] uppercase block font-semibold">Risk Classification</span>
-                  <span className="text-base font-bold font-space text-[#1814F3]">{activeClient?.riskTolerance || "Balanced Growth"}</span>
-                </div>
-              </div>
+              {(() => {
+                const totalAssetsVal = activeAssets.reduce((sum, a) => sum + a.currentValue, 0);
+                const displayNetWorth = totalAssetsVal > 0 ? formatINR(totalAssetsVal) : (activeClient?.netWorth || "₹0");
+                const displayDrag = totalAssetsVal > 0 ? `₹${Math.round(totalAssetsVal * 0.009).toLocaleString("en-IN")} / yr` : (activeClient?.dragSaved || "₹0 / yr");
+                return (
+                  <div className="grid grid-cols-3 gap-4 bg-[#F5F7FA] p-4 rounded-2xl">
+                    <div>
+                      <span className="text-[10px] text-[#718EBF] uppercase block font-semibold">Total Direct Net Worth</span>
+                      <span className="text-base font-bold font-space text-[#343C6A]">{displayNetWorth}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-[#718EBF] uppercase block font-semibold">Annual Drag Eliminated</span>
+                      <span className="text-base font-bold font-space text-emerald-600">{displayDrag}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-[#718EBF] uppercase block font-semibold">Risk Classification</span>
+                      <span className="text-base font-bold font-space text-[#1814F3]">{activeClient?.riskTolerance || "Balanced Growth"}</span>
+                    </div>
+                  </div>
+                );
+              })()}
 
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[#718EBF] mb-2">Direct Demat Folios ({activeAssets.length})</h4>
