@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { Inter, Roboto } from "next/font/google";
+import { Inter, Roboto, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { OnboardingProvider } from "@/context/OnboardingContext";
 import { FiduciaryProvider } from "@/context/FiduciaryContext";
+import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
   display: "swap",
 });
@@ -49,14 +56,16 @@ export default function RootLayout({
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${inter.variable} ${roboto.variable} h-full antialiased light`}
+      className={`${inter.variable} ${dmSans.variable} ${roboto.variable} h-full antialiased light`}
     >
       <body className="min-h-full flex flex-col bg-white text-[#030a03] font-sans selection:bg-[#1e90ff]/20 selection:text-[#1e90ff]">
-        <OnboardingProvider>
-          <FiduciaryProvider>
-            <main className="flex-1 flex flex-col w-full">{children}</main>
-          </FiduciaryProvider>
-        </OnboardingProvider>
+        <SmoothScrollProvider>
+          <OnboardingProvider>
+            <FiduciaryProvider>
+              <main className="flex-1 flex flex-col w-full">{children}</main>
+            </FiduciaryProvider>
+          </OnboardingProvider>
+        </SmoothScrollProvider>
       </body>
     </html>
   );
