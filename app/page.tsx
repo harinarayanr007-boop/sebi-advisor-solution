@@ -86,7 +86,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-start relative w-full bg-white text-[#030a03] overflow-x-hidden" data-node-id="10373:67369" data-name="Home • Desktop">
+    <div className="flex flex-col items-start relative w-full bg-white text-[#030a03] overflow-x-clip" data-node-id="10373:67369" data-name="Home • Desktop">
       
       {/* 1. NAVBAR / 1 / */}
       <FigmaNavbar />

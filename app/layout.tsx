@@ -55,10 +55,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      data-scroll-behavior="smooth"
-      className={`${inter.variable} ${dmSans.variable} ${roboto.variable} h-full antialiased light`}
+      className={`${inter.variable} ${dmSans.variable} ${roboto.variable} antialiased light`}
     >
-      <body className="min-h-full flex flex-col bg-white text-[#030a03] font-sans selection:bg-[#1e90ff]/20 selection:text-[#1e90ff]">
+      <body className="min-h-screen flex flex-col bg-white text-[#030a03] font-sans selection:bg-[#1e90ff]/20 selection:text-[#1e90ff]">
         <SmoothScrollProvider>
           <OnboardingProvider>
             <FiduciaryProvider>
