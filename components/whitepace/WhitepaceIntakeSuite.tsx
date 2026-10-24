@@ -198,25 +198,65 @@ export default function WhitepaceIntakeSuite({ onOpenDemoModal }: WhitepaceIntak
             />
           </div>
 
-          {/* Orbiting Multi-Stakeholder Avatars from Figma */}
-          <div className="absolute top-[8%] left-[22%] w-[50px] sm:w-[64px] h-[50px] sm:h-[64px] bg-white rounded-full p-2 shadow-lg border border-gray-150">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/figma/c918b7dac89b285304bf1273be965b5637f92000.svg" alt="" className="w-full h-full object-contain" />
+          {/* Orbiting Multi-Stakeholder Avatars: High-Trust Industry Professionals */}
+          {/* 1. Chartered Accountant (Tax / Audit) - Top Left */}
+          <div className="group absolute top-[5%] sm:top-[7%] left-[16%] sm:left-[19%] flex flex-col items-center z-20 cursor-pointer">
+            <div className="w-[60px] sm:w-[76px] h-[60px] sm:h-[76px] rounded-full p-[2.5px] bg-white shadow-[0_10px_25px_rgba(4,56,115,0.18)] border-2 border-white ring-2 ring-[#FFDC4D] group-hover:scale-110 group-hover:ring-[#043873] transition-all duration-300">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/assets/professionals/chartered_accountant.jpg"
+                alt="Chartered Accountant (Tax & HUF)"
+                className="w-full h-full object-cover rounded-full"
+              />
+            </div>
+            <span className="mt-1 px-2.5 py-0.5 bg-white/95 backdrop-blur-sm border border-gray-200 text-[#043873] font-['Inter'] font-semibold text-[10px] sm:text-[11px] rounded-full shadow-sm whitespace-nowrap opacity-95 group-hover:opacity-100 group-hover:bg-[#043873] group-hover:text-white transition-all">
+              Chartered Accountant
+            </span>
           </div>
 
-          <div className="absolute top-[12%] right-[18%] w-[50px] sm:w-[64px] h-[50px] sm:h-[64px] bg-white rounded-full p-2 shadow-lg border border-gray-150">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/figma/d8ad6bb131c4737ca072d4198f0b1ec48ae5a8ed.svg" alt="" className="w-full h-full object-contain" />
+          {/* 2. Senior Estate & Trust Counsel - Top Right */}
+          <div className="group absolute top-[8%] sm:top-[10%] right-[12%] sm:right-[15%] flex flex-col items-center z-20 cursor-pointer">
+            <div className="w-[60px] sm:w-[76px] h-[60px] sm:h-[76px] rounded-full p-[2.5px] bg-white shadow-[0_10px_25px_rgba(4,56,115,0.18)] border-2 border-white ring-2 ring-[#4F9CF9] group-hover:scale-110 group-hover:ring-[#043873] transition-all duration-300">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/assets/professionals/estate_lawyer.jpg"
+                alt="Senior Estate & Trust Counsel"
+                className="w-full h-full object-cover rounded-full"
+              />
+            </div>
+            <span className="mt-1 px-2.5 py-0.5 bg-white/95 backdrop-blur-sm border border-gray-200 text-[#043873] font-['Inter'] font-semibold text-[10px] sm:text-[11px] rounded-full shadow-sm whitespace-nowrap opacity-95 group-hover:opacity-100 group-hover:bg-[#043873] group-hover:text-white transition-all">
+              Estate & Trust Counsel
+            </span>
           </div>
 
-          <div className="absolute bottom-[16%] left-[20%] w-[50px] sm:w-[64px] h-[50px] sm:h-[64px] bg-white rounded-full p-2 shadow-lg border border-gray-150">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/figma/4ccedbca09f2d42cee8821193db44c2fe003e9fc.svg" alt="" className="w-full h-full object-contain" />
+          {/* 3. SEBI Fiduciary Wealth Advisor - Bottom Left */}
+          <div className="group absolute bottom-[12%] sm:bottom-[15%] left-[15%] sm:left-[17%] flex flex-col items-center z-20 cursor-pointer">
+            <div className="w-[60px] sm:w-[76px] h-[60px] sm:h-[76px] rounded-full p-[2.5px] bg-white shadow-[0_10px_25px_rgba(4,56,115,0.18)] border-2 border-white ring-2 ring-[#FF6B6B] group-hover:scale-110 group-hover:ring-[#043873] transition-all duration-300">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/assets/professionals/wealth_fiduciary.jpg"
+                alt="SEBI Registered Fiduciary"
+                className="w-full h-full object-cover rounded-full"
+              />
+            </div>
+            <span className="mt-1 px-2.5 py-0.5 bg-white/95 backdrop-blur-sm border border-gray-200 text-[#043873] font-['Inter'] font-semibold text-[10px] sm:text-[11px] rounded-full shadow-sm whitespace-nowrap opacity-95 group-hover:opacity-100 group-hover:bg-[#043873] group-hover:text-white transition-all">
+              SEBI Fiduciary Lead
+            </span>
           </div>
 
-          <div className="absolute bottom-[20%] right-[16%] w-[50px] sm:w-[64px] h-[50px] sm:h-[64px] bg-white rounded-full p-2 shadow-lg border border-gray-150">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/figma/0665242586196c6d0ce005669e65cb780c5316f2.svg" alt="" className="w-full h-full object-contain" />
+          {/* 4. Family Office Director / Treasury CFO - Bottom Right */}
+          <div className="group absolute bottom-[16%] sm:bottom-[18%] right-[12%] sm:right-[15%] flex flex-col items-center z-20 cursor-pointer">
+            <div className="w-[60px] sm:w-[76px] h-[60px] sm:h-[76px] rounded-full p-[2.5px] bg-white shadow-[0_10px_25px_rgba(4,56,115,0.18)] border-2 border-white ring-2 ring-[#FFA048] group-hover:scale-110 group-hover:ring-[#043873] transition-all duration-300">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/assets/professionals/family_office_cfo.jpg"
+                alt="Family Office Director & Treasury"
+                className="w-full h-full object-cover rounded-full"
+              />
+            </div>
+            <span className="mt-1 px-2.5 py-0.5 bg-white/95 backdrop-blur-sm border border-gray-200 text-[#043873] font-['Inter'] font-semibold text-[10px] sm:text-[11px] rounded-full shadow-sm whitespace-nowrap opacity-95 group-hover:opacity-100 group-hover:bg-[#043873] group-hover:text-white transition-all">
+              Family Office Director
+            </span>
           </div>
 
           {/* Center Floating Card with Logo Icon (107:53606) */}
