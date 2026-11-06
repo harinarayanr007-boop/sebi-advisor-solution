@@ -1,0 +1,15 @@
+# Ignore heavy scratch assets from deployment upload
+carousels_*
+scripts/
+docs/
+*.bat
+*.wav
+*.pdf
+marketing_posts/
+master_image_post_library/
+posts_before_after_figma/
+posts_x_vs_y_website_conversion/
+presentation/
+tweet_posts_*/
+.playwright-mcp/
+test/
