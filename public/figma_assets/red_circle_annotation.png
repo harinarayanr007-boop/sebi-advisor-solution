@@ -1,0 +1,91 @@
+<html>
+
+<head><meta charset="UTF-8">
+<style>
+body {
+font-family: sans, Arial, sans-serif;
+font-size: 14px;
+margin: 0;
+color: #1D1919;
+background-color: #0B0A0A;
+}
+pre {
+font-family: sans, Arial, sans-serif;
+}
+h1 {
+font-weight: normal;
+font-size: 22px;
+}
+.titleOutBox {
+height: 200px;
+background: #EDEAEA;
+}
+.titleBox {
+margin-left: 200px;
+padding-top: 75px;
+}
+.Box {
+padding: 60px;
+margin-left: 140px;
+}
+.urlText {
+color: #4cadd8;
+}
+.Text {
+color: #B9CED8;
+white-space: pre-wrap;
+}
+</style>
+
+<title>※※※受限制的存取頁面※※※</title>
+
+</head>
+
+<body>
+
+<div class="titleOutBox"><div class="titleBox">
+<h1><pre>※※※受限制的存取頁面※※※</pre></h1>
+</div></div>
+
+<div class="Box">
+<pre class="Text">!!! 安全警示：網站已被封鎖 !!!
+
+您嘗試造訪的網站已被偵測為惡意或高風險網站
+（例如：漏洞利用 Exploit / 惡意軟體 Malware / 網路釣魚 Phishing / 劫持 Hijacking / 殭屍網路 Botnet / 未分配的 IP 位址 Unassigned IP），
+為確保資訊安全，系統已自動封鎖該連線。
+
+請立即停止存取並檢查您的資訊設備。
+任何試圖繞過封鎖的行為將被記錄並可能導致帳號或網路權限停用。
+
+如您認為此網站為誤判，請聯絡資訊單位協助查驗。
+服務信箱：cc@mail.mcut.edu.tw
+
+~明志科大電算中心
+
+==================================================================================================================
+
+!!! SECURITY ALERT: SITE BLOCKED !!!
+
+The site you attempted to visit has been detected as malicious or high-risk
+(e.g., Exploit / Malware / Phishing / Hijacking / Botnet / Unassigned IP).
+To ensure information security, the system has automatically blocked this connection.
+
+Please stop attempting to access it immediately and check your information devices.
+Any attempt to bypass this block will be logged and may result in account suspension or revocation of network access.
+
+If you believe this is a false positive, please contact the IT/security unit for verification.
+Support email: cc@mail.mcut.edu.tw
+
+~MCUT Computer Center</pre><br><br>
+<p class="urlText">The requested URL is:</p>
+<p id="url" class="urlText" style="font-weight: bold"></p>
+</div>
+
+<script type="text/javascript">
+    window.onload = function() {
+        document.getElementById('url').innerHTML = window.location.href;
+    };
+</script>
+
+</body>
+</html>
