@@ -185,8 +185,8 @@ DM "STAY" for our calm-market investing guide.`,
 
 export function mergeDayState(raw?: any): GrowvellDayContentState {
   const mergedDays: Record<number, DayDeliveryRecord> = {};
-  for (const [k, v] of Object.entries(DEFAULT_SEEDED_DAYS)) {
-    mergedDays[Number(k)] = v;
+  for (let d = 1; d <= 14; d++) {
+    mergedDays[d] = DEFAULT_SEEDED_DAYS[d] || createEmptyDay(d);
   }
 
   if (raw && raw.version === 2 && raw.days) {

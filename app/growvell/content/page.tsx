@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import Link from "next/link";
 import { GROWVELL_100_POSTS } from "@/lib/growvell-posts";
 import {
   GrowvellDayContentState,
@@ -9,6 +8,7 @@ import {
   ContentSlot,
   mergeDayState,
 } from "@/lib/growvell-content-store";
+import { GrowvellPortalHeader } from "@/components/growvell/GrowvellPortalHeader";
 import {
   CheckCircle2,
   ChevronDown,
@@ -19,10 +19,9 @@ import {
   Download,
   ExternalLink,
   FileText,
+  Lock,
   MessageSquarePlus,
-  RefreshCw,
   Send,
-  ArrowLeft,
 } from "lucide-react";
 
 const LinkedInIcon = () => (
@@ -41,6 +40,8 @@ export default function GrowvellContentHubPage() {
   const [contentState, setContentState] = useState<GrowvellDayContentState>(() => mergeDayState(null));
   const [approvedCount, setApprovedCount] = useState<number>(0);
   const [openDays, setOpenDays] = useState<Set<number>>(new Set([1]));
+  const [syncState, setSyncState] = useState<"synced" | "syncing" | "error">("synced");
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [suggestionDrafts, setSuggestionDrafts] = useState<Record<number, string>>({});
@@ -55,6 +56,7 @@ export default function GrowvellContentHubPage() {
 
   const loadAll = useCallback(async () => {
     setLoading(true);
+    setSyncState("syncing");
     try {
       const [appRes, cntRes] = await Promise.all([
         fetch(`/api/growvell/approval?t=${Date.now()}`, { cache: "no-store" }),
@@ -68,8 +70,11 @@ export default function GrowvellContentHubPage() {
         setApprovedCount(count);
       }
       setContentState(mergeDayState(cntData));
+      setSyncState("synced");
+      setLastSyncedAt(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
     } catch (err) {
       console.error("Failed loading Growvell content hub:", err);
+      setSyncState("error");
       showToast("Failed to refresh latest content");
     } finally {
       setLoading(false);
@@ -80,8 +85,16 @@ export default function GrowvellContentHubPage() {
     loadAll();
   }, [loadAll]);
 
-  const sortedDays: DayDeliveryRecord[] = useMemo(() => {
-    return Object.values(contentState.days).sort((a, b) => a.day - b.day);
+  const week1Days: DayDeliveryRecord[] = useMemo(() => {
+    return Object.values(contentState.days)
+      .filter((d) => d.day >= 1 && d.day <= 7)
+      .sort((a, b) => a.day - b.day);
+  }, [contentState.days]);
+
+  const week2Days: DayDeliveryRecord[] = useMemo(() => {
+    return Object.values(contentState.days)
+      .filter((d) => d.day >= 8 && d.day <= 14)
+      .sort((a, b) => a.day - b.day);
   }, [contentState.days]);
 
   const toggleDay = (day: number) => {
@@ -97,7 +110,7 @@ export default function GrowvellContentHubPage() {
     try {
       await navigator.clipboard.writeText(text);
       setCopiedKey(key);
-      showToast("Caption copied to clipboard");
+      showToast("Caption copied");
       setTimeout(() => setCopiedKey(null), 2000);
     } catch {
       showToast("Copy failed, please select text manually");
@@ -135,6 +148,10 @@ export default function GrowvellContentHubPage() {
     }
   };
 
+  const whatsAppUrl = `https://wa.me/919345619428?text=${encodeURIComponent(
+    "Hey Hari, checking in on the Growvell Daily Content Hub."
+  )}`;
+
   const renderSlotCard = (
     day: number,
     platform: "linkedin" | "twitter",
@@ -153,9 +170,9 @@ export default function GrowvellContentHubPage() {
       : undefined;
 
     return (
-      <div className="bg-[#F8FBFE] border border-[#1E1E1E]/15 rounded-xl p-4 flex flex-col justify-between">
+      <div className="bg-[#F8FBFE] border border-gray-200 rounded-xl p-3.5 sm:p-4 flex flex-col justify-between min-w-0">
         <div>
-          <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-start justify-between gap-2 mb-3">
             <div className="flex items-center gap-2 min-w-0">
               <div
                 className={`w-7 h-7 rounded-lg flex items-center justify-center text-white shrink-0 ${
@@ -165,24 +182,24 @@ export default function GrowvellContentHubPage() {
                 {isLinkedIn ? <LinkedInIcon /> : <XIcon />}
               </div>
               <div className="min-w-0">
-                <p className="font-bold text-xs sm:text-sm text-[#1E1E1E] truncate">
+                <p className="font-bold text-xs sm:text-sm text-[#1E1E1E] break-words">
                   {slot.label || `${isLinkedIn ? "LinkedIn" : "X"} Post ${slotIdx + 1}`}
                 </p>
                 {linkedHook && (
                   <p className="text-[10px] text-gray-500 truncate">
-                    Approved Hook #{linkedHook.id}: {linkedHook.hook}
+                    Hook #{linkedHook.id}
                   </p>
                 )}
               </div>
             </div>
 
             {hasDelivery ? (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
                 <CheckCircle2 className="w-3 h-3" />
                 Ready
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 shrink-0">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 shrink-0">
                 <Clock className="w-3 h-3" />
                 In Progress
               </span>
@@ -205,7 +222,7 @@ export default function GrowvellContentHubPage() {
                   )}
                 </div>
               ) : slot.fileUrl ? (
-                <div className="rounded-lg border border-dashed border-[#0038C8]/40 bg-white p-3.5 flex items-center gap-3">
+                <div className="rounded-lg border border-dashed border-[#0038C8]/40 bg-white p-3 flex items-center gap-2.5">
                   <FileText className="w-5 h-5 text-[#0038C8] shrink-0" />
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-[#1E1E1E] truncate">
@@ -217,11 +234,11 @@ export default function GrowvellContentHubPage() {
               ) : null}
 
               {slot.fileUrl && (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-col xs:flex-row sm:flex-row gap-2">
                   <a
                     href={slot.fileUrl}
                     download={slot.fileName || true}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#0038C8] hover:bg-[#001B66] text-white text-xs font-bold transition"
+                    className="flex-1 min-h-[38px] inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#0038C8] hover:bg-[#001B66] text-white text-xs font-bold transition"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Download {isPdf ? "Carousel PDF" : "Image"}</span>
@@ -230,7 +247,7 @@ export default function GrowvellContentHubPage() {
                     href={slot.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-white border border-gray-300 hover:bg-gray-50 text-[#1E1E1E] text-xs font-semibold transition"
+                    className="min-h-[38px] inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-white border border-gray-300 hover:bg-gray-50 text-[#1E1E1E] text-xs font-semibold transition"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                     <span>Open</span>
@@ -240,13 +257,13 @@ export default function GrowvellContentHubPage() {
 
               {slot.caption && (
                 <div className="bg-white border border-gray-200 rounded-lg p-3">
-                  <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
                     <span className="text-[10px] font-bold uppercase tracking-wide text-gray-500">
-                      Copy & Paste Post Text
+                      Post Text
                     </span>
                     <button
                       onClick={() => handleCopy(slot.caption, copyKey)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#0038C8]/10 hover:bg-[#0038C8]/20 text-[#0038C8] text-[11px] font-bold transition"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#0038C8]/10 hover:bg-[#0038C8]/20 text-[#0038C8] text-[11px] font-bold transition shrink-0"
                     >
                       {copiedKey === copyKey ? (
                         <>
@@ -261,18 +278,18 @@ export default function GrowvellContentHubPage() {
                       )}
                     </button>
                   </div>
-                  <pre className="text-xs text-[#1E1E1E] whitespace-pre-wrap font-sans leading-relaxed max-h-44 overflow-y-auto">
+                  <pre className="text-xs text-[#1E1E1E] whitespace-pre-wrap break-words font-sans leading-relaxed max-h-44 overflow-y-auto">
                     {slot.caption}
                   </pre>
                 </div>
               )}
             </div>
           ) : (
-            <div className="bg-white border border-dashed border-gray-300 rounded-lg p-5 text-center my-1">
-              <Clock className="w-6 h-6 text-amber-500 mx-auto mb-1.5" />
+            <div className="bg-white border border-dashed border-gray-300 rounded-lg p-4 text-center my-1">
+              <Clock className="w-5 h-5 text-amber-500 mx-auto mb-1" />
               <p className="text-xs font-bold text-[#1E1E1E]">Content in Progress</p>
               <p className="text-[11px] text-gray-500 mt-1">
-                Asset and copy are being finalized. Add suggestions below if you want changes.
+                Asset and copy are being finalized. Add suggestions below if needed.
               </p>
             </div>
           )}
@@ -281,222 +298,244 @@ export default function GrowvellContentHubPage() {
     );
   };
 
-  return (
-    <div className="min-h-screen bg-[#F4F7FC] text-[#1E1E1E]">
-      {toast && (
-        <div className="fixed bottom-5 right-5 z-50 bg-[#001B66] text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow-lg">
-          {toast}
-        </div>
-      )}
+  const renderDayAccordion = (dayRecord: DayDeliveryRecord) => {
+    const isOpen = openDays.has(dayRecord.day);
+    const allSlots = [...dayRecord.linkedin, ...dayRecord.twitter];
+    const readyCount = allSlots.filter(
+      (s) => s.status === "ready" && (Boolean(s.fileUrl) || Boolean(s.caption))
+    ).length;
+    const daySuggestions = contentState.suggestions.filter((s) => s.day === dayRecord.day);
 
-      <header className="sticky top-0 z-30 bg-white border-b-2 border-[#1E1E1E]">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-[#0038C8] text-white font-black flex items-center justify-center text-sm border border-[#1E1E1E]">
-              G
-            </div>
-            <div>
-              <h1 className="text-base sm:text-lg font-extrabold tracking-tight text-[#1E1E1E]">
-                Growvell Daily Content Hub
-              </h1>
-              <p className="text-[11px] text-gray-500 font-medium">
-                2 LinkedIn posts (Carousel + Twitter-Style Card) + 2 X posts every day · {approvedCount} approved hooks
+    return (
+      <div
+        key={dayRecord.day}
+        className="bg-white border border-gray-300 rounded-xl overflow-hidden shadow-xs"
+      >
+        <button
+          type="button"
+          onClick={() => toggleDay(dayRecord.day)}
+          className="w-full px-3.5 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between gap-2 bg-white hover:bg-[#F8FBFE] transition text-left"
+        >
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <span className="px-2.5 py-1 rounded-lg bg-[#0038C8] text-white text-[11px] sm:text-xs font-extrabold shrink-0">
+              Day {dayRecord.day}
+            </span>
+            <div className="min-w-0">
+              <h3 className="text-xs sm:text-sm font-extrabold text-[#1E1E1E] truncate">
+                {dayRecord.title}
+              </h3>
+              <p className="text-[10px] sm:text-[11px] text-gray-500">
+                2 LinkedIn · 2 X Posts
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Link
-              href="/growvell/approval"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-xs font-bold text-[#1E1E1E] transition"
+          <div className="flex items-center gap-2 shrink-0">
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold border ${
+                readyCount === 4
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : readyCount > 0
+                  ? "bg-blue-50 text-[#0038C8] border-blue-200"
+                  : "bg-amber-50 text-amber-800 border-amber-200"
+              }`}
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Hook Approvals</span>
-            </Link>
-            <button
-              onClick={loadAll}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0038C8] hover:bg-[#001B66] text-white text-xs font-bold transition"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-              <span>Sync</span>
-            </button>
+              {readyCount}/4 Ready
+            </span>
+            {isOpen ? (
+              <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5 text-[#1E1E1E]" />
+            ) : (
+              <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-[#1E1E1E]" />
+            )}
           </div>
-        </div>
-      </header>
+        </button>
 
-      <main className="max-w-6xl mx-auto px-4 py-6 space-y-4">
+        {isOpen && (
+          <div className="px-3.5 pb-4 pt-2 sm:px-5 sm:pb-5 border-t border-gray-200 space-y-5">
+            <div>
+              <div className="flex items-center gap-2 mb-2.5">
+                <div className="w-6 h-6 rounded bg-[#0038C8] text-white flex items-center justify-center shrink-0">
+                  <LinkedInIcon />
+                </div>
+                <h4 className="text-xs sm:text-sm font-extrabold text-[#001B66] uppercase tracking-wide">
+                  LinkedIn (2 Posts: Carousel + Twitter-Style Card)
+                </h4>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                {renderSlotCard(dayRecord.day, "linkedin", 0, dayRecord.linkedin[0])}
+                {renderSlotCard(dayRecord.day, "linkedin", 1, dayRecord.linkedin[1])}
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2 mb-2.5">
+                <div className="w-6 h-6 rounded bg-[#1E1E1E] text-white flex items-center justify-center shrink-0">
+                  <XIcon />
+                </div>
+                <h4 className="text-xs sm:text-sm font-extrabold text-[#1E1E1E] uppercase tracking-wide">
+                  X / Twitter (2 Posts)
+                </h4>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                {renderSlotCard(dayRecord.day, "twitter", 0, dayRecord.twitter[0])}
+                {renderSlotCard(dayRecord.day, "twitter", 1, dayRecord.twitter[1])}
+              </div>
+            </div>
+
+            <div className="pt-3.5 border-t border-gray-200">
+              <div className="flex items-center gap-2 mb-2">
+                <MessageSquarePlus className="w-4 h-4 text-[#0038C8]" />
+                <h5 className="text-[11px] sm:text-xs font-extrabold uppercase tracking-wide text-[#1E1E1E]">
+                  Add Suggestion for Day {dayRecord.day}
+                </h5>
+              </div>
+
+              {daySuggestions.length > 0 && (
+                <div className="space-y-2 mb-3">
+                  {daySuggestions.map((s) => (
+                    <div
+                      key={s.id}
+                      className="bg-[#F4F7FC] border border-gray-200 rounded-lg px-3 py-2 text-xs flex flex-wrap items-center justify-between gap-2"
+                    >
+                      <div className="min-w-0 break-words">
+                        <span className="font-bold uppercase text-[10px] px-1.5 py-0.5 rounded bg-[#0038C8] text-white mr-2">
+                          {s.platform}
+                        </span>
+                        <span className="text-[#1E1E1E] font-medium">{s.text}</span>
+                      </div>
+                      <span className="text-[10px] text-gray-400">
+                        {new Date(s.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-2">
+                <select
+                  value={suggestionPlatform[dayRecord.day] || "general"}
+                  onChange={(e) =>
+                    setSuggestionPlatform((prev) => ({
+                      ...prev,
+                      [dayRecord.day]: e.target.value as "linkedin" | "twitter" | "general",
+                    }))
+                  }
+                  className="text-xs font-semibold border border-gray-300 rounded-lg px-2.5 py-2.5 bg-white text-[#1E1E1E]"
+                >
+                  <option value="general">Both / General</option>
+                  <option value="linkedin">LinkedIn Only</option>
+                  <option value="twitter">X / Twitter Only</option>
+                </select>
+
+                <input
+                  type="text"
+                  value={suggestionDrafts[dayRecord.day] || ""}
+                  onChange={(e) =>
+                    setSuggestionDrafts((prev) => ({
+                      ...prev,
+                      [dayRecord.day]: e.target.value,
+                    }))
+                  }
+                  placeholder={`Suggestion or edit for Day ${dayRecord.day}...`}
+                  className="flex-1 text-xs border border-gray-300 rounded-lg px-3 py-2.5"
+                />
+
+                <button
+                  onClick={() => handleAddSuggestion(dayRecord.day)}
+                  disabled={
+                    submittingDay === dayRecord.day ||
+                    !(suggestionDrafts[dayRecord.day] || "").trim()
+                  }
+                  className="min-h-[40px] inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#1E1E1E] hover:bg-[#0038C8] disabled:opacity-40 text-white text-xs font-bold transition shrink-0"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>{submittingDay === dayRecord.day ? "Sending..." : "Send"}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F4F7FC] text-[#1E1E1E]">
+      {toast && (
+        <div className="fixed bottom-4 right-4 z-50 bg-[#001B66] text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow-lg">
+          {toast}
+        </div>
+      )}
+
+      <GrowvellPortalHeader
+        activeTab="content"
+        title="8-Week Daily Content Hub"
+        subtitle={`Curated for Dhanesh Murali · 2 LinkedIn + 2 X Posts Every Day · ${approvedCount} Approved Hooks`}
+        syncState={syncState}
+        lastSyncedAt={lastSyncedAt}
+        onRefresh={loadAll}
+        whatsAppUrl={whatsAppUrl}
+      />
+
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-6">
         {loading ? (
           <div className="bg-white border border-gray-200 rounded-xl p-10 text-center text-sm text-gray-500">
-            Loading daily content schedule...
+            Loading 8-week schedule...
           </div>
         ) : (
-          sortedDays.map((dayRecord) => {
-            const isOpen = openDays.has(dayRecord.day);
-            const allSlots = [...dayRecord.linkedin, ...dayRecord.twitter];
-            const readyCount = allSlots.filter(
-              (s) => s.status === "ready" && (Boolean(s.fileUrl) || Boolean(s.caption))
-            ).length;
-            const daySuggestions = contentState.suggestions.filter((s) => s.day === dayRecord.day);
+          <>
+            {/* Week 1 (Days 1 to 7) */}
+            <section className="space-y-3">
+              <div className="flex items-center justify-between px-1">
+                <div className="flex items-center gap-2.5">
+                  <h2 className="text-base sm:text-lg font-black text-[#001B66]">Week 1</h2>
+                  <span className="text-[11px] sm:text-xs font-semibold text-gray-500">
+                    Days 1 to 7
+                  </span>
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#0038C8]/10 text-[#0038C8]">
+                  Active
+                </span>
+              </div>
+              <div className="space-y-2.5">{week1Days.map(renderDayAccordion)}</div>
+            </section>
 
-            return (
-              <section
-                key={dayRecord.day}
-                className="bg-white border-2 border-[#1E1E1E] rounded-2xl overflow-hidden shadow-[4px_4px_0px_#0038C8]"
-              >
-                {/* Accordion Header */}
-                <button
-                  type="button"
-                  onClick={() => toggleDay(dayRecord.day)}
-                  className="w-full px-5 py-4 flex flex-wrap items-center justify-between gap-3 bg-white hover:bg-[#F8FBFE] transition text-left"
+            {/* Week 2 (Days 8 to 14) */}
+            <section className="space-y-3">
+              <div className="flex items-center justify-between px-1">
+                <div className="flex items-center gap-2.5">
+                  <h2 className="text-base sm:text-lg font-black text-[#001B66]">Week 2</h2>
+                  <span className="text-[11px] sm:text-xs font-semibold text-gray-500">
+                    Days 8 to 14
+                  </span>
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#0038C8]/10 text-[#0038C8]">
+                  Active
+                </span>
+              </div>
+              <div className="space-y-2.5">{week2Days.map(renderDayAccordion)}</div>
+            </section>
+
+            {/* Weeks 3 to 8 (Locked - No Info) */}
+            <section className="space-y-2.5 pt-2">
+              {[3, 4, 5, 6, 7, 8].map((weekNum) => (
+                <div
+                  key={weekNum}
+                  className="bg-white/75 border border-gray-200 rounded-xl px-4 py-3.5 flex items-center justify-between opacity-75 select-none"
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="px-3 py-1 rounded-lg bg-[#0038C8] text-white text-xs font-extrabold">
-                      Day {dayRecord.day}
+                  <div className="flex items-center gap-2.5">
+                    <Lock className="w-4 h-4 text-gray-400 shrink-0" />
+                    <span className="text-sm sm:text-base font-extrabold text-gray-500">
+                      Week {weekNum}
                     </span>
-                    <div>
-                      <h2 className="text-sm sm:text-base font-extrabold text-[#1E1E1E]">
-                        {dayRecord.title}
-                      </h2>
-                      <p className="text-[11px] text-gray-500">
-                        2 LinkedIn Posts · 2 X Posts
-                      </p>
-                    </div>
                   </div>
-
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${
-                        readyCount === 4
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                          : readyCount > 0
-                          ? "bg-blue-50 text-[#0038C8] border-blue-200"
-                          : "bg-amber-50 text-amber-800 border-amber-200"
-                      }`}
-                    >
-                      {readyCount}/4 Ready
-                    </span>
-                    {isOpen ? (
-                      <ChevronUp className="w-5 h-5 text-[#1E1E1E]" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-[#1E1E1E]" />
-                    )}
-                  </div>
-                </button>
-
-                {/* Accordion Body */}
-                {isOpen && (
-                  <div className="px-5 pb-5 pt-2 border-t border-gray-200 space-y-6">
-                    {/* LinkedIn Section (2 Posts) */}
-                    <div>
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-6 h-6 rounded bg-[#0038C8] text-white flex items-center justify-center">
-                          <LinkedInIcon />
-                        </div>
-                        <h3 className="text-sm font-extrabold text-[#001B66] uppercase tracking-wide">
-                          LinkedIn (2 Posts: Carousel + Twitter-Style Card)
-                        </h3>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {renderSlotCard(dayRecord.day, "linkedin", 0, dayRecord.linkedin[0])}
-                        {renderSlotCard(dayRecord.day, "linkedin", 1, dayRecord.linkedin[1])}
-                      </div>
-                    </div>
-
-                    {/* X / Twitter Section (2 Posts) */}
-                    <div>
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-6 h-6 rounded bg-[#1E1E1E] text-white flex items-center justify-center">
-                          <XIcon />
-                        </div>
-                        <h3 className="text-sm font-extrabold text-[#1E1E1E] uppercase tracking-wide">
-                          X / Twitter (2 Posts)
-                        </h3>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {renderSlotCard(dayRecord.day, "twitter", 0, dayRecord.twitter[0])}
-                        {renderSlotCard(dayRecord.day, "twitter", 1, dayRecord.twitter[1])}
-                      </div>
-                    </div>
-
-                    {/* Suggestions Box for this Day */}
-                    <div className="pt-4 border-t border-gray-200">
-                      <div className="flex items-center gap-2 mb-2.5">
-                        <MessageSquarePlus className="w-4 h-4 text-[#0038C8]" />
-                        <h4 className="text-xs font-extrabold uppercase tracking-wide text-[#1E1E1E]">
-                          Add Suggestion for Day {dayRecord.day}
-                        </h4>
-                      </div>
-
-                      {daySuggestions.length > 0 && (
-                        <div className="space-y-2 mb-3">
-                          {daySuggestions.map((s) => (
-                            <div
-                              key={s.id}
-                              className="bg-[#F4F7FC] border border-gray-200 rounded-lg px-3 py-2 text-xs flex flex-wrap items-center justify-between gap-2"
-                            >
-                              <div>
-                                <span className="font-bold uppercase text-[10px] px-1.5 py-0.5 rounded bg-[#0038C8] text-white mr-2">
-                                  {s.platform}
-                                </span>
-                                <span className="text-[#1E1E1E] font-medium">{s.text}</span>
-                              </div>
-                              <span className="text-[10px] text-gray-400">
-                                {new Date(s.createdAt).toLocaleDateString()}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <select
-                          value={suggestionPlatform[dayRecord.day] || "general"}
-                          onChange={(e) =>
-                            setSuggestionPlatform((prev) => ({
-                              ...prev,
-                              [dayRecord.day]: e.target.value as "linkedin" | "twitter" | "general",
-                            }))
-                          }
-                          className="text-xs font-semibold border border-gray-300 rounded-lg px-2.5 py-2 bg-white text-[#1E1E1E]"
-                        >
-                          <option value="general">Both / General</option>
-                          <option value="linkedin">LinkedIn Only</option>
-                          <option value="twitter">X / Twitter Only</option>
-                        </select>
-
-                        <input
-                          type="text"
-                          value={suggestionDrafts[dayRecord.day] || ""}
-                          onChange={(e) =>
-                            setSuggestionDrafts((prev) => ({
-                              ...prev,
-                              [dayRecord.day]: e.target.value,
-                            }))
-                          }
-                          placeholder={`Add a suggestion or edit request for Day ${dayRecord.day}...`}
-                          className="flex-1 text-xs border border-gray-300 rounded-lg px-3 py-2"
-                        />
-
-                        <button
-                          onClick={() => handleAddSuggestion(dayRecord.day)}
-                          disabled={
-                            submittingDay === dayRecord.day ||
-                            !(suggestionDrafts[dayRecord.day] || "").trim()
-                          }
-                          className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#1E1E1E] hover:bg-[#0038C8] disabled:opacity-40 text-white text-xs font-bold transition"
-                        >
-                          <Send className="w-3.5 h-3.5" />
-                          <span>
-                            {submittingDay === dayRecord.day ? "Sending..." : "Send Suggestion"}
-                          </span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </section>
-            );
-          })
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-gray-100 text-gray-500 border border-gray-200">
+                    Locked
+                  </span>
+                </div>
+              ))}
+            </section>
+          </>
         )}
       </main>
     </div>
