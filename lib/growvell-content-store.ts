@@ -71,17 +71,24 @@ export const DEFAULT_SEEDED_DAYS: Record<number, DayDeliveryRecord> = {
         fileUrl: "/growvell_content/Growvell_Carousel_01_Salary_Checklist_Post81.pdf",
         fileName: "Growvell_Carousel_01_Salary_Checklist_Post81.pdf",
         previewImageUrl: "/growvell_content/carousel_01_cover.png",
-        caption: `Save this 5-slide checklist before your salary hits your bank account this week.
+        caption: `I audited 14 salaried portfolios last month.
 
-If you wait until the 25th of the month to decide how much to invest, lifestyle expenses will always win.
+11 of them earned over ₹1.5L/month. Yet 9 of them had less than ₹3 Lakhs saved after 4 years of working.
 
-Flip the sequence before paying rent, EMIs, or weekend plans:
-1. Lock 25% to 30% of your take-home pay toward your wealth target first.
-2. Automate your mutual fund SIP auto-debit for 3 days after payday (e.g. the 5th).
-3. Spend everything left in your account completely guilt-free.
+Not because they were careless. Because they followed the same broken order every single month:
 
-DM "SALARY" if you want our simple monthly allocation framework.`,
-        updatedAt: "2026-11-27T15:00:00.000Z",
+Salary hits -> Rent & EMIs -> Weekend spends -> "I'll invest whatever is left on the 25th."
+
+Spoiler: On the 25th, nothing is left.
+
+Indian investors now pour ₹32,160+ Crore into SIPs every single month (AMFI, Oct 2026) because they fixed one thing: the order.
+
+I built a 5-slide Salary Day checklist we use with 450+ families so your ₹1 Crore goal runs automatically before weekend spending even starts.
+
+Swipe through the 5 slides above.
+
+DM "SALARY" if you want our exact monthly allocation sheet.`,
+        updatedAt: "2026-11-27T15:54:00.000Z",
       },
       {
         label: "LinkedIn Post 2 (Twitter-Style Card)",
@@ -90,15 +97,16 @@ DM "SALARY" if you want our simple monthly allocation framework.`,
         fileUrl: "/growvell_content/01_tweet_light_salary_checklist_post81.png",
         fileName: "01_tweet_light_salary_checklist_post81.png",
         previewImageUrl: "/growvell_content/01_tweet_light_salary_checklist_post81.png",
-        caption: `Most professionals pay rent, EMIs, and weekend bills first... and invest "whatever is left."
+        caption: `I stopped asking clients "How much can you save this month?" 6 years ago.
 
-Salary hitting your account this week? Use this 3-step rule:
-1. Set aside 25% to 30% for investing first.
-2. Run your Mutual Fund SIP 3 days after payday.
-3. Spend the rest completely guilt-free.
+Because willpower always loses to EMIs, Swiggy, and weekend plans.
 
-Pay your future self first.`,
-        updatedAt: "2026-11-27T15:00:00.000Z",
+Instead, I move their SIP auto-debit to 3 days after salary day (the 5th of every month) and lock 25% to 30% first.
+
+Once that debit clears, I tell them: spend every rupee left in your salary account completely guilt-free.
+
+Pay your future self first. Let the rest take care of itself.`,
+        updatedAt: "2026-11-27T15:54:00.000Z",
       },
     ],
     twitter: [
@@ -109,16 +117,12 @@ Pay your future self first.`,
         fileUrl: "",
         fileName: "",
         previewImageUrl: "",
-        caption: `Salary hitting your bank account this week?
+        caption: `I reviewed 14 salaried bank statements last month.
 
-Do these 3 things before weekend bills start:
+The ones who hit ₹1 Cr didn't earn more. They just automated their SIP 3 days after salary day and spent the rest guilt-free.
 
-1. Move 25% to 30% into investments first.
-2. Set your Mutual Fund SIP for 3 days after payday.
-3. Spend the rest guilt-free.
-
-Pay your future self first.`,
-        updatedAt: "2026-11-27T15:00:00.000Z",
+If you wait until the 25th to invest "what's left," it's always ₹0.`,
+        updatedAt: "2026-11-27T15:54:00.000Z",
       },
       {
         label: "X Post 2 (SIP Volatility)",
@@ -127,14 +131,14 @@ Pay your future self first.`,
         fileUrl: "/growvell_content/02_tweet_dark_sip_volatility_post83.png",
         fileName: "02_tweet_dark_sip_volatility_post83.png",
         previewImageUrl: "/growvell_content/02_tweet_dark_sip_volatility_post83.png",
-        caption: `Markets may swing sharply this week.
+        caption: `I get the same panicked call every time the market drops 4% in a week:
 
-Do NOT pause or touch your SIPs.
+"Dhanesh, should I pause my SIP until things settle?"
 
-Every red week simply means your same monthly rupee amount buys MORE mutual fund units at lower prices.
+No. Every red week simply means your same ₹15,000 buys MORE mutual fund units at a discount.
 
-Stop refreshing the app daily. Let compounding work.`,
-        updatedAt: "2026-11-27T15:00:00.000Z",
+Close the app. Let compounding work.`,
+        updatedAt: "2026-11-27T15:54:00.000Z",
       },
     ],
   },
@@ -149,14 +153,20 @@ Stop refreshing the app daily. Let compounding work.`,
         fileUrl: "/growvell_content/Growvell_Carousel_02_Nominee_Fix_Post84.pdf",
         fileName: "Growvell_Carousel_02_Nominee_Fix_Post84.pdf",
         previewImageUrl: "/growvell_content/carousel_02_cover.png",
-        caption: `You work hard all year to build your mutual fund portfolio.
+        caption: `I watched a family wait 7 months to access ₹28 Lakhs in mutual funds.
 
-Yet one blank line in your account records can lock that money away from your family when they need it most.
+Not because the market crashed. Not because of a tax dispute.
 
-Take 15 minutes this Sunday to run through these 5 steps on MFCentral.com and make sure every single folio (including old ELSS funds) has a registered nominee.
+Because one single line in their account records was blank: the Nominee.
 
-Need help cleaning up older folios or sorting missing details? DM "NOMINEE" and we will guide you through it step by step.`,
-        updatedAt: "2026-11-27T15:00:00.000Z",
+When you invest for 10+ years, you assume your spouse or children can just log in and withdraw if anything happens. They cannot. Without a registered nominee, Indian AMCs freeze online redemptions and ask for succession certificates and court affidavits.
+
+I put together the exact 5-step Sunday checklist on MFCentral.com (CAMS + KFintech) so you can verify every single folio, including old ELSS funds, in under 15 minutes.
+
+Swipe through all 8 slides.
+
+DM "NOMINEE" if you want us to audit your older folios.`,
+        updatedAt: "2026-11-27T15:54:00.000Z",
       },
       {
         label: "LinkedIn Post 2 (4-Slide Volatility Carousel PDF)",
@@ -165,19 +175,49 @@ Need help cleaning up older folios or sorting missing details? DM "NOMINEE" and 
         fileUrl: "/growvell_content/Growvell_Carousel_03_SIP_Volatility_Post83.pdf",
         fileName: "Growvell_Carousel_03_SIP_Volatility_Post83.pdf",
         previewImageUrl: "/growvell_content/carousel_03_cover.png",
-        caption: `Save this before the next red market headline hits your feed.
+        caption: `I have guided 450+ families across India and the Gulf through multiple market corrections.
 
-Pausing your SIP during volatility feels "safe" in the short term, and quietly breaks your long-term compounding math.
+And I can tell you the #1 reason people miss their ₹1 Crore goal has nothing to do with picking the "wrong fund."
 
-When the market dips 5% or 10%, your fixed monthly SIP buys MORE mutual fund units at lower prices. Those discounted units accelerate your returns when the cycle rebounds.
+It is checking their portfolio app every 2 hours during a red week, panicking, and pausing their SIP right when units go on sale.
 
-DM "STAY" for our calm-market investing guide.`,
-        updatedAt: "2026-11-27T15:00:00.000Z",
+Meanwhile, over ₹3.35 Lakh Crore sits in Kerala NRI bank accounts alone (SLBC 2026) losing purchasing power to inflation because people fear short-term volatility.
+
+Swipe through these 4 slides before the next market headline hits your feed.
+
+DM "STAY" for our calm-market investing checklist.`,
+        updatedAt: "2026-11-27T15:54:00.000Z",
       },
     ],
     twitter: [
-      createEmptySlot("X Post 1 (Sunday Nominee Thread)"),
-      createEmptySlot("X Post 2 (Market Dip Reminder)"),
+      {
+        label: "X Post 1 (Sunday Nominee Check)",
+        approvedPostId: 84,
+        status: "ready",
+        fileUrl: "",
+        fileName: "",
+        previewImageUrl: "",
+        caption: `I saw a family wait months for court succession papers just to unlock ₹28L in mutual funds.
+
+All because the Nominee field was blank.
+
+This Sunday, spend 10 minutes on MFCentral.com, enter your PAN + OTP, and verify every folio (especially old ELSS funds).`,
+        updatedAt: "2026-11-27T15:54:00.000Z",
+      },
+      {
+        label: "X Post 2 (Bank RM ULIP Filter)",
+        approvedPostId: 83,
+        status: "ready",
+        fileUrl: "",
+        fileName: "",
+        previewImageUrl: "",
+        caption: `I tell every client one line to use when a bank RM calls pitching an "exclusive wealth plan":
+
+"Does this have a 5-year lock-in or mortality charges?"
+
+If yes, it's a ULIP disguised as a mutual fund. Hang up politely.`,
+        updatedAt: "2026-11-27T15:54:00.000Z",
+      },
     ],
   },
   3: createEmptyDay(3, "Day 3: Next Approved Batch"),
