@@ -116,7 +116,7 @@ export function GrowvellPortalHeader({
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-[11px] sm:text-xs font-bold transition shadow-sm shrink-0"
             >
               <Send className="w-3 h-3" />
-              <span>WhatsApp Hari</span>
+              <span>Contact</span>
             </a>
           </div>
         </div>

@@ -964,7 +964,7 @@ export default function GrowvellApprovalPortal() {
               className="flex-2 sm:flex-initial px-3 py-1.5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-[11px] sm:text-xs font-bold transition shadow-sm flex items-center justify-center gap-1"
             >
               <Send className="w-3 h-3" />
-              <span>WhatsApp Hari</span>
+              <span>Contact</span>
             </a>
           </div>
         </div>
