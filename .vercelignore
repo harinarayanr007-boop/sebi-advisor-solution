@@ -5,6 +5,7 @@ docs/
 *.bat
 *.wav
 *.pdf
+!public/growvell_content/*.pdf
 marketing_posts/
 master_image_post_library/
 posts_before_after_figma/
