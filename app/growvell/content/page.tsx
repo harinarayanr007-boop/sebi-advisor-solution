@@ -39,7 +39,7 @@ const XIcon = () => (
 export default function GrowvellContentHubPage() {
   const [contentState, setContentState] = useState<GrowvellDayContentState>(() => mergeDayState(null));
   const [approvedCount, setApprovedCount] = useState<number>(0);
-  const [openDays, setOpenDays] = useState<Set<number>>(new Set([1]));
+  const [openDays, setOpenDays] = useState<Set<number>>(new Set());
   const [syncState, setSyncState] = useState<"synced" | "syncing" | "error">("synced");
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);

@@ -128,9 +128,9 @@ If you wait until the 25th to invest "what's left," it's always ₹0.`,
         label: "X Post 2 (SIP Volatility)",
         approvedPostId: 83,
         status: "ready",
-        fileUrl: "/growvell_content/02_tweet_dark_sip_volatility_post83.png",
-        fileName: "02_tweet_dark_sip_volatility_post83.png",
-        previewImageUrl: "/growvell_content/02_tweet_dark_sip_volatility_post83.png",
+        fileUrl: "",
+        fileName: "",
+        previewImageUrl: "",
         caption: `I get the same panicked call every time the market drops 4% in a week:
 
 "Dhanesh, should I pause my SIP until things settle?"

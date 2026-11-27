@@ -95,30 +95,6 @@ export function GrowvellPortalHeader({
               {subtitle}
             </p>
           </div>
-
-          {/* Quick Actions */}
-          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 sm:pb-0">
-            {onRefresh && (
-              <button
-                onClick={onRefresh}
-                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-[11px] sm:text-xs font-semibold text-[#1E1E1E] transition border border-gray-300 shrink-0"
-                title="Refresh cloud state"
-              >
-                <RefreshCw className={`w-3 h-3 ${syncState === "syncing" ? "animate-spin" : ""}`} />
-                <span className="hidden sm:inline">Pull Cloud</span>
-              </button>
-            )}
-            {extraActions}
-            <a
-              href={whatsAppUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-[11px] sm:text-xs font-bold transition shadow-sm shrink-0"
-            >
-              <Send className="w-3 h-3" />
-              <span>Contact</span>
-            </a>
-          </div>
         </div>
 
         {children}
