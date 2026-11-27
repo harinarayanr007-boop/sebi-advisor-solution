@@ -2,20 +2,21 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { GROWVELL_100_POSTS, GrowvellPost } from "@/lib/growvell-posts";
+import { GROWVELL_100_POSTS } from "@/lib/growvell-posts";
 import {
-  GrowvellContentState,
-  PostDeliveryRecord,
-  PlatformAsset,
-  createEmptyPlatformAsset,
-  mergeWithDefaults,
+  GrowvellDayContentState,
+  DayDeliveryRecord,
+  ContentSlot,
+  createEmptyDay,
+  mergeDayState,
 } from "@/lib/growvell-content-store";
 import {
-  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
   ExternalLink,
+  Plus,
   RefreshCw,
   Save,
-  Search,
   Trash2,
   Upload,
   AlertCircle,
@@ -33,18 +34,14 @@ const XIcon = () => (
   </svg>
 );
 
-type ApprovalStatus = "approved" | "revision" | "rejected";
-
 export default function GrowvellContentAdminPage() {
-  const [statusMap, setStatusMap] = useState<Record<number, ApprovalStatus>>({});
-  const [notesMap, setNotesMap] = useState<Record<number, string>>({});
-  const [contentState, setContentState] = useState<GrowvellContentState>(() => mergeWithDefaults(null));
-  const [draftPosts, setDraftPosts] = useState<Record<number, PostDeliveryRecord>>({});
+  const [contentState, setContentState] = useState<GrowvellDayContentState>(() => mergeDayState(null));
+  const [draftDays, setDraftDays] = useState<Record<number, DayDeliveryRecord>>({});
+  const [openDays, setOpenDays] = useState<Set<number>>(new Set([1]));
   const [loading, setLoading] = useState(true);
-  const [savingId, setSavingId] = useState<number | null>(null);
+  const [savingDay, setSavingDay] = useState<number | null>(null);
+  const [addingDay, setAddingDay] = useState(false);
   const [uploadingKey, setUploadingKey] = useState<string | null>(null);
-  const [showAllPosts, setShowAllPosts] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [toast, setToast] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -55,18 +52,11 @@ export default function GrowvellContentAdminPage() {
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [appRes, cntRes] = await Promise.all([
-        fetch(`/api/growvell/approval?t=${Date.now()}`, { cache: "no-store" }),
-        fetch(`/api/growvell/content?t=${Date.now()}`, { cache: "no-store" }),
-      ]);
-      const appData = await appRes.json();
-      const cntData = await cntRes.json();
-
-      if (appData?.statusMap) setStatusMap(appData.statusMap);
-      if (appData?.notesMap) setNotesMap(appData.notesMap);
-      const merged = mergeWithDefaults(cntData);
+      const res = await fetch(`/api/growvell/content?t=${Date.now()}`, { cache: "no-store" });
+      const data = await res.json();
+      const merged = mergeDayState(data);
       setContentState(merged);
-      setDraftPosts(merged.posts);
+      setDraftDays(merged.days);
     } catch (err) {
       console.error("Admin load error:", err);
       showToast("Failed to load content state");
@@ -79,81 +69,57 @@ export default function GrowvellContentAdminPage() {
     loadAll();
   }, [loadAll]);
 
-  const visiblePosts = useMemo(() => {
-    return GROWVELL_100_POSTS.filter((p) => {
-      if (!showAllPosts && statusMap[p.id] !== "approved") return false;
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        return (
-          p.hook.toLowerCase().includes(q) ||
-          p.pillar.toLowerCase().includes(q) ||
-          String(p.id).includes(q)
-        );
-      }
-      return true;
-    });
-  }, [showAllPosts, statusMap, searchQuery]);
+  const sortedDays = useMemo(() => {
+    return Object.values(draftDays).sort((a, b) => a.day - b.day);
+  }, [draftDays]);
 
-  const getDraft = (postId: number): PostDeliveryRecord => {
-    return (
-      draftPosts[postId] || {
-        postId,
-        linkedin: createEmptyPlatformAsset(),
-        twitter: createEmptyPlatformAsset(),
-      }
-    );
+  const toggleDay = (day: number) => {
+    setOpenDays((prev) => {
+      const next = new Set(prev);
+      if (next.has(day)) next.delete(day);
+      else next.add(day);
+      return next;
+    });
   };
 
-  const updateField = (
-    postId: number,
+  const updateDayTitle = (day: number, title: string) => {
+    setDraftDays((prev) => {
+      const cur = prev[day] || createEmptyDay(day);
+      return { ...prev, [day]: { ...cur, title } };
+    });
+  };
+
+  const updateSlotField = (
+    day: number,
     platform: "linkedin" | "twitter",
-    field: keyof PlatformAsset,
-    value: string
+    slotIdx: 0 | 1,
+    field: keyof ContentSlot,
+    value: string | number | undefined
   ) => {
-    setDraftPosts((prev) => {
-      const current = prev[postId] || {
-        postId,
-        linkedin: createEmptyPlatformAsset(),
-        twitter: createEmptyPlatformAsset(),
-      };
+    setDraftDays((prev) => {
+      const cur = prev[day] || createEmptyDay(day);
+      const list = [...cur[platform]] as [ContentSlot, ContentSlot];
+      list[slotIdx] = { ...list[slotIdx], [field]: value };
       return {
         ...prev,
-        [postId]: {
-          ...current,
-          [platform]: {
-            ...current[platform],
-            [field]: value,
-          },
-        },
-      };
-    });
-  };
-
-  const updateCustomTitle = (postId: number, customTitle: string) => {
-    setDraftPosts((prev) => {
-      const current = getDraft(postId);
-      return {
-        ...prev,
-        [postId]: {
-          ...current,
-          customTitle,
-        },
+        [day]: { ...cur, [platform]: list },
       };
     });
   };
 
   const handleFileUpload = async (
-    postId: number,
+    day: number,
     platform: "linkedin" | "twitter",
+    slotIdx: 0 | 1,
     kind: "main" | "preview",
     file: File
   ) => {
-    const key = `${postId}-${platform}-${kind}`;
+    const key = `d${day}-${platform}-${slotIdx}-${kind}`;
     setUploadingKey(key);
     try {
       const fd = new FormData();
       fd.append("file", file);
-      fd.append("postId", String(postId));
+      fd.append("postId", `day${day}-${slotIdx + 1}`);
       fd.append("platform", `${platform}-${kind}`);
 
       const res = await fetch("/api/growvell/upload", { method: "POST", body: fd });
@@ -163,32 +129,24 @@ export default function GrowvellContentAdminPage() {
         return;
       }
 
-      setDraftPosts((prev) => {
-        const current = prev[postId] || {
-          postId,
-          linkedin: createEmptyPlatformAsset(),
-          twitter: createEmptyPlatformAsset(),
-        };
-        const platObj = { ...current[platform] };
+      setDraftDays((prev) => {
+        const cur = prev[day] || createEmptyDay(day);
+        const list = [...cur[platform]] as [ContentSlot, ContentSlot];
+        const nextSlot = { ...list[slotIdx] };
         if (kind === "main") {
-          platObj.fileUrl = data.url;
-          platObj.fileName = data.fileName;
-          platObj.status = "ready";
+          nextSlot.fileUrl = data.url;
+          nextSlot.fileName = data.fileName;
+          nextSlot.status = "ready";
           if (/\.(png|jpg|jpeg|webp)$/i.test(data.fileName)) {
-            platObj.previewImageUrl = data.url;
+            nextSlot.previewImageUrl = data.url;
           }
         } else {
-          platObj.previewImageUrl = data.url;
+          nextSlot.previewImageUrl = data.url;
         }
-        return {
-          ...prev,
-          [postId]: {
-            ...current,
-            [platform]: platObj,
-          },
-        };
+        list[slotIdx] = nextSlot;
+        return { ...prev, [day]: { ...cur, [platform]: list } };
       });
-      showToast(`Uploaded ${file.name}. Click Save Post to publish.`);
+      showToast(`Uploaded ${file.name}. Click Save Day ${day} to publish.`);
     } catch {
       showToast("Upload failed");
     } finally {
@@ -196,33 +154,57 @@ export default function GrowvellContentAdminPage() {
     }
   };
 
-  const handleSavePost = async (postId: number) => {
-    setSavingId(postId);
+  const handleSaveDay = async (day: number) => {
+    setSavingDay(day);
     try {
-      const record = getDraft(postId);
+      const record = draftDays[day];
       const res = await fetch("/api/growvell/content", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "save_post",
-          postId,
+          action: "save_day",
+          day,
           record,
           updatedBy: "Hari Narayan (Admin)",
         }),
       });
       const data = await res.json();
       if (data.success) {
-        const merged = mergeWithDefaults(data);
+        const merged = mergeDayState(data);
         setContentState(merged);
-        setDraftPosts(merged.posts);
-        showToast(`Saved post #${postId} live to /growvell/content`);
+        setDraftDays(merged.days);
+        showToast(`Saved Day ${day} live to /growvell/content`);
       } else {
         showToast(data.error || "Save failed");
       }
     } catch {
-      showToast("Network error while saving");
+      showToast("Network error saving Day");
     } finally {
-      setSavingId(null);
+      setSavingDay(null);
+    }
+  };
+
+  const handleAddDay = async () => {
+    setAddingDay(true);
+    try {
+      const res = await fetch("/api/growvell/content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "add_day" }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        const merged = mergeDayState(data);
+        setContentState(merged);
+        setDraftDays(merged.days);
+        const maxDay = Math.max(...Object.keys(merged.days).map(Number));
+        setOpenDays((prev) => new Set(prev).add(maxDay));
+        showToast(`Added Day ${maxDay}`);
+      }
+    } catch {
+      showToast("Could not add new Day");
+    } finally {
+      setAddingDay(false);
     }
   };
 
@@ -235,7 +217,7 @@ export default function GrowvellContentAdminPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setContentState(mergeWithDefaults(data));
+        setContentState(mergeDayState(data));
         showToast("Suggestion marked resolved");
       }
     } catch {
@@ -243,10 +225,11 @@ export default function GrowvellContentAdminPage() {
     }
   };
 
-  const renderAdminPlatformEditor = (
-    post: GrowvellPost,
+  const renderSlotEditor = (
+    day: number,
     platform: "linkedin" | "twitter",
-    asset: PlatformAsset
+    slotIdx: 0 | 1,
+    slot: ContentSlot
   ) => {
     const isLinkedIn = platform === "linkedin";
     return (
@@ -254,35 +237,75 @@ export default function GrowvellContentAdminPage() {
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             {isLinkedIn ? <LinkedInIcon /> : <XIcon />}
-            <span className="text-sm font-extrabold text-[#1E1E1E]">
-              {isLinkedIn ? "LinkedIn Deliverable" : "Twitter / X Deliverable"}
+            <span className="text-xs sm:text-sm font-extrabold text-[#1E1E1E]">
+              {isLinkedIn ? `LinkedIn Post ${slotIdx + 1}` : `X Post ${slotIdx + 1}`}
             </span>
           </div>
 
           <select
-            value={asset.status}
+            value={slot.status}
             onChange={(e) =>
-              updateField(post.id, platform, "status", e.target.value as "in_progress" | "ready")
+              updateSlotField(day, platform, slotIdx, "status", e.target.value as "in_progress" | "ready")
             }
             className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${
-              asset.status === "ready"
+              slot.status === "ready"
                 ? "bg-emerald-50 text-emerald-700 border-emerald-300"
                 : "bg-amber-50 text-amber-800 border-amber-300"
             }`}
           >
-            <option value="ready">Ready to Publish</option>
+            <option value="ready">Ready to Post</option>
             <option value="in_progress">Content in Progress</option>
           </select>
         </div>
 
-        {/* File upload & manual URL */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">
+              Slot Format / Label
+            </label>
+            <input
+              type="text"
+              value={slot.label}
+              onChange={(e) => updateSlotField(day, platform, slotIdx, "label", e.target.value)}
+              placeholder={isLinkedIn ? "Carousel PDF / Twitter-Style Card" : "X Post"}
+              className="w-full text-xs border border-gray-300 rounded-lg px-2.5 py-1.5 bg-white"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">
+              Linked Hook # (Optional)
+            </label>
+            <select
+              value={slot.approvedPostId || ""}
+              onChange={(e) =>
+                updateSlotField(
+                  day,
+                  platform,
+                  slotIdx,
+                  "approvedPostId",
+                  e.target.value ? Number(e.target.value) : undefined
+                )
+              }
+              className="w-full text-xs border border-gray-300 rounded-lg px-2.5 py-1.5 bg-white"
+            >
+              <option value="">None</option>
+              {GROWVELL_100_POSTS.map((p) => (
+                <option key={p.id} value={p.id}>
+                  #{p.id} - {p.hook.slice(0, 48)}...
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <label className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-dashed border-[#0038C8] bg-white hover:bg-[#0038C8]/5 text-[#0038C8] text-xs font-bold cursor-pointer transition">
             <Upload className="w-3.5 h-3.5" />
             <span>
-              {uploadingKey === `${post.id}-${platform}-main`
+              {uploadingKey === `d${day}-${platform}-${slotIdx}-main`
                 ? "Uploading..."
-                : "Upload Main PDF / PNG"}
+                : "Upload PDF / PNG"}
             </span>
             <input
               type="file"
@@ -290,7 +313,7 @@ export default function GrowvellContentAdminPage() {
               className="hidden"
               onChange={(e) => {
                 const f = e.target.files?.[0];
-                if (f) handleFileUpload(post.id, platform, "main", f);
+                if (f) handleFileUpload(day, platform, slotIdx, "main", f);
               }}
             />
           </label>
@@ -298,7 +321,7 @@ export default function GrowvellContentAdminPage() {
           <label className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-dashed border-gray-400 bg-white hover:bg-gray-50 text-[#1E1E1E] text-xs font-semibold cursor-pointer transition">
             <Upload className="w-3.5 h-3.5" />
             <span>
-              {uploadingKey === `${post.id}-${platform}-preview`
+              {uploadingKey === `d${day}-${platform}-${slotIdx}-preview`
                 ? "Uploading..."
                 : "Upload Cover Thumbnail"}
             </span>
@@ -308,64 +331,44 @@ export default function GrowvellContentAdminPage() {
               className="hidden"
               onChange={(e) => {
                 const f = e.target.files?.[0];
-                if (f) handleFileUpload(post.id, platform, "preview", f);
+                if (f) handleFileUpload(day, platform, slotIdx, "preview", f);
               }}
             />
           </label>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <div>
-            <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">
-              Download File URL
-            </label>
-            <input
-              type="text"
-              value={asset.fileUrl}
-              onChange={(e) => updateField(post.id, platform, "fileUrl", e.target.value)}
-              placeholder="/growvell_content/... or https://..."
-              className="w-full text-xs border border-gray-300 rounded-lg px-2.5 py-1.5 bg-white"
-            />
-          </div>
-          <div>
-            <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">
-              Download Filename
-            </label>
-            <input
-              type="text"
-              value={asset.fileName}
-              onChange={(e) => updateField(post.id, platform, "fileName", e.target.value)}
-              placeholder="filename.pdf or .png"
-              className="w-full text-xs border border-gray-300 rounded-lg px-2.5 py-1.5 bg-white"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">
-            Preview Thumbnail URL (Optional for PDF)
-          </label>
           <input
             type="text"
-            value={asset.previewImageUrl || ""}
-            onChange={(e) => updateField(post.id, platform, "previewImageUrl", e.target.value)}
-            placeholder="/growvell_content/carousel_cover.png"
+            value={slot.fileUrl}
+            onChange={(e) => updateSlotField(day, platform, slotIdx, "fileUrl", e.target.value)}
+            placeholder="Download URL (/growvell_content/...)"
+            className="w-full text-xs border border-gray-300 rounded-lg px-2.5 py-1.5 bg-white"
+          />
+          <input
+            type="text"
+            value={slot.fileName}
+            onChange={(e) => updateSlotField(day, platform, slotIdx, "fileName", e.target.value)}
+            placeholder="Filename (e.g. carousel.pdf)"
             className="w-full text-xs border border-gray-300 rounded-lg px-2.5 py-1.5 bg-white"
           />
         </div>
 
-        <div>
-          <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">
-            Copy-Paste Post Caption
-          </label>
-          <textarea
-            rows={5}
-            value={asset.caption}
-            onChange={(e) => updateField(post.id, platform, "caption", e.target.value)}
-            placeholder={`Write the ready-to-paste ${isLinkedIn ? "LinkedIn" : "Twitter / X"} caption...`}
-            className="w-full text-xs border border-gray-300 rounded-lg p-2.5 bg-white leading-relaxed"
-          />
-        </div>
+        <input
+          type="text"
+          value={slot.previewImageUrl || ""}
+          onChange={(e) => updateSlotField(day, platform, slotIdx, "previewImageUrl", e.target.value)}
+          placeholder="Preview Thumbnail URL (optional for PDF)"
+          className="w-full text-xs border border-gray-300 rounded-lg px-2.5 py-1.5 bg-white"
+        />
+
+        <textarea
+          rows={4}
+          value={slot.caption}
+          onChange={(e) => updateSlotField(day, platform, slotIdx, "caption", e.target.value)}
+          placeholder={`Write ready-to-copy ${isLinkedIn ? "LinkedIn" : "X / Twitter"} text...`}
+          className="w-full text-xs border border-gray-300 rounded-lg p-2.5 bg-white leading-relaxed"
+        />
       </div>
     );
   };
@@ -382,20 +385,28 @@ export default function GrowvellContentAdminPage() {
         <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-base sm:text-lg font-extrabold">
-              Growvell Content Admin Studio
+              Growvell Daily Content Admin Studio
             </h1>
             <p className="text-[11px] text-blue-200">
-              Edit captions, upload PNGs/PDFs, toggle Ready status, and manage Dhanesh suggestions
+              Manage Day 1, Day 2, Day 3+ accordions · 2 LinkedIn + 2 X posts per day
             </p>
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleAddDay}
+              disabled={addingDay}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>{addingDay ? "Adding..." : "Add New Day"}</span>
+            </button>
             <Link
               href="/growvell/content"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-[#001B66] text-xs font-bold hover:bg-blue-50 transition"
             >
               <ExternalLink className="w-3.5 h-3.5" />
-              <span>Preview Client View</span>
+              <span>Client View</span>
             </Link>
             <button
               onClick={loadAll}
@@ -408,20 +419,15 @@ export default function GrowvellContentAdminPage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-        {/* Client Suggestions Inbox */}
+      <main className="max-w-6xl mx-auto px-4 py-6 space-y-5">
+        {/* Suggestions Inbox */}
         <section className="bg-white border-2 border-[#1E1E1E] rounded-2xl p-4 shadow-[3px_3px_0px_#0038C8]">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-extrabold flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-[#0038C8]" />
-              <span>Client Suggestions Inbox ({contentState.suggestions.length})</span>
-            </h2>
-          </div>
-
+          <h2 className="text-sm font-extrabold flex items-center gap-2 mb-2.5">
+            <AlertCircle className="w-4 h-4 text-[#0038C8]" />
+            <span>Client Suggestions Inbox ({contentState.suggestions.length})</span>
+          </h2>
           {contentState.suggestions.length === 0 ? (
-            <p className="text-xs text-gray-500">
-              No pending suggestions from Dhanesh right now.
-            </p>
+            <p className="text-xs text-gray-500">No pending suggestions from Dhanesh.</p>
           ) : (
             <div className="space-y-2">
               {contentState.suggestions.map((s) => (
@@ -430,11 +436,11 @@ export default function GrowvellContentAdminPage() {
                   className="bg-[#F8FBFE] border border-gray-200 rounded-lg p-3 flex flex-wrap items-center justify-between gap-3"
                 >
                   <div className="text-xs">
-                    <span className="font-extrabold text-[#001B66] mr-2">Post #{s.postId}</span>
+                    <span className="font-extrabold text-[#001B66] mr-2">Day {s.day}</span>
                     <span className="uppercase text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#0038C8] text-white mr-2">
                       {s.platform}
                     </span>
-                    <span className="text-[#1E1E1E] font-medium">{s.text}</span>
+                    <span className="font-medium">{s.text}</span>
                     <span className="text-gray-400 ml-2">
                       ({s.author} · {new Date(s.createdAt).toLocaleString()})
                     </span>
@@ -452,89 +458,81 @@ export default function GrowvellContentAdminPage() {
           )}
         </section>
 
-        {/* Controls */}
-        <div className="bg-white border border-gray-300 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3">
-          <div className="relative flex-1 min-w-[220px]">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Filter posts by #ID, hook, or pillar..."
-              className="w-full pl-9 pr-3 py-2 text-xs border border-gray-200 rounded-lg"
-            />
-          </div>
+        {/* Day Accordions */}
+        {sortedDays.map((dayRecord) => {
+          const isOpen = openDays.has(dayRecord.day);
+          return (
+            <section
+              key={dayRecord.day}
+              className="bg-white border-2 border-[#1E1E1E] rounded-2xl overflow-hidden shadow-[3px_3px_0px_#1E1E1E]"
+            >
+              <div className="px-5 py-3.5 flex flex-wrap items-center justify-between gap-3 bg-white">
+                <button
+                  type="button"
+                  onClick={() => toggleDay(dayRecord.day)}
+                  className="flex items-center gap-3 text-left flex-1 min-w-[200px]"
+                >
+                  <span className="px-3 py-1 rounded-lg bg-[#0038C8] text-white text-xs font-extrabold">
+                    Day {dayRecord.day}
+                  </span>
+                  <span className="font-extrabold text-sm text-[#1E1E1E]">{dayRecord.title}</span>
+                  {isOpen ? (
+                    <ChevronUp className="w-4 h-4 text-gray-500" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-gray-500" />
+                  )}
+                </button>
 
-          <label className="inline-flex items-center gap-2 text-xs font-bold text-[#1E1E1E] cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showAllPosts}
-              onChange={(e) => setShowAllPosts(e.target.checked)}
-              className="rounded border-gray-300"
-            />
-            <span>Show all 100 posts (not just Approved)</span>
-          </label>
-        </div>
+                <button
+                  onClick={() => handleSaveDay(dayRecord.day)}
+                  disabled={savingDay === dayRecord.day}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0038C8] hover:bg-[#001B66] text-white text-xs font-extrabold transition"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>
+                    {savingDay === dayRecord.day ? "Saving..." : `Save Day ${dayRecord.day}`}
+                  </span>
+                </button>
+              </div>
 
-        {/* Post Editors */}
-        <div className="space-y-6">
-          {visiblePosts.map((post) => {
-            const draft = getDraft(post.id);
-            const isApproved = statusMap[post.id] === "approved";
-            const founderNote = notesMap[post.id];
-
-            return (
-              <div
-                key={post.id}
-                className="bg-white border-2 border-[#1E1E1E] rounded-2xl p-5 shadow-[3px_3px_0px_#1E1E1E]"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-3 pb-4 border-b border-gray-200 mb-4">
-                  <div className="flex-1 min-w-[240px]">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <span className="px-2 py-0.5 rounded bg-[#001B66] text-white text-[11px] font-extrabold">
-                        #{post.id}
-                      </span>
-                      <span className="px-2 py-0.5 rounded bg-gray-100 text-gray-700 text-[11px] font-semibold">
-                        {post.pillar} · {post.segment}
-                      </span>
-                      {isApproved && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[11px] font-bold border border-emerald-200">
-                          <CheckCircle2 className="w-3 h-3" />
-                          Client Approved
-                        </span>
-                      )}
-                    </div>
+              {isOpen && (
+                <div className="px-5 pb-5 pt-3 border-t border-gray-200 space-y-5">
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">
+                      Day Accordion Title
+                    </label>
                     <input
                       type="text"
-                      value={draft.customTitle ?? post.hook}
-                      onChange={(e) => updateCustomTitle(post.id, e.target.value)}
-                      className="w-full text-sm font-bold text-[#1E1E1E] border border-gray-300 rounded-lg px-3 py-1.5"
+                      value={dayRecord.title}
+                      onChange={(e) => updateDayTitle(dayRecord.day, e.target.value)}
+                      className="w-full text-sm font-bold border border-gray-300 rounded-lg px-3 py-2"
                     />
-                    {founderNote && (
-                      <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded px-2.5 py-1 mt-2 inline-block">
-                        Approval Note: {founderNote}
-                      </p>
-                    )}
                   </div>
 
-                  <button
-                    onClick={() => handleSavePost(post.id)}
-                    disabled={savingId === post.id}
-                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#0038C8] hover:bg-[#001B66] text-white text-xs font-extrabold transition shrink-0"
-                  >
-                    <Save className="w-4 h-4" />
-                    <span>{savingId === post.id ? "Saving..." : `Save Post #${post.id}`}</span>
-                  </button>
-                </div>
+                  <div>
+                    <h3 className="text-xs font-extrabold uppercase tracking-wide text-[#001B66] mb-2.5">
+                      LinkedIn (2 Posts: Carousel + Twitter-Style Card)
+                    </h3>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      {renderSlotEditor(dayRecord.day, "linkedin", 0, dayRecord.linkedin[0])}
+                      {renderSlotEditor(dayRecord.day, "linkedin", 1, dayRecord.linkedin[1])}
+                    </div>
+                  </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {renderAdminPlatformEditor(post, "linkedin", draft.linkedin)}
-                  {renderAdminPlatformEditor(post, "twitter", draft.twitter)}
+                  <div>
+                    <h3 className="text-xs font-extrabold uppercase tracking-wide text-[#1E1E1E] mb-2.5">
+                      X / Twitter (2 Posts)
+                    </h3>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      {renderSlotEditor(dayRecord.day, "twitter", 0, dayRecord.twitter[0])}
+                      {renderSlotEditor(dayRecord.day, "twitter", 1, dayRecord.twitter[1])}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              )}
+            </section>
+          );
+        })}
       </main>
     </div>
   );
