@@ -460,6 +460,13 @@ export default function GrowvellApprovalPortal() {
                 <span className="hidden sm:inline">Export CSV</span>
               </button>
               <a
+                href="/growvell/content"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#0038C8] hover:bg-[#001B66] text-white text-[11px] sm:text-xs font-bold transition shadow-sm shrink-0"
+              >
+                <ExternalLink className="w-3 h-3" />
+                <span>Content Hub</span>
+              </a>
+              <a
                 href={generateWhatsAppUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
