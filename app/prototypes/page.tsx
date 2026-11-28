@@ -1,263 +1,364 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import {
+  ArrowUpRight,
+  Check,
+  ExternalLink,
+  Layers,
+  Lock,
+  MessageCircle,
+  Sparkles,
+} from "lucide-react";
+
+type PillarFilter = "all" | "pillar1" | "pillar2" | "pillar3";
 
 interface PrototypeItem {
   id: string;
   title: string;
   subtitle: string;
+  pillar: Exclude<PillarFilter, "all">;
   category: string;
   badge: string;
-  badgeColor: string;
   description: string;
   deliverables: string[];
   href: string;
   mockUrl: string;
-  accentColor: string;
+  previewImage: string;
 }
 
 const prototypes: PrototypeItem[] = [
   {
     id: "stratum",
     title: "Stratum Planning",
-    subtitle: "Digital Wealth Mandate Desk",
+    subtitle: "Modern Wealth Mandate Desk",
+    pillar: "pillar2",
     category: "Pillar 2: Lead Conversion & Brand",
-    badge: "AWWWARDS CANDIDATE",
-    badgeColor: "#53A0FD",
-    description: "Built for ₹100 Cr+ AUM wealth advisory firms. Replaces 14-page PDF risk questionnaires with an interactive 60-second digital intake desk that qualifies liquid net worth before booking a call.",
+    badge: "MODERN WEALTH UI",
+    description:
+      "Built for ₹100 Cr+ AUM wealth advisory firms. Replaces static PDF questionnaires with an interactive 60-second intake desk that qualifies liquid net worth before booking a call.",
     deliverables: [
-      "Sub-second page load speeds on mobile and desktop",
-      "Interactive liquid net-worth screening calculator",
-      "Direct WhatsApp and calendar consultation dispatch",
-      "Institutional typography and luxury wealth aesthetic"
+      "Sub-second page loads on mobile and desktop",
+      "Interactive liquid net-worth screening flow",
+      "Direct WhatsApp and calendar booking dispatch",
+      "Clean editorial layout with data clarity",
     ],
     href: "/stratum",
     mockUrl: "stratum.advisorsolution.com",
-    accentColor: "#53A0FD"
+    previewImage: "/prototype_previews/stratum.png",
   },
   {
     id: "valmont",
     title: "Valmont & Cie",
-    subtitle: "Sovereign Private Banking Desk",
+    subtitle: "Heritage Private Banking Desk",
+    pillar: "pillar2",
     category: "Pillar 2: High-Trust Website",
-    badge: "PRIVATE WEALTH DESK",
-    badgeColor: "#DA291C",
-    description: "Designed to reflect the quiet pedigree of European independent private bankers. Built to protect HNI trust with discreet mandate routing, asset protection workflows, and generational wealth positioning.",
+    badge: "PRIVATE BANK UI",
+    description:
+      "Reflects the understated pedigree of European independent private bankers. Built to protect HNI confidence with discreet mandate routing and multi-generational storytelling.",
     deliverables: [
-      "Bespoke family office and philanthropic mandate modules",
-      "Discreet client qualification with zero generic templates",
-      "Clean Swiss minimalist design with high-contrast serif typography",
-      "Interactive consultation request flow"
+      "Family office and philanthropic mandate architecture",
+      "Zero generic directory template clutter",
+      "High-contrast serif typography for legacy wealth",
+      "Confidential consultation intake flow",
     ],
     href: "/private-bank",
     mockUrl: "valmont-cie.advisorsolution.com",
-    accentColor: "#DA291C"
+    previewImage: "/prototype_previews/valmont.png",
   },
   {
     id: "growvell",
-    title: "Growvell Wealth Desk",
-    subtitle: "HNI Intake & Risk Qualifier",
-    category: "Pillar 1: Inbound Lead Qualification",
-    badge: "RAPID QUALIFIER DESK",
-    badgeColor: "#3EFFB4",
-    description: "A frictionless client intake desk for modern Indian wealth advisors. Filters out unqualified retail inquiries while collecting KYC and portfolio parameters from serious HNI prospects in under 2 minutes.",
+    title: "Growvell Content & Desk",
+    subtitle: "NRI Wealth Funnel & Approval Portal",
+    pillar: "pillar1",
+    category: "Pillar 1: Lead Generation Engine",
+    badge: "LIVE CLIENT SYSTEM",
+    description:
+      "Full inbound authority system for NRI wealth advisory: LinkedIn banner overhaul, 60-day daily content calendar, hook approval desk, and structured HNI lead qualification.",
     deliverables: [
-      "3-step liquid net-worth qualifier",
-      "Automated fee-drag calculation vs regular mutual funds",
-      "Instant WhatsApp dispatch with pre-filled client parameters",
-      "SEBI compliance disclosures built into every step"
+      "120 designed assets + 4:5 editorial PDF carousels",
+      "Interactive client content approval and delivery hub",
+      "3-step NRI net-worth and fee-drag qualifier",
+      "Built strictly within regulatory communication boundaries",
     ],
     href: "/growvell",
     mockUrl: "growvell.advisorsolution.com",
-    accentColor: "#3EFFB4"
+    previewImage: "/prototype_previews/growvell.png",
   },
   {
     id: "aurum",
-    title: "Aurum Fiduciary Wealth",
-    subtitle: "SEBI RIA Client Onboarding Desk",
+    title: "Aurum Fiduciary Desk",
+    subtitle: "SEBI RIA Client Onboarding & Dossier",
+    pillar: "pillar2",
     category: "Pillar 2: Conversion & Compliance",
-    badge: "SEBI COMPLIANT DESK",
-    badgeColor: "#FFBD2E",
-    description: "End-to-end digital onboarding architecture for Indian Registered Investment Advisers. Complete with risk profiling, automated advisory agreement signatures, and mock CeFCoM fee gateway.",
+    badge: "SEBI RIA FLOW",
+    description:
+      "End-to-end digital onboarding flow for Indian Registered Investment Advisers featuring structured risk profiling, agreement signatures, and statutory Reg 15/17/19 dossiers.",
     deliverables: [
-      "Mandatory SEBI Risk Profiling Questionnaire (RPQ)",
-      "Digital advisory agreement review and signature simulation",
-      "Mock BSE/MFU CeFCoM payment gateway flow",
-      "Investor Charter and regulatory disclosure modals"
+      "SEBI Risk Profiling Questionnaire (RPQ) engine",
+      "Digital advisory agreement signing workflow",
+      "Mock BSE/MFU CeFCoM fee gateway flow",
+      "Printable statutory fiduciary audit dossier",
     ],
     href: "/onboarding",
     mockUrl: "aurum.advisorsolution.com",
-    accentColor: "#FFBD2E"
+    previewImage: "/prototype_previews/aurum_dossier.png",
   },
   {
     id: "portal",
     title: "Private Client Portal",
-    subtitle: "Client Retention & Document Hub",
+    subtitle: "Retention Hub & Portfolio Vault",
+    pillar: "pillar3",
     category: "Pillar 3: Client Retention",
-    badge: "RETENTION DASHBOARD",
-    badgeColor: "#9D7BFF",
-    description: "A dedicated, clean dashboard for active clients. Eliminates 'Where is my update?' messages by providing a transparent milestone roadmap, document vault, and portfolio review center.",
+    badge: "CLIENT PORTAL",
+    description:
+      "Private client command center that replaces scattered WhatsApp chats with direct demat valuation, annual commission savings tracking, and milestone goal roadmaps.",
     deliverables: [
-      "Centralized deliverables hub for agreements and quarterly reports",
-      "Visual milestone roadmap with live project progress tracking",
-      "Step-by-step document checklist for onboarding",
-      "Direct secure messaging and meeting scheduler"
+      "Centralized agreements, CKYC vault, and reports",
+      "Live direct expense ratio savings metrics",
+      "Funded Financial Goals GPS milestone tracking",
+      "Eliminates repetitive 'What is the status?' pings",
     ],
     href: "/client/dashboard",
     mockUrl: "portal.advisorsolution.com",
-    accentColor: "#9D7BFF"
+    previewImage: "/prototype_previews/aurum_portal.png",
   },
   {
     id: "agency",
-    title: "Advisor Solution Agency Desk",
-    subtitle: "Full Service Showcase & Portfolio",
-    category: "Master Agency Desk",
-    badge: "MASTER SHOWCASE",
-    badgeColor: "#0038C8",
-    description: "The complete agency portfolio showcasing our 3-step digital system: 60-day social content engines, conversion-first website redesigns, and private client retention portals.",
+    title: "Advisor Solution Desk",
+    subtitle: "Complete 3-Pillar System & Pricing",
+    pillar: "pillar1",
+    category: "Master System Overview",
+    badge: "ALL-IN-ONE BUNDLE",
+    description:
+      "Master agency showcase unifying all three pillars: 60-day social content generation, conversion-first website redesigns, and private client portals in a 2 to 3 week sprint.",
     deliverables: [
-      "Awwwards-grade responsive masonry portfolio showcase",
-      "Interactive 72-hour rapid deployment pilot selector",
-      "Comprehensive service tier breakdowns and pricing matrices",
-      "Integrated WhatsApp consultation desk (+91 93456 19428)"
+      "2-to-3 week turnkey sprint with Hari directly",
+      "2-Year Presence Guarantee on live deployments",
+      "6 months of complimentary copy and UI updates",
+      "Complete 3-pillar Founder Bundle option",
     ],
     href: "/agency",
     mockUrl: "advisorsolution.com/agency",
-    accentColor: "#0038C8"
-  }
+    previewImage: "/prototype_previews/agency_system.png",
+  },
+];
+
+const FILTERS: { id: PillarFilter; label: string }[] = [
+  { id: "all", label: "All Systems (6)" },
+  { id: "pillar1", label: "Lead Gen & Content (2)" },
+  { id: "pillar2", label: "Websites & Intake (3)" },
+  { id: "pillar3", label: "Client Portal (1)" },
 ];
 
 export default function PrototypesPage() {
+  const [activeFilter, setActiveFilter] = useState<PillarFilter>("all");
+
+  const visiblePrototypes =
+    activeFilter === "all"
+      ? prototypes
+      : prototypes.filter((item) => item.pillar === activeFilter);
+
   return (
-    <div className="min-h-screen bg-[#070A12] text-white selection:bg-[#53A0FD]/30 selection:text-[#53A0FD]">
-      {/* Top Navigation */}
-      <header className="sticky top-0 z-50 bg-[#0B0F19]/90 backdrop-blur-md border-b border-white/[0.08] px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
+    <div
+      className="min-h-screen bg-[#F8FBFE] text-[#1E1E1E] selection:bg-[#0038C8] selection:text-white"
+      style={{
+        backgroundImage:
+          "linear-gradient(to right, rgba(0, 56, 200, 0.045) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 56, 200, 0.045) 1px, transparent 1px)",
+        backgroundSize: "48px 48px",
+      }}
+    >
+      {/* Top Institutional Navigation */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b-[1.5px] border-[#1E1E1E] px-4 sm:px-6 py-3.5">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5 min-w-0">
             <Link
               href="/agency"
-              className="text-lg font-bold tracking-tight text-white hover:text-[#53A0FD] transition-colors"
+              className="inline-flex items-center gap-2 font-black text-sm sm:text-base tracking-tight text-[#001B66] hover:text-[#0038C8] transition-colors shrink-0"
             >
-              ADVISOR SOLUTION
+              <span className="w-7 h-7 rounded-lg bg-[#0038C8] border-[1.5px] border-[#1E1E1E] text-white flex items-center justify-center text-xs font-black">
+                HN
+              </span>
+              <span>ADVISOR SOLUTION</span>
             </Link>
-            <span className="text-white/30 text-xs font-mono">/</span>
-            <span className="text-xs font-mono text-[#53A0FD] uppercase tracking-wider bg-[#53A0FD]/10 border border-[#53A0FD]/20 px-2 py-0.5 rounded-full">
-              Interactive Prototypes
+            <span className="hidden sm:inline text-gray-300 font-bold">/</span>
+            <span className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-[#EFF6FF] text-[#0038C8] border border-[#0038C8]/30">
+              Live Prototypes
             </span>
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-mono">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/agency"
-              className="text-white/70 hover:text-white transition-colors"
+              className="hidden md:inline-flex px-3.5 py-1.5 rounded-lg text-xs font-bold text-[#1E1E1E] hover:text-[#0038C8] border-[1.5px] border-transparent hover:border-[#1E1E1E] hover:bg-[#F8FBFE] transition-all"
             >
               Agency Desk
+            </Link>
+            <Link
+              href="/growvell/content"
+              className="hidden md:inline-flex px-3.5 py-1.5 rounded-lg text-xs font-bold text-[#1E1E1E] hover:text-[#0038C8] border-[1.5px] border-transparent hover:border-[#1E1E1E] hover:bg-[#F8FBFE] transition-all"
+            >
+              Client Content Hub
             </Link>
             <a
               href="https://wa.me/919345619428?text=Hi%20Hari,%20I%20am%20reviewing%20your%20interactive%20prototypes"
               target="_blank"
               rel="noreferrer"
-              className="px-3.5 py-1.5 rounded-full bg-[#0038C8] hover:bg-[#53A0FD] text-white hover:text-black font-semibold transition-all flex items-center gap-1.5 shadow-[0_4px_12px_rgba(0,56,200,0.3)]"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#0038C8] hover:bg-[#001B66] text-white text-xs font-bold border-[1.5px] border-[#1E1E1E] shadow-[3px_3px_0px_#1E1E1E] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#1E1E1E] transition-all"
             >
-              <span>WhatsApp Hari</span>
-              <span>→</span>
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>Book 15-Min Call</span>
             </a>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="py-16 px-6 border-b border-white/[0.08] bg-gradient-to-b from-[#0B0F19] to-[#070A12]">
+      <section className="px-4 sm:px-6 pt-12 pb-10">
         <div className="max-w-7xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#53A0FD]/10 border border-[#53A0FD]/25 text-[#53A0FD] text-xs font-mono uppercase tracking-wider mb-4">
-            <span className="w-2 h-2 rounded-full bg-[#53A0FD] animate-pulse" />
-            <span>Interactive Client Desks & Live Prototypes</span>
+          <div className="relative">
+            <div className="absolute inset-0 translate-x-2 translate-y-2 rounded-2xl bg-[#0038C8] border-[1.5px] border-[#1E1E1E]" />
+            <div className="relative rounded-2xl bg-white border-[1.5px] border-[#1E1E1E] p-6 sm:p-10">
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#EFF6FF] border border-[#0038C8] text-[#0038C8] text-[11px] font-extrabold uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Hari Narayan // Interactive Systems Library</span>
+                </div>
+                <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold text-[#001B66]">
+                  <span className="px-2.5 py-1 rounded-md bg-[#F8FBFE] border border-gray-300">
+                    2 to 3 Week Build
+                  </span>
+                  <span className="px-2.5 py-1 rounded-md bg-[#F8FBFE] border border-gray-300">
+                    2-Yr Presence Guarantee
+                  </span>
+                  <span className="px-2.5 py-1 rounded-md bg-[#F8FBFE] border border-gray-300">
+                    SEBI Compliance Conscious
+                  </span>
+                </div>
+              </div>
+
+              <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-[#001B66] max-w-4xl leading-[1.1]">
+                Explore Live Wealth Desks, Websites & Client Portals.
+              </h1>
+              <p className="mt-4 text-sm sm:text-base text-gray-700 max-w-2xl leading-relaxed">
+                Every prototype below is functional production code built by Hari Narayan to show exactly how founders and SEBI RIAs turn cold traffic into booked calls and organized client relationships.
+              </p>
+
+              {/* Interactive Pillar Filter Strip */}
+              <div className="mt-7 pt-6 border-t border-gray-200 flex flex-wrap items-center gap-2.5">
+                <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-gray-500 mr-1">
+                  <Layers className="w-3.5 h-3.5 text-[#0038C8]" />
+                  Filter:
+                </span>
+                {FILTERS.map((filter) => {
+                  const active = activeFilter === filter.id;
+                  return (
+                    <button
+                      key={filter.id}
+                      onClick={() => setActiveFilter(filter.id)}
+                      className={`px-3.5 py-1.5 rounded-lg text-xs font-bold border-[1.5px] transition-all cursor-pointer ${
+                        active
+                          ? "bg-[#0038C8] text-white border-[#1E1E1E] shadow-[2px_2px_0px_#1E1E1E]"
+                          : "bg-[#F8FBFE] text-[#1E1E1E] border-gray-300 hover:border-[#0038C8] hover:text-[#0038C8]"
+                      }`}
+                    >
+                      {filter.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white max-w-3xl leading-tight">
-            Explore Our Live Prototypes & Custom Wealth Desks
-          </h1>
-          <p className="mt-4 text-base md:text-lg text-white/60 max-w-2xl font-light">
-            Every prototype below is a functional, production-ready system designed to demonstrate how we gather, convert, and retain clients for wealth management firms.
-          </p>
         </div>
       </section>
 
-      {/* Grid of Prototypes */}
-      <section className="py-16 px-6">
+      {/* Prototypes Grid */}
+      <section className="px-4 sm:px-6 pb-16">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {prototypes.map((item) => (
-              <div
-                key={item.id}
-                className="rounded-xl border border-white/[0.12] bg-[#0E1322] hover:border-[#53A0FD] hover:shadow-[0_16px_40px_rgba(83,160,253,0.12)] transition-all duration-300 flex flex-col justify-between overflow-hidden group"
-              >
-                {/* Browser Chrome Header */}
-                <div className="h-[36px] bg-[#121624] border-b border-white/[0.08] px-4 flex items-center justify-between select-none">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]/80" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]/80" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F]/80" />
-                  </div>
-                  <div className="bg-black/50 border border-white/10 px-2.5 py-0.5 rounded-full text-[10px] font-mono text-white/70 flex items-center gap-1">
-                    <span className="text-[9px] text-[#53A0FD]">🔒</span>
-                    <span className="truncate max-w-[140px]">{item.mockUrl}</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-[9px] font-mono text-[#53A0FD]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#53A0FD] animate-pulse" />
-                    <span>LIVE</span>
-                  </div>
-                </div>
+            {visiblePrototypes.map((item) => (
+              <div key={item.id} className="relative group h-full flex flex-col">
+                {/* Neo-Brutalist Royal Blue Offset Backing */}
+                <div className="absolute inset-0 translate-x-1.5 translate-y-1.5 rounded-2xl bg-[#0038C8] border-[1.5px] border-[#1E1E1E] transition-transform duration-200 group-hover:translate-x-2 group-hover:translate-y-2" />
 
-                {/* Card Body */}
-                <div className="p-6 flex-1 flex flex-col justify-between">
+                {/* Front White Card */}
+                <div className="relative flex-1 rounded-2xl bg-white border-[1.5px] border-[#1E1E1E] flex flex-col justify-between overflow-hidden transition-transform duration-200 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
                   <div>
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      <span
-                        className="text-[10px] font-mono font-bold tracking-wider px-2 py-0.5 rounded border uppercase"
-                        style={{
-                          color: item.badgeColor,
-                          borderColor: `${item.badgeColor}40`,
-                          backgroundColor: `${item.badgeColor}15`
-                        }}
-                      >
-                        {item.badge}
-                      </span>
-                      <span className="text-[11px] font-mono text-white/40">
-                        {item.category}
-                      </span>
+                    {/* Browser Chrome Bar */}
+                    <div className="h-9 bg-[#F1F5F9] border-b-[1.5px] border-[#1E1E1E] px-3.5 flex items-center justify-between gap-2 select-none">
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#1E1E1E]" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#0038C8]" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-gray-400" />
+                      </div>
+                      <div className="bg-white border border-gray-300 px-2.5 py-0.5 rounded-full text-[10px] font-semibold text-[#1E1E1E] flex items-center gap-1 min-w-0">
+                        <Lock className="w-2.5 h-2.5 text-[#0038C8] shrink-0" />
+                        <span className="truncate">{item.mockUrl}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[10px] font-extrabold text-[#0038C8] shrink-0">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                        <span>LIVE</span>
+                      </div>
                     </div>
 
-                    <h3 className="text-xl font-bold text-white group-hover:text-[#53A0FD] transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="text-xs font-mono text-[#53A0FD] mt-0.5">
-                      {item.subtitle}
-                    </p>
+                    {/* Crisp Visual Screenshot Strip */}
+                    <div className="bg-[#F8FBFE] border-b border-gray-200 p-2.5">
+                      <div className="aspect-[16/10] w-full rounded-lg overflow-hidden border border-gray-300 bg-white">
+                        <img
+                          src={item.previewImage}
+                          alt={`${item.title} live preview`}
+                          className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
+                        />
+                      </div>
+                    </div>
 
-                    <p className="text-xs text-white/70 mt-3 leading-relaxed">
-                      {item.description}
-                    </p>
+                    {/* Card Details */}
+                    <div className="p-5 sm:p-6">
+                      <div className="flex items-center justify-between gap-2 mb-2.5">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-[#EFF6FF] text-[#0038C8] border border-[#0038C8]/40">
+                          {item.badge}
+                        </span>
+                        <span className="text-[11px] font-semibold text-gray-500 truncate">
+                          {item.category}
+                        </span>
+                      </div>
 
-                    {/* Deliverables Bullet List */}
-                    <div className="mt-4 pt-4 border-t border-white/[0.08] space-y-1.5">
-                      {item.deliverables.map((bullet, idx) => (
-                        <div key={idx} className="flex items-start gap-2 text-[11px] text-white/60">
-                          <span className="text-[#3EFFB4] font-mono text-xs">✓</span>
-                          <span>{bullet}</span>
-                        </div>
-                      ))}
+                      <h2 className="text-xl font-black text-[#001B66] group-hover:text-[#0038C8] transition-colors">
+                        {item.title}
+                      </h2>
+                      <p className="text-xs font-bold text-[#0038C8] mt-0.5">
+                        {item.subtitle}
+                      </p>
+
+                      <p className="text-xs text-gray-700 mt-3 leading-relaxed">
+                        {item.description}
+                      </p>
+
+                      <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
+                        {item.deliverables.map((bullet, idx) => (
+                          <div
+                            key={idx}
+                            className="flex items-start gap-2 text-xs text-[#1E1E1E]"
+                          >
+                            <span className="w-4 h-4 rounded bg-[#EFF6FF] border border-[#0038C8]/30 text-[#0038C8] flex items-center justify-center shrink-0 mt-0.5">
+                              <Check className="w-2.5 h-2.5 stroke-[3]" />
+                            </span>
+                            <span className="leading-snug">{bullet}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Launch Button */}
-                  <div className="mt-6 pt-4 border-t border-white/[0.08]">
+                  {/* Action Footer */}
+                  <div className="px-5 sm:px-6 pb-5 sm:pb-6 pt-2">
                     <Link
                       href={item.href}
-                      className="w-full py-2.5 px-4 rounded-lg bg-white/5 hover:bg-[#53A0FD] text-white hover:text-black font-semibold text-xs font-mono border border-white/10 hover:border-[#53A0FD] transition-all flex items-center justify-center gap-2 group/btn shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
+                      className="w-full py-2.5 px-4 rounded-xl bg-[#001B66] hover:bg-[#0038C8] text-white font-bold text-xs border-[1.5px] border-[#1E1E1E] transition-all flex items-center justify-center gap-2 group/btn"
                     >
                       <span>Launch Interactive Prototype</span>
-                      <span className="text-sm group-hover/btn:translate-x-1 transition-transform">→</span>
+                      <ArrowUpRight className="w-4 h-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                     </Link>
                   </div>
                 </div>
@@ -267,40 +368,56 @@ export default function PrototypesPage() {
         </div>
       </section>
 
-      {/* Bottom CTA */}
-      <section className="py-16 px-6 border-t border-white/[0.08] bg-[#0B0F19]">
-        <div className="max-w-4xl mx-auto text-center">
-          <span className="text-xs font-mono text-[#3EFFB4] uppercase tracking-wider bg-[#3EFFB4]/10 border border-[#3EFFB4]/20 px-3 py-1 rounded-full">
-            72-Hour Rapid Deployment
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mt-4">
-            Need a Custom Digital Intake Desk for Your Firm?
-          </h2>
-          <p className="mt-3 text-sm text-white/60 max-w-xl mx-auto">
-            We build and launch modern intake flows, wealth branding, and client portals tailored to your advisory practice in 2 to 3 weeks.
-          </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
-            <a
-              href="https://wa.me/919345619428?text=Hi%20Hari,%20I%20am%20interested%20in%20a%20custom%20intake%20desk%20pilot"
-              target="_blank"
-              rel="noreferrer"
-              className="px-6 py-3 rounded-full bg-[#0038C8] hover:bg-[#53A0FD] text-white hover:text-black font-semibold text-xs font-mono transition-all shadow-[0_4px_16px_rgba(0,56,200,0.4)]"
-            >
-              Book 15-Minute Strategy Call on WhatsApp
-            </a>
-            <Link
-              href="/agency"
-              className="px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 text-white font-semibold text-xs font-mono border border-white/10 transition-all"
-            >
-              View Full Agency Desk
-            </Link>
+      {/* Bottom Institutional CTA Block */}
+      <section className="px-4 sm:px-6 pb-16">
+        <div className="max-w-5xl mx-auto relative">
+          <div className="absolute inset-0 translate-x-2 translate-y-2 rounded-2xl bg-[#0038C8] border-[1.5px] border-[#1E1E1E]" />
+          <div className="relative rounded-2xl bg-[#001B66] border-[1.5px] border-[#1E1E1E] p-8 sm:p-12 text-center text-white">
+            <span className="inline-block text-[11px] font-extrabold uppercase tracking-wider bg-[#0038C8] border border-white/25 px-3 py-1 rounded-lg">
+              Direct Founder Build // 2 to 3 Weeks
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-black tracking-tight mt-4">
+              Need a Custom Intake Desk & Client Portal for Your Firm?
+            </h2>
+            <p className="mt-3 text-sm sm:text-base text-blue-100 max-w-2xl mx-auto">
+              I build your LinkedIn content engine, high-trust website, and private client portal under one unified system backed by a 2-Year Presence Guarantee and 6 Months of free updates.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-4">
+              <a
+                href="https://wa.me/919345619428?text=Hi%20Hari,%20I%20am%20interested%20in%20a%20custom%20intake%20desk%20pilot"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white hover:bg-[#F8FBFE] text-[#001B66] font-extrabold text-xs sm:text-sm border-[1.5px] border-[#1E1E1E] shadow-[3px_3px_0px_#0038C8] transition-all"
+              >
+                <MessageCircle className="w-4 h-4 text-[#0038C8]" />
+                <span>WhatsApp Hari (+91 93456 19428)</span>
+              </a>
+              <Link
+                href="/agency"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#0038C8] hover:bg-blue-700 text-white font-bold text-xs sm:text-sm border-[1.5px] border-white/30 transition-all"
+              >
+                <span>View Full Agency Desk</span>
+                <ExternalLink className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-6 border-t border-white/[0.08] text-center text-xs text-white/40 font-mono">
-        <p>Advisor Solution // Built by Hari Narayan (+91 93456 19428) // All Rights Reserved</p>
+      <footer className="py-6 px-6 bg-white border-t-[1.5px] border-[#1E1E1E] text-center text-xs font-semibold text-gray-600">
+        <p>
+          Advisor Solution · Built by{" "}
+          <a
+            href="https://linkedin.com/in/harinarayanfintech"
+            target="_blank"
+            rel="noreferrer"
+            className="text-[#0038C8] font-bold hover:underline"
+          >
+            Hari Narayan
+          </a>{" "}
+          · +91 93456 19428 · All Rights Reserved
+        </p>
       </footer>
     </div>
   );
