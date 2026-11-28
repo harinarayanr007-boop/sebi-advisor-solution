@@ -68,44 +68,6 @@ const prototypes: PrototypeItem[] = [
     previewImage: "/prototype_previews/valmont.png",
   },
   {
-    id: "growvell",
-    title: "Growvell Content & Desk",
-    subtitle: "NRI Wealth Funnel & Approval Portal",
-    pillar: "pillar1",
-    category: "Pillar 1: Lead Generation Engine",
-    badge: "LIVE CLIENT SYSTEM",
-    description:
-      "Full inbound authority system for NRI wealth advisory: LinkedIn banner overhaul, 60-day daily content calendar, hook approval desk, and structured HNI lead qualification.",
-    deliverables: [
-      "120 designed assets + 4:5 editorial PDF carousels",
-      "Interactive client content approval and delivery hub",
-      "3-step NRI net-worth and fee-drag qualifier",
-      "Built strictly within regulatory communication boundaries",
-    ],
-    href: "/growvell",
-    mockUrl: "growvell.advisorsolution.com",
-    previewImage: "/prototype_previews/growvell.png",
-  },
-  {
-    id: "aurum",
-    title: "Aurum Fiduciary Desk",
-    subtitle: "SEBI RIA Client Onboarding & Dossier",
-    pillar: "pillar2",
-    category: "Pillar 2: Conversion & Compliance",
-    badge: "SEBI RIA FLOW",
-    description:
-      "End-to-end digital onboarding flow for Indian Registered Investment Advisers featuring structured risk profiling, agreement signatures, and statutory Reg 15/17/19 dossiers.",
-    deliverables: [
-      "SEBI Risk Profiling Questionnaire (RPQ) engine",
-      "Digital advisory agreement signing workflow",
-      "Mock BSE/MFU CeFCoM fee gateway flow",
-      "Printable statutory fiduciary audit dossier",
-    ],
-    href: "/onboarding",
-    mockUrl: "aurum.advisorsolution.com",
-    previewImage: "/prototype_previews/aurum_dossier.png",
-  },
-  {
     id: "portal",
     title: "Private Client Portal",
     subtitle: "Retention Hub & Portfolio Vault",
@@ -124,31 +86,11 @@ const prototypes: PrototypeItem[] = [
     mockUrl: "portal.advisorsolution.com",
     previewImage: "/prototype_previews/aurum_portal.png",
   },
-  {
-    id: "agency",
-    title: "Advisor Solution Desk",
-    subtitle: "Complete 3-Pillar System & Pricing",
-    pillar: "pillar1",
-    category: "Master System Overview",
-    badge: "ALL-IN-ONE BUNDLE",
-    description:
-      "Master agency showcase unifying all three pillars: 60-day social content generation, conversion-first website redesigns, and private client portals in a 2 to 3 week sprint.",
-    deliverables: [
-      "2-to-3 week turnkey sprint with Hari directly",
-      "2-Year Presence Guarantee on live deployments",
-      "6 months of complimentary copy and UI updates",
-      "Complete 3-pillar Founder Bundle option",
-    ],
-    href: "/agency",
-    mockUrl: "advisorsolution.com/agency",
-    previewImage: "/prototype_previews/agency_system.png",
-  },
 ];
 
 const FILTERS: { id: PillarFilter; label: string }[] = [
-  { id: "all", label: "All Systems (6)" },
-  { id: "pillar1", label: "Lead Gen & Content (2)" },
-  { id: "pillar2", label: "Websites & Intake (3)" },
+  { id: "all", label: "All Systems (3)" },
+  { id: "pillar2", label: "Websites & Intake (2)" },
   { id: "pillar3", label: "Client Portal (1)" },
 ];
 
